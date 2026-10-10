@@ -22,12 +22,12 @@ int lowbit(int pos) {
 }
 ```
 ## 树状数组的理解
-+ `t[pos]`的含义：\$$t[pos]=\sum_{\{\forall x \mid x+lowbit(x)=pos\}}{t[x]}+a[pos]$$。
-+ 例如：\$$t[8=1000]=t[4=0100]+t[6=0110]+t[7=0111]+a[8]$$，其中\$$a[8]$$是原始数组第8个数。
-+ 注意：不能通过\$$pos-lowbit(pos)$$得到x。
++ `t[pos]`的含义：$t[pos]=\sum_{\{\forall x \mid x+lowbit(x)=pos\}}{t[x]}+a[pos]$。
++ 例如：$t[8=1000]=t[4=0100]+t[6=0110]+t[7=0111]+a[8]$，其中$a[8]$是原始数组第8个数。
++ 注意：不能通过$pos-lowbit(pos)$得到x。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/9203012a34294d73a6e27f2396bee927.png){: referrerpolicy="no-referrer" }
 ## 建树
-+ 由于不能通过\$$pos-lowbit(pos)$$反过来确定x，所以我们要**从x开始累加**`lowbit(x)`向上更新，这一步相当于前缀和的累积。
++ 由于不能通过$pos-lowbit(pos)$反过来确定x，所以我们要**从x开始累加**`lowbit(x)`向上更新，这一步相当于前缀和的累积。
 ```cpp
 void build(int pos,int val) {
 	while (pos<=n) {

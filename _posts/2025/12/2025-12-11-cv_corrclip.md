@@ -192,14 +192,14 @@ MCT的数量和融合后的掩码数量一致，经过ViT编码后，将与自�
 
    * 输入图像被切成 N 个 patch，经线性层变成 token：
 
-     * 记为 \$$ X_C \in \mathbb{R}^{N \times d} $$（d 是通道维）。
+     * 记为 $ X_C \in \mathbb{R}^{N \times d} $（d 是通道维）。
    * 加上位置编码，送入 CLIP 的 ViT 视觉编码器。
 
 2. **最后一层 self-attention**
 
    * 在最后一层，把 token 映射成 Q、K、V：
 
-     * \$$ Q_C, K_C, V_C \in \mathbb{R}^{N \times d} $$。
+     * $ Q_C, K_C, V_C \in \mathbb{R}^{N \times d} $。
    * ClearCLIP 的做法：用 **Q·Qᵀ** 来构造相似度矩阵 S：
 
      $$
@@ -242,7 +242,7 @@ MCT的数量和融合后的掩码数量一致，经过ViT编码后，将与自�
 
 5. **分类：patch 特征 × 文本向量**
 
-   * 把 \$$ F_\text{img} $$ 投影到与文本相同空间，然后做点积，取 argmax：
+   * 把 $ F_\text{img} $ 投影到与文本相同空间，然后做点积，取 argmax：
 
      $$
      \begin{align}
@@ -279,16 +279,16 @@ MCT的数量和融合后的掩码数量一致，经过ViT编码后，将与自�
      \end{align}
      $$
 
-   * 未被任何 SAM 掩码覆盖的 patch 合并成一个“背景区域” \$$ m_0 $$。
+   * 未被任何 SAM 掩码覆盖的 patch 合并成一个“背景区域” $ m_0 $。
 
 #### 2.2.2 区域特征 & 掩码聚类（mask merging）
 
-1. 先从某个“语义更连贯”的特征序列 \$$ F_S $$ 上做 mask average pooling：
+1. 先从某个“语义更连贯”的特征序列 $ F_S $ 上做 mask average pooling：
 
-   * \$$ f_i = \text{Mean}(m_i \odot F_S) $$，得到每个区域的特征 \$$ f_i \in \mathbb{R}^d $$。
-2. 对 \$$ {f_i} $$ 用 DBSCAN 聚类（eps=0.2，min_samples=1），把语义相似的区域合并：
+   * $ f_i = \text{Mean}(m_i \odot F_S) $，得到每个区域的特征 $ f_i \in \mathbb{R}^d $。
+2. 对 $ {f_i} $ 用 DBSCAN 聚类（eps=0.2，min_samples=1），把语义相似的区域合并：
 
-   * 得到合并后的区域掩码集合 \$$ \hat{M}={\hat{m}_1,\dots,\hat{m}_z} $$。
+   * 得到合并后的区域掩码集合 $ \hat{M}={\hat{m}_1,\dots,\hat{m}_z} $。
 
 > 注意：合并之后的掩码里可能包含多个类别的像素，但它们在特征空间应该“很像”，类间相关的负面影响较小。消除更多噪声和伪分割区域带来的收益更大。实验表明“开聚类”比“不聚类”在所有数据集上都有提升。
 
@@ -296,9 +296,9 @@ MCT的数量和融合后的掩码数量一致，经过ViT编码后，将与自�
 
 现在，我们用 $$ \hat{M} $$ 来定义一个二值矩阵 $$ E \in \{0,1\}^{N\times N} $$：
 
-1. 对每个合并区域 \$$ \hat{m}_i $$：
+1. 对每个合并区域 $ \hat{m}_i $：
 
-   * 外积 \$$ \hat{m}_i \otimes \hat{m}_i $$ 生成一个区域内部的“完全连通图”：
+   * 外积 $ \hat{m}_i \otimes \hat{m}_i $ 生成一个区域内部的“完全连通图”：
 
      * 行列为 1 的位置表示“这两个 patch 在同一 region，可以互相注意”。
    * 把这些区域的外积累加起来：
@@ -309,7 +309,7 @@ MCT的数量和融合后的掩码数量一致，经过ViT编码后，将与自�
      \end{align}
      $$
 
-2. 对未分割区域 \$$ m_0 $$：
+2. 对未分割区域 $ m_0 $：
 
    * 不能简单地让所有背景 patch 互相连通，否则类间相关会太多。
    * 作者做法：
@@ -359,9 +359,9 @@ SAM 区域可能依然包含多个类别，即使我们把交互限制在区域�
 
 1. 在 DINO 的 ViT 上，得到 token 序列，在最后一层映射成：
 
-   * \$$ Q_D, K_D, V_D \in \mathbb{R}^{N \times d} $$（长度和 patch 大小通过插值对齐 CLIP）。
+   * $ Q_D, K_D, V_D \in \mathbb{R}^{N \times d} $（长度和 patch 大小通过插值对齐 CLIP）。
 
-2. 构造“语义特征” \$$ F_S = Q_D + K_D $$，然后用它做 cosine 相似：
+2. 构造“语义特征” $ F_S = Q_D + K_D $，然后用它做 cosine 相似：
 
    $$
    \begin{align}
@@ -408,10 +408,10 @@ $$
 
 #### 2.4.1 空间分支（Spatial branch）
 
-* 利用 CLIP **较低层**的 patch 特征 \$$ V'_C $$：
+* 利用 CLIP **较低层**的 patch 特征 $ V'_C $：
 
   * 低层特征含有更细致的纹理和位置信息。
-* 先用最后一层的 value-projection 把 \$$ V'_C $$ 映射到同一空间，再用同一 Attn 聚合：
+* 先用最后一层的 value-projection 把 $ V'_C $ 映射到同一空间，再用同一 Attn 聚合：
 
   * 得到增强空间维度的特征分支。
 
@@ -460,7 +460,7 @@ $$
 
 **做法：**
 
-* 利用前面得到的区域掩码（\$$ \hat{m}_i $$，i>0），对初始预测 pred 做后处理：
+* 利用前面得到的区域掩码（$ \hat{m}_i $，i>0），对初始预测 pred 做后处理：
 
   $$
   \begin{align}
@@ -697,12 +697,12 @@ $$
    * 调 SAM 的 inference，设置 threshold=0.7，得到一系列掩码；
    * 下采样到 patch 分辨率，构造 m_i 与 m_0；
    * 用 DINO 的某层特征做 mask average pooling 得到 f_i；
-   * 用 DBSCAN 聚类 f_i，得到合并掩码 \$$ \hat{m}_i $$。
+   * 用 DBSCAN 聚类 f_i，得到合并掩码 $ \hat{m}_i $。
 
 3. **构造交互矩阵 E**
 
-   * 对每个 \$$ \hat{m}_i $$ 做外积并累加；
-   * 对 m_0 做外积乘 \$$ S>mean(S) $$；
+   * 对每个 $ \hat{m}_i $ 做外积并累加；
+   * 对 m_0 做外积乘 $ S>mean(S) $；
    * 得到 E，并在注意力 softmax 中用作 mask。
 
 4. **相似度重构（Value Reconstruction）**
@@ -723,7 +723,7 @@ $$
 
    * 用 CLIP 文本编码器算 F_text；
    * F_img 与 F_text 做点积分类，得到粗分割 map；
-   * 对每个 \$$ \hat{m}_i $$ 做多数投票更新 pred。
+   * 对每个 $ \hat{m}_i $ 做多数投票更新 pred。
 
 ---
 

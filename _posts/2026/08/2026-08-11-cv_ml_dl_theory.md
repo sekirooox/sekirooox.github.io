@@ -465,7 +465,7 @@ $$
 
 局部感知中写了两类典型池化：
 
-- \$$K\times K\times$$ mean：对局部区域做平均池化。
+- $K\times K\times$ mean：对局部区域做平均池化。
 - <span style="color:red">global mean</span>：全局平均池化。
 
 ### 卷积种类
@@ -570,9 +570,9 @@ $$
 
 ### 应用
 
-- 序列分类：\$$\mathbf{x}_{1:N}\rightarrow \mathbf{h}_{1:N}\rightarrow \mathbf{h}_N\rightarrow \mathbf{y}_N$$
-- 序列标记：\$$\mathbf{x}_{1:N}\rightarrow \mathbf{h}_{1:N}\rightarrow \mathbf{y}_{1:N}$$
-- 自回归：\$$\mathbf{x}_{1:N}\rightarrow \mathbf{h}_{1:N}\rightarrow y_{N+1}=x_{N+1}$$，再递推得到后续预测
+- 序列分类：$\mathbf{x}_{1:N}\rightarrow \mathbf{h}_{1:N}\rightarrow \mathbf{h}_N\rightarrow \mathbf{y}_N$
+- 序列标记：$\mathbf{x}_{1:N}\rightarrow \mathbf{h}_{1:N}\rightarrow \mathbf{y}_{1:N}$
+- 自回归：$\mathbf{x}_{1:N}\rightarrow \mathbf{h}_{1:N}\rightarrow y_{N+1}=x_{N+1}$，再递推得到后续预测
 - 条件生成：如条件回归、机器翻译
 
 ### 问题：梯度消失/爆炸，<span style="color:red">长期记忆能力有限</span>

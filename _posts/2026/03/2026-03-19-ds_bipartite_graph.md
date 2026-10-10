@@ -15,9 +15,9 @@ description: "本文整理“图论·二分图”的核心思路、典型问题�
 
 一个**二分图**（又称**二部图**，Bipartite Graph）是一个三元组 $$G = (U, V, E)$$，其中：
 
-- \$$U$$ 和 \$$V$$ 是两个**非空**且**互不相交**的顶点集合，即 \$$U \cap V = \emptyset$$
-- \$$E$$ 是边的集合
-- **任意一条边 \$$e \in E$$ 都连接 \$$U$$ 中的一个顶点和 \$$V$$ 中的一个顶点**
+- $U$ 和 $V$ 是两个**非空**且**互不相交**的顶点集合，即 $U \cap V = \emptyset$
+- $E$ 是边的集合
+- **任意一条边 $e \in E$ 都连接 $U$ 中的一个顶点和 $V$ 中的一个顶点**
 
 ## 等价定义
 
@@ -39,9 +39,9 @@ description: "本文整理“图论·二分图”的核心思路、典型问题�
 
 一种特殊的二分图称为**完全二分图**，记作 $$K_{m, n}$$，其中：
 
-- \$$\lvert U\rvert = m$$，\$$\lvert V\rvert = n$$
-- \$$U$$ 中的**每个顶点都与 \$$V$$ 中的所有顶点相连**
-- 边数 \$$\lvert E\rvert = m \times n$$
+- $\lvert U\rvert = m$，$\lvert V\rvert = n$
+- $U$ 中的**每个顶点都与 $V$ 中的所有顶点相连**
+- 边数 $\lvert E\rvert = m \times n$
 
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/c718bac6af6a4119a199ef06e5c7cc6a.png){: referrerpolicy="no-referrer" }

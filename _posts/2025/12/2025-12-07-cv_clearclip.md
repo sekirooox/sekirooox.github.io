@@ -68,14 +68,14 @@ The aforementioned baseline in Eq. (4) often fails to achieve satisfactory resul
 
 于是他们把最后一层输出拆成两部分：
 
-* 残差分支：\$$X_{\text{res}} = X$$
-* 注意力输出：\$$X_{\text{attn}} = \text{Proj}(\text{Attn}_{qk}\cdot v)$$
-* 原本输出：\$$X_{\text{sum}} = X_{\text{res}} + X_{\text{attn}}$$
+* 残差分支：$X_{\text{res}} = X$
+* 注意力输出：$X_{\text{attn}} = \text{Proj}(\text{Attn}_{qk}\cdot v)$
+* 原本输出：$X_{\text{sum}} = X_{\text{res}} + X_{\text{attn}}$
 
 然后分别拿 $$X_{\text{res}}$$ 与 $$X_{\text{attn}}$$ 做语义分割。结果：
 
-* 用 \$$X_{\text{res}}$$：mIoU 接近 0，图几乎全是噪声；
-* 用 \$$X_{\text{attn}}$$：分割明显更清晰，mIoU 远高于原始 \$$X_{\text{sum}}$$（Fig.3）。
+* 用 $X_{\text{res}}$：mIoU 接近 0，图几乎全是噪声；
+* 用 $X_{\text{attn}}$：分割明显更清晰，mIoU 远高于原始 $X_{\text{sum}}$（Fig.3）。
 
 ⇒ **噪声主要来自 residual 这一支，而不是注意力本身**。
 
@@ -83,7 +83,7 @@ The aforementioned baseline in Eq. (4) often fails to achieve satisfactory resul
 
 1. **只动 attention，不动 residual：**
 
-   * MaskCLIP：把 \$$\text{Attn}_{qk}$$ 改成单位矩阵，只用 value embedding 做 dense 特征。
+   * MaskCLIP：把 $\text{Attn}_{qk}$ 改成单位矩阵，只用 value embedding 做 dense 特征。
    * CLIPSurgery：强调 value-value attention。
    * SCLIP：组合 q-q 和 k-k self-self attention。
 
@@ -96,8 +96,8 @@ The aforementioned baseline in Eq. (4) often fails to achieve satisfactory resul
 
 3. **局部可区分性差：**
 
-   * 统计发现：在 CLIP 中，残差分支 \$$X_{\text{res}}$$ 在各层的 normalized entropy 接近 0，而注意力分支 \$$X_{\text{attn}}$$ 保持接近 1（Fig.4）。
-   * 说明 \$$X_{\text{res}}$$ 中只有少数几个 channel 的值特别大（“高能通道”），大部分 patch 在这些通道方向上都很相似。
+   * 统计发现：在 CLIP 中，残差分支 $X_{\text{res}}$ 在各层的 normalized entropy 接近 0，而注意力分支 $X_{\text{attn}}$ 保持接近 1（Fig.4）。
+   * 说明 $X_{\text{res}}$ 中只有少数几个 channel 的值特别大（“高能通道”），大部分 patch 在这些通道方向上都很相似。
 
    这对于图像分类（需要全局方向）还可以，但对“区分不同空间位置的 patch”非常糟糕——用余弦相似度时，不同位置 patch 的方向太像，很难区分，从而产生噪声分割。
 
@@ -109,9 +109,9 @@ The aforementioned baseline in Eq. (4) often fails to achieve satisfactory resul
 
 更形式一点：
 
-1. 残差 \$$X_{\text{res}}$$ 在 latent 空间里被训练成对比学习的“全局方向”，层数越深，高能通道越集中、熵越低；
-2. attention \$$X_{\text{attn}}$$ 通过自注意力在空间上区分不同位置，保留局部差异；
-3. 最终输出 \$$X_{\text{sum}} = X_{\text{res}} + X_{\text{attn}}$$ 被残差里的高范数全局方向主导 ⇒ 破坏局部区分能力 ⇒ noisy segmentation；
+1. 残差 $X_{\text{res}}$ 在 latent 空间里被训练成对比学习的“全局方向”，层数越深，高能通道越集中、熵越低；
+2. attention $X_{\text{attn}}$ 通过自注意力在空间上区分不同位置，保留局部差异；
+3. 最终输出 $X_{\text{sum}} = X_{\text{res}} + X_{\text{attn}}$ 被残差里的高范数全局方向主导 ⇒ 破坏局部区分能力 ⇒ noisy segmentation；
 4. 因此：**去 residual、强化 self-self attention 输出** 是提升 dense vision-language 的关键。
 
 ---
@@ -131,7 +131,7 @@ $$
 
 其中 $$x_{\text{cls}}$$ 是全局 token，$$x_i$$ 是每个 patch 的视觉 token。最后一个 transformer block 计算：
 
-1. 投影得到 \$$q,k,v$$：
+1. 投影得到 $q,k,v$：
 
    $$
    \begin{align}
@@ -181,7 +181,7 @@ $$
   \end{align}
   $$
 
-* 文本侧：对每个类别 \$$c$$，构造 prompt “a photo of a {label}”，用 CLIP 文本编码器得到
+* 文本侧：对每个类别 $c$，构造 prompt “a photo of a {label}”，用 CLIP 文本编码器得到
 
   $$
   \begin{align}
@@ -199,17 +199,17 @@ $$
   \end{align}
   $$
 
-  最后 reshape 成 $$ H\times W $$ 的语义 mask。
+  最后 reshape 成 $ H\times W $ 的语义 mask。
 
 **ClearCLIP 改动点（都在最后一个 block）**：
 
 1. **去掉残差连接：**
 
-   不再做 $$ X_{\text{sum}} = X + X_{\text{attn}} $$，而是直接用 $$ X_{\text{attn}} $$ 做输出。
+   不再做 $ X_{\text{sum}} = X + X_{\text{attn}} $，而是直接用 $ X_{\text{attn}} $ 做输出。
 
 2. **使用 self-self attention（默认 q-q）：**
 
-   把原来的 $$ \text{Attn}_{qk} $$ 换成
+   把原来的 $ \text{Attn}_{qk} $ 换成
 
    $$
    \begin{align}
@@ -239,7 +239,7 @@ $$
 
 4. **后续 dense 推理不变：**
 
-   * 仍然把 \$$X^{\text{visual}}$$ 去掉 CLS，得到 \$$hw\times d$$ 的 patch 特征；
+   * 仍然把 $X^{\text{visual}}$ 去掉 CLS，得到 $hw\times d$ 的 patch 特征；
    * 与文本特征做余弦、argmax 得分割图，公式同上。
 
 所以 ClearCLIP 本质上就是：
@@ -250,13 +250,13 @@ $$
 
 1. **残差连接（RC）：**
 
-   * 保持了前一层的表示 \$$X_{\text{res}} = X$$；
+   * 保持了前一层的表示 $X_{\text{res}} = X$；
    * 在 CLIP 对比训练下，它被塑造成“高范数、低熵、少数通道主导”的表示——即强全局方向，弱局部区分。
    * 对 classification 很好，对 dense segmentation 却是噪声来源。
 
 2. **Self-self attention：**
 
-   * 通过 \$$\text{Attn}_{qq}, \text{Attn}_{kk}, \text{Attn}_{vv}$$ 等形式，让 token 之间根据自己的相似性进行空间上的重组；
+   * 通过 $\text{Attn}_{qq}, \text{Attn}_{kk}, \text{Attn}_{vv}$ 等形式，让 token 之间根据自己的相似性进行空间上的重组；
    * 更关注局部语义关系（patch 与 patch 之间）；
    * 当 residual 被去掉时，这种空间重组直接决定最终特征的结构 ⇒ 得到更清晰、连贯的分割图。
 
@@ -266,7 +266,7 @@ $$
    * 但论文和 CLIPSurgery 的发现：最后一层 FFN 对“最终分类特征方向”影响很大，但对 dense 任务帮助有限甚至有害；
    * 在去 residual 之后，原本为“带 residual 的表示”设计的 FFN 变成不匹配的变换，于是直接丢掉反而更稳定。
 
-4. **缩放因子 \$$\alpha$$ 的分析（动机的一部分）：**
+4. **缩放因子 $\alpha$ 的分析（动机的一部分）：**
 
    作者设置
 
@@ -277,7 +277,7 @@ $$
    \end{align}
    $$
 
-   发现随着 $$ \alpha $$ 增大，mIoU 持续上升；当 $$ \alpha $$ 很小（0.5）时性能急剧下降（Fig.6）。
+   发现随着 $ \alpha $ 增大，mIoU 持续上升；当 $ \alpha $ 很小（0.5）时性能急剧下降（Fig.6）。
 
    ⇒ **放大 attention 输出、相对压制 residual** 能显著提升性能；极端情况就是完全去掉 residual（ClearCLIP 的做法）。
 
@@ -285,7 +285,7 @@ $$
 
 1. **Entropy 公式（分析噪声来源）：**
 
-   对于第 $$ L $$ 层的特征图 $$ X^L \in \mathbb{R}^{(1+hw)\times d} $$，把里面所有元素 flatten 成一维，然后做 softmax：
+   对于第 $ L $ 层的特征图 $ X^L \in \mathbb{R}^{(1+hw)\times d} $，把里面所有元素 flatten 成一维，然后做 softmax：
 
    $$
    \begin{align}
@@ -306,9 +306,9 @@ $$
    * 如果只在少数元素上非常大，其余都很小 ⇒ 分布很“尖” ⇒ 熵接近 0；
    * 如果比较均匀 ⇒ 熵接近 1。
 
-   结果：CLIP 的 $$ X_{\text{res}}, X_{\text{sum}} $$ 熵很低，而 DINO 的三个特征都比较稳定 ⇒ 佐证 CLIP 残差里“少数高能通道支配”的现象。
+   结果：CLIP 的 $ X_{\text{res}}, X_{\text{sum}} $ 熵很低，而 DINO 的三个特征都比较稳定 ⇒ 佐证 CLIP 残差里“少数高能通道支配”的现象。
 
-2. **Scaling 因子 \$$\alpha$$：**
+2. **Scaling 因子 $\alpha$：**
 
    $$
    \begin{align}
@@ -316,9 +316,9 @@ $$
    \end{align}
    $$
 
-   * 当 \$$\alpha \uparrow$$：attention 的范数变大，开始在相加中主导方向 ⇒ 分割质量变好；
-   * 当 \$$\alpha \downarrow$$：residual 主导 ⇒ 回到 noisy segmentation。
-     ClearCLIP 做的是“极限情况”：相当于 \$$ \alpha \to \infty $$ 且不再加 residual。
+   * 当 $\alpha \uparrow$：attention 的范数变大，开始在相加中主导方向 ⇒ 分割质量变好；
+   * 当 $\alpha \downarrow$：residual 主导 ⇒ 回到 noisy segmentation。
+     ClearCLIP 做的是“极限情况”：相当于 $ \alpha \to \infty $ 且不再加 residual。
 
 ---
 
@@ -400,25 +400,25 @@ $$
 
 1. **无背景类（Tab.2）——CLIP ViT-B/16：**
 
-   * CLIP baseline：平均 mIoU \$$12.6$$；
-   * MaskCLIP：\$$28.0$$；SCLIP（复现版）：\$$35.2$$；
-   * **ClearCLIP：\$$37.5$$（5 个数据集平均），在 VOC20/Context59/Stuff/Cityscapes/ADE20K 上 4/5 个数据集最佳。**
+   * CLIP baseline：平均 mIoU $12.6$；
+   * MaskCLIP：$28.0$；SCLIP（复现版）：$35.2$；
+   * **ClearCLIP：$37.5$（5 个数据集平均），在 VOC20/Context59/Stuff/Cityscapes/ADE20K 上 4/5 个数据集最佳。**
 
 2. **无背景类——CLIP ViT-L/14：**
 
-   * CLIP：仅 \$$5.4$$；
-   * MaskCLIP：\$$13.7$$；SCLIP：\$$23.6$$；
-   * **ClearCLIP：\$$34.5$$，比 SCLIP 高约 11 mIoU，比 baseline 高 29 mIoU。**
+   * CLIP：仅 $5.4$；
+   * MaskCLIP：$13.7$；SCLIP：$23.6$；
+   * **ClearCLIP：$34.5$，比 SCLIP 高约 11 mIoU，比 baseline 高 29 mIoU。**
 
 3. **有背景类（Tab.3）——CLIP ViT-B/16：**
 
-   * TCL（弱监督 SOTA）：平均 \$$35.3$$；
-   * SCLIP*（无重命名技巧复现）：\$$37.3$$；
-   * **ClearCLIP：\$$39.1$$，在 Context60 和 COCO Object 上分别高出 SCLIP* 2.1 和 3.0 mIoU。**
+   * TCL（弱监督 SOTA）：平均 $35.3$；
+   * SCLIP*（无重命名技巧复现）：$37.3$；
+   * **ClearCLIP：$39.1$，在 Context60 和 COCO Object 上分别高出 SCLIP* 2.1 和 3.0 mIoU。**
 
 4. **“Free lunch” 适配到其他模型（Tab.5）：**
 
-   * 例如在 BLIP ViT-B 上：baseline 平均 \$$11.4$$，+ClearCLIP 变 \$$32.7$$，提升 21.3 mIoU；
+   * 例如在 BLIP ViT-B 上：baseline 平均 $11.4$，+ClearCLIP 变 $32.7$，提升 21.3 mIoU；
    * 在 MetaCLIP ViT-B 上：11.0 → 36.4，+25.4；
    * 对 MaskCLIP / SCLIP / GEM 再叠加 ClearCLIP 也有小幅提升。
 
@@ -473,9 +473,9 @@ $$
    * 残差和 FFN；
 3. **改造最后一层 block：**
 
-   * 把 \$$\text{Attn}_{qk}$$ 换成 \$$\text{Attn}_{qq}$$（或其他 self-self）；
-   * 直接输出 \$$X_{\text{attn}} = \text{Proj}(\text{Attn}_{qq}\cdot v)$$；
-   * 不再做 \$$X + X_{\text{attn}}$$，也不再过 FFN。
+   * 把 $\text{Attn}_{qk}$ 换成 $\text{Attn}_{qq}$（或其他 self-self）；
+   * 直接输出 $X_{\text{attn}} = \text{Proj}(\text{Attn}_{qq}\cdot v)$；
+   * 不再做 $X + X_{\text{attn}}$，也不再过 FFN。
 4. **dense 推理：**
 
    * 去掉 CLS，只保留 patch tokens；

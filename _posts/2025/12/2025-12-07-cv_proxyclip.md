@@ -117,21 +117,21 @@ ProxyCLIP 的讨论和动机。 CLIP 采用的图像级对比学习范式经常�
 
 **符号约定**
 
-* 输入图像：尺寸 \$$ H_0 \times W_0 $$
-* 滑窗后每个 crop 统一 resize 为 \$$ 336 \times 336 $$ 输入模型（City/ADE 用 448 作为短边，滑窗 336×336, stride 112）。
+* 输入图像：尺寸 $ H_0 \times W_0 $
+* 滑窗后每个 crop 统一 resize 为 $ 336 \times 336 $ 输入模型（City/ADE 用 448 作为短边，滑窗 336×336, stride 112）。
 * CLIP：
 
-  * patch 数 \$$ L_v $$，特征维度 \$$ D_v $$
+  * patch 数 $ L_v $，特征维度 $ D_v $
 * VFM：
 
-  * patch 数 \$$ L_x $$，特征维度 \$$ D_x $$
+  * patch 数 $ L_x $，特征维度 $ D_x $
 
 #### Step 1：用 CLIP 提取语义 value 特征
 
 1. 图像 → CLIP ViT 图像编码器。
 2. 在最后一个 attention block 中，输入 token 记为
-   $$ \boldsymbol{x} = [x_0, x_1, ..., x_{L_v}] \in \mathbb{R}^{(L_v+1)\times D_v} $$，
-   其中 $$ x_0 $$ 是 class token，后面是 patch token。
+   $ \boldsymbol{x} = [x_0, x_1, ..., x_{L_v}] \in \mathbb{R}^{(L_v+1)\times D_v} $，
+   其中 $ x_0 $ 是 class token，后面是 patch token。
 3. 通过线性层得到 q, k, v：
 
    $$
@@ -143,7 +143,7 @@ ProxyCLIP 的讨论和动机。 CLIP 采用的图像级对比学习范式经常�
    （注：这里主要用 v，当作 CLIP 的“语义基础”）。
 4. 去掉 class token，只保留 patch 对应的 value：
 
-   * \$$ v \in \mathbb{R}^{n \times L_v \times D_v} $$，其中 n 是多头数。
+   * $ v \in \mathbb{R}^{n \times L_v \times D_v} $，其中 n 是多头数。
 
 > 直觉：我们不再让 CLIP 自己算 qk-attention，而是把它的 v 借出来，当“要被重组的语义砖块”。
 
@@ -152,10 +152,10 @@ ProxyCLIP 的讨论和动机。 CLIP 采用的图像级对比学习范式经常�
 1. 同一张图像输入一个 VFM（可选 DINO / DINOv2 / MAE / SAM / Stable Diffusion UNet）。
 2. 取其 backbone 输出的 patch 特征：
 
-   * \$$ x \in \mathbb{R}^{L_x \times D_x} $$
-3. 对每个 patch 特征做 \$$ \ell_2 $$ 归一化：
+   * $ x \in \mathbb{R}^{L_x \times D_x} $
+3. 对每个 patch 特征做 $ \ell_2 $ 归一化：
 
-   * \$$ \tilde{x}_i = x_i / |x_i|_2 $$
+   * $ \tilde{x}_i = x_i / |x_i|_2 $
 4. 计算所有 patch 间的余弦相似度矩阵：
 
    $$
@@ -188,11 +188,11 @@ ProxyCLIP 的讨论和动机。 CLIP 采用的图像级对比学习范式经常�
      \end{align}
      $$
 
-     其中 \$$ \beta $$ 是平移因子，\$$ \gamma $$ 是缩放因子。论文默认 \$$ \beta=1.2, \gamma=3 $$。
+     其中 $ \beta $ 是平移因子，$ \gamma $ 是缩放因子。论文默认 $ \beta=1.2, \gamma=3 $。
 
 2. **掩码（只保留正相关）**
 
-   * 定义掩码矩阵 \$$ \mathcal{M} $$：
+   * 定义掩码矩阵 $ \mathcal{M} $：
 
      $$
      \begin{align}
@@ -220,7 +220,7 @@ ProxyCLIP 的讨论和动机。 CLIP 采用的图像级对比学习范式经常�
 
 为了匹配维度，作者会插值 CLIP 的 feature map，使得 patch 数一致：
 
-* 先把 CLIP 的 v 对应的空间网格 resize（双线性插值）到与 VFM 相同的 patch 分辨率，使 \$$ L_v = L_x $$。
+* 先把 CLIP 的 v 对应的空间网格 resize（双线性插值）到与 VFM 相同的 patch 分辨率，使 $ L_v = L_x $。
 
 然后在每个 head 上用 $$ \text{Attn}_p $$ 聚合 v：
 
@@ -230,16 +230,16 @@ z = \text{Proj}(\text{Attn}_p \cdot v)
 \end{align}
 $$
 
-* \$$ \text{Attn}_p $$：\$$ \mathbb{R}^{L_x \times L_x} $$
-* \$$ v $$：\$$ \mathbb{R}^{n \times L_x \times D_v} $$，广播 \$$ \text{Attn}_p $$ 到每个 head。
-* \$$ \text{Attn}_p \cdot v $$：得到 \$$ \mathbb{R}^{n \times L_x \times D_v} $$ 的聚合结果。
-* Proj：重用 CLIP 最后一层注意力的输出投影参数，将多头结果融合到 \$$ \mathbb{R}^{L_x \times D_v} $$。
+* $ \text{Attn}_p $：$ \mathbb{R}^{L_x \times L_x} $
+* $ v $：$ \mathbb{R}^{n \times L_x \times D_v} $，广播 $ \text{Attn}_p $ 到每个 head。
+* $ \text{Attn}_p \cdot v $：得到 $ \mathbb{R}^{n \times L_x \times D_v} $ 的聚合结果。
+* Proj：重用 CLIP 最后一层注意力的输出投影参数，将多头结果融合到 $ \mathbb{R}^{L_x \times D_v} $。
 
 > 这一步可以看成：
 >
 > * **不要 CLIP 原来的 q-k**，换成“VFM 相似度注意力”；
 > * 只用 CLIP 的 v 和输出投影；
-> * 最终得到新的 dense 表示 \$$ z $$，既保留 CLIP 的语义，又遵从 VFM 的空间结构。
+> * 最终得到新的 dense 表示 $ z $，既保留 CLIP 的语义，又遵从 VFM 的空间结构。
 
 #### Step 5：与文本特征对齐，做 patch 分类 + 上采样
 
@@ -252,11 +252,11 @@ $$
    $$
 
    （C 是类别数，d 是 CLIP 共享语义空间维度）。
-2. 把新的 dense 表示 \$$ z $$ 投到 vision-language 共享空间：
+2. 把新的 dense 表示 $ z $ 投到 vision-language 共享空间：
 
-   * 得到 \$$ z_v \in \mathbb{R}^{L_x \times d} $$。
+   * 得到 $ z_v \in \mathbb{R}^{L_x \times d} $。
 3. 对每个 patch 计算与所有类别文本特征的余弦相似度，取最大者作为该 patch 的类别预测。
-4. 把 \$$ L_x $$ 个 patch 的预测重新 reshape 成 \$$ (h \times w) $$ 空间网格，再上采样到原图尺寸 \$$ H_0 \times W_0 $$，得到最终分割图 \$$ S\in\mathbb{R}^{H_0\times W_0} $$。
+4. 把 $ L_x $ 个 patch 的预测重新 reshape 成 $ (h \times w) $ 空间网格，再上采样到原图尺寸 $ H_0 \times W_0 $，得到最终分割图 $ S\in\mathbb{R}^{H_0\times W_0} $。
 
 ---
 
@@ -276,9 +276,9 @@ $$
 
 * 核心桥梁：
 
-  * 输入：VFM 的 x（算 S→A→\$$ \text{Attn}_p $$）和 CLIP 的 v。
+  * 输入：VFM 的 x（算 S→A→$ \text{Attn}_p $）和 CLIP 的 v。
   * 输出：新的 dense 表示 z。
-* 通过自适应归一化 + 掩码，使 \$$ \text{Attn}_p $$ 对不同 VFM 都稳定、可分。
+* 通过自适应归一化 + 掩码，使 $ \text{Attn}_p $ 对不同 VFM 都稳定、可分。
 
 **4. 文本编码器 + patch 分类头**
 
@@ -302,7 +302,7 @@ $$
    $$
 
    * 原本是“用 q-k 算的注意力权重 × v”，再加回 x。
-   * ProxyCLIP 等价于把 \$$ \text{Attn}_{qk} $$ 换成 \$$ \text{Attn}_p $$（由 VFM 提供），并只用最后一层。
+   * ProxyCLIP 等价于把 $ \text{Attn}_{qk} $ 换成 $ \text{Attn}_p $（由 VFM 提供），并只用最后一层。
 
 2. **Proxy attention 的相似度矩阵**
 
@@ -327,7 +327,7 @@ $$
      把不同模型的平均相似度拉到类似的范围，同时放大差异。
    * 掩码：
 
-     * 负值的条目认为是“不相关”，在 softmax 前置为 \$$ -\infty $$，强制其权重为 0。
+     * 负值的条目认为是“不相关”，在 softmax 前置为 $ -\infty $，强制其权重为 0。
    * 这相当于：只让“与我相似的 patch”参与我的特征聚合，避免语义污染。
 
 4. **最终的 dense 表示**
@@ -338,7 +338,7 @@ $$
    \end{align}
    $$
 
-   * 某个 patch i 的 z_i，是所有 patch 的 v_j 按 \$$ \text{Attn}_p[i,j] $$ 加权求和的结果。
+   * 某个 patch i 的 z_i，是所有 patch 的 v_j 按 $ \text{Attn}_p[i,j] $ 加权求和的结果。
    * 若 i 在“狗”的区域，则它主要聚合“狗相关 patch”，使 z_i 更接近“狗”文本特征。
 
 ---
@@ -534,14 +534,14 @@ $$
 
    * 从 CLIP 的最后一层 ViT block 抽取 value v 和输出投影层参数；
    * 从 VFM backbone 抽取 patch 特征 x；
-   * 通过插值，让 v 的空间布局和 x 对齐（即 \$$ L_v = L_x $$）。
+   * 通过插值，让 v 的空间布局和 x 对齐（即 $ L_v = L_x $）。
 
 4. **实现 Proxy attention**
 
-   * 对 x 做 \$$ \ell_2 $$ 归一化，算 \$$ S = xx^T $$；
-   * 算 \$$ \mu $$，做 \$$ A = \gamma(S - \beta \mu) $$（默认 \$$ \beta=1.2,\gamma=3 $$）；
-   * 做掩码：负值置 \$$ -\infty $$，然后 softmax 得 \$$ \text{Attn}_p $$；
-   * 用 \$$ \text{Attn}_p v $$ + Proj 得到 z。
+   * 对 x 做 $ \ell_2 $ 归一化，算 $ S = xx^T $；
+   * 算 $ \mu $，做 $ A = \gamma(S - \beta \mu) $（默认 $ \beta=1.2,\gamma=3 $）；
+   * 做掩码：负值置 $ -\infty $，然后 softmax 得 $ \text{Attn}_p $；
+   * 用 $ \text{Attn}_p v $ + Proj 得到 z。
 
 5. **文本特征 & patch 分类**
 

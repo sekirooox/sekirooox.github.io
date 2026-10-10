@@ -50,7 +50,7 @@ description: "本文围绕“计算机基础·cs336-现代Transforme…”梳理
 ### `scores.masked_fill(mask==False,float('-inf'))`：将矩阵值为1/True的地方填充为指定值
 + 我们得到的掩膜False值是要省略的，因此需要手动转换`mask==False`。
 ## 线性层
-+ 计算机为行存储优先，因此将W定义为(out,in)矩阵存储在前向过程中效率更高(\$$xW^T$$而不是\$$xW$$。)。
++ 计算机为行存储优先，因此将W定义为(out,in)矩阵存储在前向过程中效率更高($xW^T$而不是$xW$。)。
 ```cpp
 class Linear(nn.Module):
     def __init__(self,input_dim,output_dim,device=None,dtype=None):
@@ -97,9 +97,9 @@ class Embedding_Layer(nn.Module):
 ### 核心思想
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/85519c088aec4446bbdb7a432fa80f61.png){: referrerpolicy="no-referrer" }
 
-+ 我们需要让\$$Q_m$$和\$$K_n$$进行**注意力操作的结果与它们的相对位置有关(m-n)**，我们可以使用旋转矩阵的性质来满足这一点
-+ 首先我们只考虑二维度的情况，假设\$$Q_m'$$=\$$R(m\theta)Q_m$$，\$$K_n'=R(n\theta)K_n$$，R是旋转矩阵，**旋转角度与它们的位置有关**。
-+ 此时\$$Q'^TK'=Q_mR(m\theta)R(n\theta)K_n$$,然后我们利用一些旋转矩阵的性质，得到\$$Q'^TK'=Q_mR((m-n)\theta)K_n$$
++ 我们需要让$Q_m$和$K_n$进行**注意力操作的结果与它们的相对位置有关(m-n)**，我们可以使用旋转矩阵的性质来满足这一点
++ 首先我们只考虑二维度的情况，假设$Q_m'$=$R(m\theta)Q_m$，$K_n'=R(n\theta)K_n$，R是旋转矩阵，**旋转角度与它们的位置有关**。
++ 此时$Q'^TK'=Q_mR(m\theta)R(n\theta)K_n$,然后我们利用一些旋转矩阵的性质，得到$Q'^TK'=Q_mR((m-n)\theta)K_n$
 
 ### 计算公式
 + 旋转矩阵R是一个2x2的矩阵(我们现在只对2维的情况考虑)，假设有n个维度，**我们可以构造n/2个旋转矩阵R组成的对角矩阵**(**将n个维度拆分为n/2个组，每个组单独考虑**)。
@@ -112,7 +112,7 @@ class Embedding_Layer(nn.Module):
 + 只考虑第d个token，我们发现其特征维度叠加ROPE位置编码的公式有这样的特点
 + 下标从0开始，对于偶数位：`output[...,0::2]=self.cos*x_even-self.sin*x_odd`
 + 下标从0开始，对于奇数位：`output[...,1::2]=self.cos*x_odd+self.sin*x_even`
-+ 旋转角度\$$\theta$$和token位置与组数有关，因此提前处理即可`theta_matrix=torch.outer(seqs,thetas)# [l,d_k/2]`。
++ 旋转角度$\theta$和token位置与组数有关，因此提前处理即可`theta_matrix=torch.outer(seqs,thetas)# [l,d_k/2]`。
 
 $$
 \begin{align}
@@ -288,7 +288,7 @@ LayerNorm(x)=\frac{x-E(x)}{\sqrt{VAR(x)}}\cdot \gamma+ \beta
 \end{align}
 $$
 
-+ \$$\gamma$$和\$$\beta$$都是**可学习的参数**,维度为(d_model,)
++ $\gamma$和$\beta$都是**可学习的参数**,维度为(d_model,)
 ```cpp
 class LayerNorm(nn.Module):
     def __init__(self,d_model,device=None,dtype=None,eps=1e-5):
@@ -317,8 +317,8 @@ $$
 \end{align}
 $$
 
-+ 其中 RMS代表x的**均方根**，\$$RMS(x)=\sqrt{\frac{\sum_i^d{x_i^2}}{d}}$$
-+ \$$\gamma$$代表**RMSNorm的参数**,维度为(d_model,)。
++ 其中 RMS代表x的**均方根**，$RMS(x)=\sqrt{\frac{\sum_i^d{x_i^2}}{d}}$
++ $\gamma$代表**RMSNorm的参数**,维度为(d_model,)。
 ```cpp
 class RMSNorm(nn.Module):
     def __init__(self,d_model,device=None,dtype=None,eps=1e-8):

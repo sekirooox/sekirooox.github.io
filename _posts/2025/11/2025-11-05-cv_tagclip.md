@@ -14,7 +14,7 @@ Abstract—Contrastive Language-Image Pre-training (CLIP) has recently shown gre
 ## 动机
 过去的工作总是**将不可见类错误分类为相似类(应该指的是可见类)**。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/c03063bfb0a944f2bcd550814a63eaaf.png){: referrerpolicy="no-referrer" }
-+ 引入一个额外的token \$$t_C$$
++ 引入一个额外的token $t_C$
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/c93edd5a9208495ebadede9e4aab93b1.png){: referrerpolicy="no-referrer" }
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/0e301c04638845ea9a9f1f3b1c67bbae.png){: referrerpolicy="no-referrer" }
@@ -22,7 +22,7 @@ Abstract—Contrastive Language-Image Pre-training (CLIP) has recently shown gre
 ## 可信token学习器：就是一个自注意力机制。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/4a8679df4e1a41d893565cbf011ba2b9.png){: referrerpolicy="no-referrer" }
 
-+ 分为两个\$$M_A$$和\$$M_R$$，\$$M_R$$用于减少对于不可见类的概率。
++ 分为两个$M_A$和$M_R$，$M_R$用于减少对于不可见类的概率。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/3a9523d0b8a64c03a368ee36b6de220b.png){: referrerpolicy="no-referrer" }
 
 + 可见类为1，不可见类为0

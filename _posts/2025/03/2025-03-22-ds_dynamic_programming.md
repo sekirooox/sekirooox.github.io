@@ -46,7 +46,7 @@ description: "本文整理“算法·动态规划”的核心思路、典型问�
 + [P1002 [NOIP 2002 普及组] 过河卒](https://www.luogu.com.cn/problem/P1002) :边界条件+数组拷贝
 ---
 ## 状态
-+ 可以理解为**n元函数**\$$f(x_1,x_2,\cdots,x_n)$$：完成某个特定任务，需要**考虑哪些变量**?
++ 可以理解为**n元函数**$f(x_1,x_2,\cdots,x_n)$：完成某个特定任务，需要**考虑哪些变量**?
 + **状态的定义来自 子问题(本质)** 
 ---
 ## 状态转移
@@ -63,7 +63,7 @@ description: "本文整理“算法·动态规划”的核心思路、典型问�
 ### 遍历顺序和初始化取决 1.状态+状态转移方程(本质) 2.题目的特点
 
 ## 状态压缩
-+ ### 本质是精简 \$$f(x_1,x_2\cdots,x_n)$$中变量的个数，通常用于优化空间效率
++ ### 本质是精简 $f(x_1,x_2\cdots,x_n)$中变量的个数，通常用于优化空间效率
 + ### 状态压缩 来自于 1.可以直接减少无关状态变量 2.递推公式
 ---
 
@@ -371,8 +371,8 @@ void solve() {
 ---
 # 区间DP：区间组合和括号问题，$$O(n^{2})$$
 
-+ [282. 石子合并](https://www.acwing.com/problem/content/description/284/)：\$$O(N^2K)$$
-+ 矩阵乘法链：\$$O(N^2K)$$
++ [282. 石子合并](https://www.acwing.com/problem/content/description/284/)：$O(N^2K)$
++ 矩阵乘法链：$O(N^2K)$
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/80b12709bd3d4aea8a130d6ef6a30f78.png){: referrerpolicy="no-referrer" }
 + [回文串](https://leetcode.cn/problems/longest-palindromic-substring/description/?envType=study-plan-v2&envId=top-100-liked)：DP不擅长获得具体的方案实现，因此将问题转换为判定回文数。
 + 括号问题：

@@ -53,7 +53,7 @@ def closest_centroid(X,centroids):
 ## 生成新的聚类中心
 >一般采取计算样本的均值，使用`np.mean()`即可
 >注意python的条件索引
-* Specifically, for every centroid \$$\mu_k$$ we set
+* Specifically, for every centroid $\mu_k$ we set
 
 $$
 \begin{align}
@@ -62,8 +62,8 @@ $$
 $$
 
     where 
-    * \$$C_k$$ is the set of examples that are assigned to centroid \$$k$$
-    * \$$\lvert C_k\rvert$$ is the number of examples in the set \$$C_k$$
+    * $C_k$ is the set of examples that are assigned to centroid $k$
+    * $\lvert C_k\rvert$ is the number of examples in the set $C_k$
 ```python
 def update_centroids(X,idx,centroids):
     """
@@ -138,7 +138,7 @@ $$
 where
 
 
-  * The \$$F_1$$ score is computed using precision (\$$prec$$) and recall (\$$rec$$) as follows:
+  * The $F_1$ score is computed using precision ($prec$) and recall ($rec$) as follows:
 
 $$
 \begin{align}

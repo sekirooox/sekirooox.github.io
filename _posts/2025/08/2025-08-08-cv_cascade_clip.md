@@ -26,7 +26,7 @@ description: "本文整理“深度学习·Cascade-CLIP”涉及的模型原理�
 + 在本文中，**作者划分了3个阶段**，每个阶段的设置见下。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/98a16bb7b0c448209a0318e194c363e7.png){: referrerpolicy="no-referrer" }
 ## 级联式的架构
-+ 将阶段\$$s$$(包含\$$l$$ 个transformer layers)的特征综合处理得到\$$Z_s$$，然后每一个文本编码\$$\hat{T}$$(C,2D)投射到(C,D)，这个**投射层貌似是独立的**。按照Zegclip的做法得到掩码矩阵\$$M_s$$。直接相加所有阶段的掩码矩阵，并使用**softmax归一化**，得到最后的掩码矩阵。
++ 将阶段$s$(包含$l$ 个transformer layers)的特征综合处理得到$Z_s$，然后每一个文本编码$\hat{T}$(C,2D)投射到(C,D)，这个**投射层貌似是独立的**。按照Zegclip的做法得到掩码矩阵$M_s$。直接相加所有阶段的掩码矩阵，并使用**softmax归一化**，得到最后的掩码矩阵。
 + 注意：前几层包含的语义信息太少，所以不考虑。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/570a65fb5f0948f2be34a18c4d4a5114.png){: referrerpolicy="no-referrer" }
 + stage数量的设置和划分
@@ -37,6 +37,6 @@ description: "本文整理“深度学习·Cascade-CLIP”涉及的模型原理�
 
 + NGA**本质是一种加权**
 + 注意：权重的**初始化方式**作者已经给出，并且**在训练中可以学习**！
-+ \$$\sigma=1$$
++ $\sigma=1$
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/fc6a0133e75043b2b2a27cac79c0cbee.png){: referrerpolicy="no-referrer" }
 

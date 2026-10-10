@@ -37,7 +37,7 @@ description: "本文记录“论文精读·Crowd Comparative…”的研究问�
 
 1. **生成群众响应（Crowd Response Generation）**
 
-   * 给定任务指令 \$$x$$，利用多个LLM（如Qwen、Mistral等）和不同温度参数生成多样化的响应集合。
+   * 给定任务指令 $x$，利用多个LLM（如Qwen、Mistral等）和不同温度参数生成多样化的响应集合。
    * 这些“crowd responses”作为评估锚点，用以揭示候选响应（A/B）中更多隐含细节。
 
 2. **生成群众判断（Crowd Judgment Generation）**
