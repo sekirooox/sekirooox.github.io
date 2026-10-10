@@ -46,7 +46,7 @@ description: "本文整理“算法·动态规划”的核心思路、典型问�
 + [P1002 [NOIP 2002 普及组] 过河卒](https://www.luogu.com.cn/problem/P1002) :边界条件+数组拷贝
 ---
 ## 状态
-+ 可以理解为**n元函数**$f(x_1,x_2,\cdots,x_n)$：完成某个特定任务，需要**考虑哪些变量**?
++ 可以理解为**n元函数**\$$f(x_1,x_2,\cdots,x_n)$$：完成某个特定任务，需要**考虑哪些变量**?
 + **状态的定义来自 子问题(本质)** 
 ---
 ## 状态转移
@@ -62,12 +62,10 @@ description: "本文整理“算法·动态规划”的核心思路、典型问�
 ## 遍历顺序和初始化
 ### 遍历顺序和初始化取决 1.状态+状态转移方程(本质) 2.题目的特点
 
-
 ## 状态压缩
-+ ### 本质是精简 $f(x_1,x_2\cdots,x_n)$中变量的个数，通常用于优化空间效率
++ ### 本质是精简 \$$f(x_1,x_2\cdots,x_n)$$中变量的个数，通常用于优化空间效率
 + ### 状态压缩 来自于 1.可以直接减少无关状态变量 2.递推公式
 ---
-
 
 ## dp五部曲的理解
 见：[代码随想录](https://www.programmercarl.com/0416.%E5%88%86%E5%89%B2%E7%AD%89%E5%92%8C%E5%AD%90%E9%9B%86.html#_01%E8%83%8C%E5%8C%85%E9%97%AE%E9%A2%98)
@@ -84,11 +82,10 @@ description: "本文整理“算法·动态规划”的核心思路、典型问�
 + 一般来说，先遍历背包还是物体,顺序不重要，更**取决于递推公式**。
 + **对于一些问题(排列或组合)，遍历顺序影响答案**。
 
-
 <br><br><br><br>
 
 ---
-## 0-1背包问题：$O(nm)$，$O(n)-O(nm)$
+## 0-1背包问题：$$O(nm)$$，$$O(n)-O(nm)$$
 + [P1048 [NOIP 2005 普及组] 采药
 ](https://www.luogu.com.cn/problem/P1048)
 + [P1802 5 倍经验日](https://www.luogu.com.cn/problem/P1802):这个背包问题需要考虑`dp[0]`的情况
@@ -146,13 +143,11 @@ void solve() {
 }
 ```
 
-
-
 <br><br><br><br>
 
 ---
 
-## 完全背包问题：$O(nm)$，$O(n)-O(nm)$
+## 完全背包问题：$$O(nm)$$，$$O(n)-O(nm)$$
 + 物体可以**重复使用无限次**
 + 区别是:是否能利用刚更新的状态
 + **不能直接转换为0-1背包问题**
@@ -170,16 +165,16 @@ $$
 dp[i][j]=max(dp[i-1][j-0\times w[i]]+0\times v[i],...,dp[i-1][j-k\times w[i]]+k\times v[i],...)\\
 dp[i][j-w[i]]=max(dp[i-1][j-1\times w[i]]+1\times v[i],...,dp[i-1][j-k\times w[i]]+k\times v[i],...)\\
 dp[i][j]=max(dp[i-1][j],dp[i][j-w[i]])
+
 $$
 
-
-## 多重背包问题：$O(nmk)$，$O(n)-O(nm)$
-### 朴素多重背包解法：$O(nmk)$
+## 多重背包问题：$$O(nmk)$$，$$O(n)-O(nm)$$
+### 朴素多重背包解法：$$O(nmk)$$
 + **多一重循环k，用于遍历使用次数**(注：不能直接根据`c[i]`来遍历，这样会有干扰)
 + 部分问题可以完全转换为0-1背包
 + 倒序遍历j(参照0-1背包）
 + [P1077 [NOIP 2012 普及组] 摆花](https://www.luogu.com.cn/problem/P1077)：不能直接转换为0-1背包
-### 倍增思想优化：$O(nm\log(k))$
+### 倍增思想优化：$$O(nm\log(k))$$
 + 使用二进制优化：**任意二进制1,2,4,8,16,R(表示余数)，可以唯一确定一个数k。**
 + 将物体数量按照二进制进行分解，**每一维度代表1个，2个，4个...，R个物体**，**然后将问题完全转换为0-1背包(防止重复)**
 
@@ -207,11 +202,9 @@ void solve() {
 
 + 416. 分割等和子集
 
-
 <br><br><br><br>
 
 ---
-
 
 # 状态机DP
 ## DP数组的定义：解决问题<span class="text-danger">依赖</span>哪些有限状态，状态定义上一般是互斥的
@@ -265,7 +258,7 @@ void solve() {
 + [198.打家劫舍](https://leetcode.cn/problems/house-robber/submissions/614436503/)：状态压缩：`dp[i][2]->dp[i]`
 + [213.打家劫舍II](https://leetcode.cn/problems/house-robber-ii/description/)：初始化有问题，分类讨论。
 + [337.打家劫舍 III](https://leetcode.cn/problems/house-robber-iii/)：树上DP，使用 [198.打家劫舍](https://leetcode.cn/problems/house-robber/submissions/614436503/)：定义的类似状态:`dp[i][2]`，就能理解。**当然这题也可以进行状态压缩!**
-## 最长递增序列问题 (LIS)：$O(n^2)$，$O(n)$
+## 最长递增序列问题 (LIS)：$$O(n^2)$$，$$O(n)$$
 ### 最长递增子序列
 + dp定义：以j结尾的子序列的属性。**不一定包含a[j]**。
 ```cpp
@@ -344,7 +337,7 @@ void solve() {
 ```
 
 # 多维度动态规划问题
-## 公共子序列问题：$O(nm)，O(nm)$
+## 公共子序列问题：$$O(nm)，O(nm)$$
 ## DP数组的定义：考虑目标`A[0,i]`和`B[0,j]`之间的属性
 + dp数组：`dp[i][j]`，考虑`[0，i]`和`[0，j]`的子串属性。
 + 子集划分依据：可以不包含i，不包含j，也可以不包含i和j(被前者囊括进去)，同时包含i和j。
@@ -374,10 +367,10 @@ void solve() {
 <br><br><br><br>
 
 ---
-# 区间DP：区间组合和括号问题，$O(n^{2})$
+# 区间DP：区间组合和括号问题，$$O(n^{2})$$
 
-+ [282. 石子合并](https://www.acwing.com/problem/content/description/284/)：$O(N^2K)$
-+ 矩阵乘法链：$O(N^2K)$
++ [282. 石子合并](https://www.acwing.com/problem/content/description/284/)：\$$O(N^2K)$$
++ 矩阵乘法链：\$$O(N^2K)$$
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/80b12709bd3d4aea8a130d6ef6a30f78.png){: referrerpolicy="no-referrer" }
 + [回文串](https://leetcode.cn/problems/longest-palindromic-substring/description/?envType=study-plan-v2&envId=top-100-liked)：DP不擅长获得具体的方案实现，因此将问题转换为判定回文数。
 + 括号问题：
@@ -581,7 +574,6 @@ for(int i=0;i<text1.size();i++){
         }
 ```
 
-
 + [516.最长回文子序列](https://leetcode.cn/problems/longest-palindromic-subsequence/):这题见到那很多，就是一般的定义。**注意要求是子序列，所以即使不相等也要继承前一个状态**。特殊处理`i==j`的情况。
 ```cpp
         for(int j=1;j<=s.size();j++){
@@ -601,9 +593,7 @@ for(int i=0;i<text1.size();i++){
         }
 ```
 
-# 状态压缩DP：$O(2^m*n)$，m为需要压缩的状态数，n为普通状态数
-
-
+# 状态压缩DP：$$O(2^m*n)$$，m为需要压缩的状态数，n为普通状态数
 
 ## 核心思想：用二进制表示状态
 ## 例题
@@ -652,10 +642,8 @@ void solve() {
 + **先枚举状态，再枚举结点(确保已经更新)。**
 + [分数分割](https://pgcode.cn/problem/2704)：对于每一个最大分数的限制条件，都不能简单的使用背包的思想来解决，一定要考虑每一个状态之间的转换，其中状态定义为**每件物品是否都有且选用过**，可以使用**状态压缩的方式来解决**。
 
-
-# 树形DP：$O(n)+$
+# 树形DP：$$O(n)+$$
 ## DP数组的定义：以某一节点为根的节点集合
-
 
 ## 做法1：后序遍历的形式转译为DP问题
 ### 例题
@@ -663,7 +651,6 @@ void solve() {
 ## 做法2：转换为一般数组问题，但是要记录<span class="text-danger">父亲节点</span>
 ### 例题
 + [285. 没有上司的舞会](https://www.acwing.com/problem/content/description/287/)
-
 
 # 例题
 ## 背包问题
@@ -676,5 +663,4 @@ void solve() {
 ### 多维(3D及以上)背包问题
 
 + [474. 一和零](https://leetcode.cn/problems/ones-and-zeroes/description/)
-
 

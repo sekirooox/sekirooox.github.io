@@ -54,7 +54,7 @@ description: "本文整理“深度学习·Zegclip&Clip-RC”涉及的模型原�
 + G是图像token(1,D)，P是prompt token(K,D)，I是patch token(N,D)，**R是作者引入的region token**(M,D)。
 
 ## R的理解和掩码设计
-+ 作者认为每一个R中的token对应了$\frac{\sqrt{N}\sqrt{M}}{\sqrt{N}\sqrt{M}}$个patches
++ 作者认为每一个R中的token对应了\$$\frac{\sqrt{N}\sqrt{M}}{\sqrt{N}\sqrt{M}}$$个patches
 + 例子：假设N=4,M=2，**图像中2x2的区域对应一个R的token**
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b58c86d56dc2499280be527dcfb8003c.png){: referrerpolicy="no-referrer" }
 + 多了个掩码矩阵，一个R的token对应这些patch，其他的patch不需要参与计算，所以说**有个掩码矩阵**
@@ -64,7 +64,6 @@ description: "本文整理“深度学习·Zegclip&Clip-RC”涉及的模型原�
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/48ee6b51a0c94609b01380d7631cc7bd.png){: referrerpolicy="no-referrer" }
 # RLB
 
-
 ##  对齐图像编码
 + image特征对齐为：(N,3D)
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/56325badedc94e8e8f3a7e3a7960595d.png){: referrerpolicy="no-referrer" }
@@ -73,7 +72,7 @@ description: "本文整理“深度学习·Zegclip&Clip-RC”涉及的模型原�
 + 得到特殊编码：(M,C,2D)
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/0e9023ecb1e84003b095b05e43001671.png){: referrerpolicy="no-referrer" }
 # Decoder头
-+ 先把$\hat{I}$和$\hat{R}$进行线性层映射到D维度(N,D)和(M,C,D)
++ 先把\$$\hat{I}$$和\$$\hat{R}$$进行线性层映射到D维度(N,D)和(M,C,D)
 + 正常交叉注意力
 + 得到I和R形状不变
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/8f83898f4dbe42b2a725b41001ac1611.png){: referrerpolicy="no-referrer" }
@@ -89,10 +88,4 @@ description: "本文整理“深度学习·Zegclip&Clip-RC”涉及的模型原�
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ffab8d3c323c4633bf8df429b8e7be77.png){: referrerpolicy="no-referrer" }
 + 这里的I指的是原始CLIP提取的**图像特征**，已经被冻结，R指的是关系描述符，也就是**文本特征**。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/eb5dcbaa11a743d5b99c6dfdff311090.png){: referrerpolicy="no-referrer" }
-
-
-
-
-
-
 

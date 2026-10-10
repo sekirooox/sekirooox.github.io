@@ -20,14 +20,17 @@ description: "本文围绕“机器学习·L3W2-协同过滤”整理基本原�
 本质上用的算法还是线性回归那套
 ## 计算公式
 
-$$J({\mathbf{x}^{(0)},...,\mathbf{x}^{(n_m-1)},\mathbf{w}^{(0)},b^{(0)},...,\mathbf{w}^{(n_u-1)},b^{(n_u-1)}})= \left[ \frac{1}{2}\sum_{(i,j):r(i,j)=1}(\mathbf{w}^{(j)} \cdot \mathbf{x}^{(i)} + b^{(j)} - y^{(i,j)})^2 \right]+ \underbrace{\left[\frac{\lambda}{2}\sum_{j=0}^{n_u-1}\sum_{k=0}^{n-1}(\mathbf{w}^{(j)}_k)^2+ \frac{\lambda}{2}\sum_{i=0}^{n_m-1}\sum_{k=0}^{n-1}(\mathbf{x}_k^{(i)})^2\right]}_{regularization}
 $$
-The first summation in (1) is "for all $i$, $j$ where $r(i,j)$ equals $1$" and could be written:
+J({\mathbf{x}^{(0)},...,\mathbf{x}^{(n_m-1)},\mathbf{w}^{(0)},b^{(0)},...,\mathbf{w}^{(n_u-1)},b^{(n_u-1)}})= \left[ \frac{1}{2}\sum_{(i,j):r(i,j)=1}(\mathbf{w}^{(j)} \cdot \mathbf{x}^{(i)} + b^{(j)} - y^{(i,j)})^2 \right]+ \underbrace{\left[\frac{\lambda}{2}\sum_{j=0}^{n_u-1}\sum_{k=0}^{n-1}(\mathbf{w}^{(j)}_k)^2+ \frac{\lambda}{2}\sum_{i=0}^{n_m-1}\sum_{k=0}^{n-1}(\mathbf{x}_k^{(i)})^2\right]}_{regularization}
+$$
+
+The first summation in (1) is "for all $$i$$, $$j$$ where $$r(i,j)$$ equals $$1$$" and could be written:
 
 $$
 = \left[ \frac{1}{2}\sum_{j=0}^{n_u-1} \sum_{i=0}^{n_m-1}r(i,j)*(\mathbf{w}^{(j)} \cdot \mathbf{x}^{(i)} + b^{(j)} - y^{(i,j)})^2 \right]
 +\text{regularization}
 $$
+
 ## 代码
 **本质上就是一个矩阵的运算，利用`np.sum()`化简代码**
 >自定义计算函数`cofi_cost_func_v`
@@ -71,7 +74,7 @@ for iter in range(iterations):
 + 矩阵乘法：`y_pred=X@W.T+b`
 + 合并原始数据：`Y_res=R*Y+(1-R)*y_pred`
 ## 预测二进制变量
->原来的$f(w,b,x)\to f=sigmoid(z)$函数
+>原来的$$f(w,b,x)\to f=sigmoid(z)$$函数
 >损失函数改为交叉熵即可！
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/6965bd63142d4ff6985a5b28382739c4.png){: referrerpolicy="no-referrer" }
@@ -81,4 +84,3 @@ for iter in range(iterations):
 + 需要额外的信息，很难解释这些额外的信息的含义
 + **梯度下降速度极慢，参数太多**
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/67cb9b2ab19d469f9063c393a43a07f7.png){: referrerpolicy="no-referrer" }
-

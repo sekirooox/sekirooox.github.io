@@ -11,8 +11,8 @@ description: "本文整理“图论·并查集 (未完)”的核心思路、典�
 
 # 并查集
 
-## 核心思想：集合合并($O(1)$)，集合查询(~$O(1)$)和集合判断($O(1)$)的高效数据结构
-+ 关键是集合合并，暴力方法需要$O(n)$复杂度。
+## 核心思想：集合合并($$O(1)$$)，集合查询(~$$O(1)$$)和集合判断($$O(1)$$)的高效数据结构
++ 关键是集合合并，暴力方法需要\$$O(n)$$复杂度。
 + 图论中的应用：**是否存在回路，图是否有连通性**
 + 其他应用：两个**元素之间是否存在关系**，可以建模为图论中的连通性
 
@@ -40,7 +40,6 @@ void merge(int x, int y) {
 + 注意：**只有集合(子集)的根节点**的权值是一定有效的，**非根结点不一定有效**。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/73eb50bc5c5c47d7ababa3f49a3ad495.png){: referrerpolicy="no-referrer" }
 
-
 ### 例题
 + [AcWing 837. 连通块中点的数量](https://www.acwing.com/activity/content/problem/content/886/)：并查集中元素的利用，不定义为类使用，重写find和merge方法。
 
@@ -48,7 +47,6 @@ void merge(int x, int y) {
 
 + [240. 食物链](https://www.acwing.com/problem/content/description/242/)：*未完成*。
 + [P1955 [NOI2015] 程序自动分析](https://www.luogu.com.cn/problem/P1955)：相等的元素放在同一个集合，最后比较不相等的元素是否出现在同一集合当中。这题还需要使用离散化的技巧，将下标i和j离散化为有限数组。时间复杂度接近10^8。
-
 
 ```cpp
 int n,t,flag=1;

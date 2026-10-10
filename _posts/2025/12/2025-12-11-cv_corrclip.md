@@ -25,7 +25,6 @@ description: "本文整理“CorrCLIP”涉及的模型原理、关键方法与�
 
 ![，](https://i-blog.csdnimg.cn/direct/cd289eba30bf4deca758b9c0bd5d389c.png){: referrerpolicy="no-referrer" }
 
-
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/4360addf2e524443a7ab5aacdae3a42c.png){: referrerpolicy="no-referrer" }
 
 先前的方法本质上可以理解为降低类间相似度来提高分割性能。
@@ -38,16 +37,11 @@ description: "本文整理“CorrCLIP”涉及的模型原理、关键方法与�
 
 尽管self-self注意力可以增加性能，但仍然受限于CLIP的类间相关性。作者使用SAM来显示构造这种注意力掩码。
 
-注意：$F_S$是DINO中提取的特征。SAM2生成的分割掩码与$F_S$进行交互，得到二分类掩码。这些二分类掩码将会被用于聚类，得到多个聚类中心。
+注意：$$F_S$$是DINO中提取的特征。SAM2生成的分割掩码与$$F_S$$进行交互，得到二分类掩码。这些二分类掩码将会被用于聚类，得到多个聚类中心。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/6a2f6c8e3fbf467ca21b557c824e78aa.png){: referrerpolicy="no-referrer" }
-
-
 
 Z个掩码经过聚类后只剩下z个掩码，这z个掩码中分为背景类和非背景类。
 然后**设计一种注意力掩码**，其中**背景类只允许与自己交互**，非背景类**还需要确保置信度达标**。
-
-
-
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/5908aff1deb34a2e93bbaef757ef3ff5.png){: referrerpolicy="no-referrer" }
 # Value Reconstruction
@@ -61,12 +55,10 @@ MCT的数量和融合后的掩码数量一致，经过ViT编码后，将与自�
 假设z个MCT，维度为(z,D)，共有(z,H*W)个掩膜，相乘后维度恰好为(H*W,D)，然后就可以与前面的特征进行融合。
 ![F](https://i-blog.csdnimg.cn/direct/a3758502139947d1b729bfe54ea67d62.png){: referrerpolicy="no-referrer" }
 
-
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a0dac767cbd54d9a97382db7d4993986.png){: referrerpolicy="no-referrer" }
 # Map Correction
 前面**融合后的掩码将用于用于同一某一区域的类别**。
 作者说是为了**保持空间一致性**，抑制区域内单个patch的噪声。
-
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/1ce073f418304b889d2cf7d99d304351.png){: referrerpolicy="no-referrer" }
 
@@ -91,7 +83,6 @@ MCT的数量和融合后的掩码数量一致，经过ViT编码后，将与自�
 **实现复杂度较高**
 
 管理多模型（CLIP + DINO + SAM）、多阶段（SR/VR/FR/MC）、多 Hyper-parameter（τ、mask size、聚类 eps 等）需要较多工程工作。
-
 
 # GPT总结
 0. 摘要翻译（意译，便于理解）

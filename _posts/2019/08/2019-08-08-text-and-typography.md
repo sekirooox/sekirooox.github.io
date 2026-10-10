@@ -150,9 +150,11 @@ $$
 
 可以通过 \eqref{eq:series} 引用该公式。
 
-当 $a \ne 0$ 时，方程 $ax^2 + bx + c = 0$ 有两个解，分别为
+当 $$a \ne 0$$ 时，方程 $$ax^2 + bx + c = 0$$ 有两个解，分别为
 
-$$ x = {-b \pm \sqrt{b^2-4ac} \over 2a} $$
+$$
+x = {-b \pm \sqrt{b^2-4ac} \over 2a}
+$$
 
 ## Mermaid SVG 图表
 

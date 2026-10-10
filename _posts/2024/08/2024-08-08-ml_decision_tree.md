@@ -16,14 +16,20 @@ description: "本文围绕“机器学习·L2W4-决策树”整理基本原理�
 - 不断重复分割过程，直到满足停止条件
 ## 信息增益
 >也可以理解为信息熵的减少
->$p$是结果为positive的概率
+>$$p$$是结果为positive的概率
 
-$$\text{Information Gain} = H(p_1^\text{node})- \left(w^{\text{left}}H\left(p_1^\text{left}\right) + w^{\text{right}}H\left(p_1^\text{right}\right)\right),$$
+$$
+\text{Information Gain} = H(p_1^\text{node})- \left(w^{\text{left}}H\left(p_1^\text{left}\right) + w^{\text{right}}H\left(p_1^\text{right}\right)\right),
+$$
+
 ## 划分依据
 ### 信息熵
 >与逻辑回归的SparseCategoricalCrossentropy函数定义一致
 
-$$H(p_1) = -p_1 \text{log}_2(p_1) - (1- p_1) \text{log}_2(1- p_1)$$
+$$
+H(p_1) = -p_1 \text{log}_2(p_1) - (1- p_1) \text{log}_2(1- p_1)
+$$
+
 ### 基尼指数
 
 ## 多标签分类
@@ -34,18 +40,20 @@ $$H(p_1) = -p_1 \text{log}_2(p_1) - (1- p_1) \text{log}_2(1- p_1)$$
 # 回归树
 树划分的标准为：
 
-$\max\left\{\operatorname{var}_{root}-\left(w_{left}\operatorname{var}_{left}+w_{right}\operatorname{var}_{right}\right)\right\}$
+$$
+\max\left\{\operatorname{var}_{root}-\left(w_{left}\operatorname{var}_{left}+w_{right}\operatorname{var}_{right}\right)\right\}
+$$
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/8310aface75247c8aa82d0813de79d3c.png){: referrerpolicy="no-referrer" }
 输出的结果为**数据集的均值**
 # 随机森林
->随机森林每次从n个样本中抽取$\sqrt{n}$个特征作为划分的标准，可以避免形成对于特定特征局部一致的决策树
+>随机森林每次从n个样本中抽取$$\sqrt{n}$$个特征作为划分的标准，可以避免形成对于特定特征局部一致的决策树
 
 决策树模型中的所有超参数也将存在于此算法中，因为随机森林是许多决策树的集合。
 + 随机森林的另一个超参数称为 n_estimators，它是组成随机森林的决策树的数量。
 请记住，对于随机森林，我们随机选择特征子集并随机选择训练示例子集来训练每棵树。
 
-+ 按照讲座，如果n是特征数量，我们将随机选择 $\sqrt{n}$这些特征来训练每棵树。请注意，您可以通过设置 max_features 参数来修改它。
++ 按照讲座，如果n是特征数量，我们将随机选择 \$$\sqrt{n}$$这些特征来训练每棵树。请注意，您可以通过设置 max_features 参数来修改它。
 + 您还可以使用另一个参数 n_jobs 加快训练作业的速度。
 由于每棵树的拟合彼此独立，因此可以并行拟合多棵树。
 因此，将 n_jobs 设置得更高将增加其使用的 CPU 核心数。

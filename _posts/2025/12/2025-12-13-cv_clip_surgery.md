@@ -15,7 +15,6 @@ description: "本文整理“CLIP Surgery”涉及的模型原理、关键方法
 # 动机
 CLIP存在相反激活问题，意味着它关注图像的背景，而不是前景。
 
-
 ## 验证实验
 
 ### 反向可视化
@@ -27,8 +26,6 @@ Q-K自注意力本来应该在前景位置激活，但是却发现主要在背�
 即使使用空字符串作为类别嵌入，发现也能激活一些无关的地方，这说明CLIP的局部特征中**分享着一些共同类别的特征**。
 CLIP 为了适应海量类别，会学到大量在当前类别下“未激活”的特征，**这些就是冗余特征**。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/97841b6b0f8944cfab0a870f98ce2854.png){: referrerpolicy="no-referrer" }
-
-
 
 先直接按照你给的提纲来梳理这篇 **CLIP Surgery for Better Explainability with Enhancement in Open-Vocabulary Tasks**。
 
@@ -126,20 +123,20 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
 
 1. **标准 CLIP 前向**
 
-   * 输入：图像 $$I$$ 和若干文本标签 $${T_j}_{j=1}^{N_t}$$。
+   * 输入：图像 \$$I$$ 和若干文本标签 \$${T_j}_{j=1}^{N_t}$$。
    * 图像编码器输出：
 
-     * class token 特征 $$F_c \in \mathbb{R}^{1\times C}$$
-     * patch tokens 特征 $$F_i \in \mathbb{R}^{N_i \times C}$$
+     * class token 特征 \$$F_c \in \mathbb{R}^{1\times C}$$
+     * patch tokens 特征 \$$F_i \in \mathbb{R}^{N_i \times C}$$
    * 文本编码器输出：
 
-     * 文本特征 $$F_t \in \mathbb{R}^{N_t \times C}$$
+     * 文本特征 \$$F_t \in \mathbb{R}^{N_t \times C}$$
 
 2. **Architecture Surgery（结构手术）**
 
-   * 从某个深度 $$d$$ 开始，对后续 Transformer Block 复制一条“新路径”：
+   * 从某个深度 \$$d$$ 开始，对后续 Transformer Block 复制一条“新路径”：
 
-     * 在新路径中，把原来的 $$q\text{-}k$$ 自注意力替换为 **v-v 自注意力**；
+     * 在新路径中，把原来的 \$$q\text{-}k$$ 自注意力替换为 **v-v 自注意力**；
      * **去掉 FFN**，只保留注意力 + 线性投影；
      * 用“二路残差”把新路径输出与原路径输出合并（dual paths）。
    * 新路径专门给 **解释 / 分割**用，原路径保留给 **分类 / 多标签识别**。
@@ -149,14 +146,18 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
    * 目标：从图文特征中估计“冗余部分”并减掉。
    * 步骤（解释任务）：
 
-     1. 将 $$F_i$$ 在文本维度复制为 $$\hat F_i \in \mathbb{R}^{N_i \times N_t \times C}$$，
+     1. 将 \$$F_i$$ 在文本维度复制为 \$$\hat F_i \in \mathbb{R}^{N_i \times N_t \times C}$$，
         将 $$F_t$$ 在空间维度复制为 $$\hat F_t \in \mathbb{R}^{N_i \times N_t \times C}$$。
      2. 归一化后做逐元素乘法：
+
         $$
         F^m = \frac{\hat F_i}{|\hat F_i|_2} \odot \frac{\hat F_t}{|\hat F_t|_2}
         \in \mathbb{R}^{N_i \times N_t \times C}
+
         $$
-     3. 用 class token 与文本的相似度算出每个类的权重 $$w \in \mathbb{R}^{1 \times N_t}$$，强调“显著类”：
+
+     3. 用 class token 与文本的相似度算出每个类的权重 \$$w \in \mathbb{R}^{1 \times N_t}$$，强调“显著类”：
+
         $$
         s = \text{softmax}\Big(
         \frac{F_c}{|F_c|_2}
@@ -165,24 +166,32 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
         \cdot \tau
         \Big),\quad
         w = \frac{s}{\text{mean}(s)}
+
         $$
+
      4. 按类别加权平均，得到“冗余特征”：
+
         $$
         F_r = \text{mean}\big(F^m \odot \text{expand}(w)\big)
         \in \mathbb{R}^{N_i \times 1 \times C}
+
         $$
+
      5. 最终相似度：
+
         $$
         S = \text{sum}\big(F^m - \text{expand}(F_r)\big)
         \in \mathbb{R}^{N_i \times N_t}
+
         $$
-   * 将 $$S$$ reshape → resize → normalize 得到最终 similarity map $$\hat M$$。
+
+   * 将 \$$S$$ reshape → resize → normalize 得到最终 similarity map \$$\hat M$$。
 
 4. **输出**
 
-   * **Explainability**：对每个类 $$j$$，用对应的 $$S[:, j]$$ 得到热力图，可视化 / 生成伪 mask。
+   * **Explainability**：对每个类 \$$j$$，用对应的 \$$S[:, j]$$ 得到热力图，可视化 / 生成伪 mask。
    * **开放词汇分割**：Argmax over 类维度，得到每个像素的类标签。
-   * **多标签识别**：用 $$F_c$$ 代替 $$\hat F_i$$ 做同样的 Feature Surgery，得到 per-class score $$\hat S \in \mathbb{R}^{1\times N_t}$$ 作为分类 logit。
+   * **多标签识别**：用 \$$F_c$$ 代替 \$$\hat F_i$$ 做同样的 Feature Surgery，得到 per-class score \$$\hat S \in \mathbb{R}^{1\times N_t}$$ 作为分类 logit。
 
 ---
 
@@ -191,24 +200,29 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
 1. **原始 q-k 自注意力模块**
 
    公式：
+
    $$
    \text{Attn}_{qk} = \text{softmax}(QK^\top \cdot \text{scale})V
+
    $$
+
    其中：
 
-   * $$Q = X\phi_q,\ K = X\phi_k,\ V = X\phi_v$$
-   * $$X$$ 为层输入，维度 $$\mathbb{R}^{N\times C}$$。
+   * \$$Q = X\phi_q,\ K = X\phi_k,\ V = X\phi_v$$
+   * \$$X$$ 为层输入，维度 \$$\mathbb{R}^{N\times C}$$。
 
    问题：作者可视化发现 $$Q,K$$ 产生的注意图，会把 token 与“语义相反”的区域强绑定，导致“反向可视化”（Fig.4）。
 
 2. **v-v 自注意力模块**
 
    公式：
+
    $$
    \text{Attn}_{vv} = \text{softmax}(VV^\top \cdot \text{scale})V
+
    $$
 
-   * 不再使用 $$\phi_q, \phi_k$$，只用 $$\phi_v$$。
+   * 不再使用 \$$\phi_q, \phi_k$$，只用 \$$\phi_v$$。
    * 好处：自相似度最高，其次是**语义相近的邻域 token**，注意力更局部、更符合直觉。
 
 3. **Dual Paths（双路径残差）**
@@ -216,6 +230,7 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
    见 Fig.2 下半部分和 Eq.(5)：
 
    新路径输出：
+
    $$
    \hat x_{i+1} =
    \begin{cases}
@@ -223,14 +238,18 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
    \text{Attn}_{vv}(x_i;\phi_v) + x_i, & i=d[3pt]
    \text{Attn}_{vv}(x_i;\phi_v) + \hat x_i, & i>d
    \end{cases}
+
    $$
+
    原路径输出：
+
    $$
    x_{i+1} =
    \begin{cases}
    \text{FFN}(x_i')+x_i',\quad x_i' = \text{Attn}_{qk}(x_i;\phi_q,\phi_k,\phi_v)+x_i, & \text{ViT} [3pt]
    \text{ResBlock}(x_i) + x_i, & \text{ResNet}
    \end{cases}
+
    $$
 
    直观理解：
@@ -250,6 +269,7 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
    $$
    a\langle F_t, \hat F_c\rangle =
    \frac{F_t \cdot \hat F_c}{|F_t|_2|\hat F_c|_2}
+
    $$
 
    发现：
@@ -264,24 +284,26 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
 ### 2.c 关键公式与含义（通俗讲一下）
 
 1. **原始 similarity map：**
+
    $$
    M = \text{norm}(\text{resize}(\text{reshape}(
    \frac{F_i}{|F_i|_2}
    \cdot
    (\frac{F_t}{|F_t|_2})^\top)))
+
    $$
 
-   * $$F_i \in \mathbb{R}^{N_i\times C}$$：图像各 patch 特征
-   * $$F_t \in \mathbb{R}^{N_t\times C}$$：文本各类别特征
+   * \$$F_i \in \mathbb{R}^{N_i\times C}$$：图像各 patch 特征
+   * \$$F_t \in \mathbb{R}^{N_t\times C}$$：文本各类别特征
    * 内积 + L2 归一化 = 余弦相似度
    * reshape & resize：把 token 网格插值成输入图像大小的热力图。
 
 2. **Feature Surgery 的核心：**
 
-   * $$F^m$$：对每个“像素–类别–通道”位置，把图像特征和对应类别文本特征相乘，相当于保留“对这个类别有贡献的通道”。
-   * $$w$$：哪些类别对当前图像“显而易见”，就给它更大的权重，让它们在估计冗余特征时更有话语权。
-   * $$F_r$$：对所有类别的 $$F^m$$ 加权平均，得到在“所有类别里都常见”的部分，也就是冗余特征。
-   * $$S = \text{sum}(F^m - \text{expand}(F_r))$$：从每个位置、每个类别的“原贡献”里减去冗余部分，再对通道求和，即 **去冗余后的类别得分**。
+   * \$$F^m$$：对每个“像素–类别–通道”位置，把图像特征和对应类别文本特征相乘，相当于保留“对这个类别有贡献的通道”。
+   * \$$w$$：哪些类别对当前图像“显而易见”，就给它更大的权重，让它们在估计冗余特征时更有话语权。
+   * \$$F_r$$：对所有类别的 \$$F^m$$ 加权平均，得到在“所有类别里都常见”的部分，也就是冗余特征。
+   * \$$S = \text{sum}(F^m - \text{expand}(F_r))$$：从每个位置、每个类别的“原贡献”里减去冗余部分，再对通道求和，即 **去冗余后的类别得分**。
 
    对多标签分类，只是把 $$F_i$$ 换成 $$F_c$$，得到 per-class logit，用于 mAP。
 
@@ -365,11 +387,14 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
    * 数据集：VOC 2012, COCO 2017, PASCAL Context, ImageNet-S50。
    * 指标：
 
-     * $$\text{mIoU}$$：前景 mask 与 GT 的平均 IoU；
-     * $$\text{mSC}$$（mean Score Contrast）：前景分数与背景分数的平均差异，范围 [-100%, 100%]。
+     * \$$\text{mIoU}$$：前景 mask 与 GT 的平均 IoU；
+     * \$$\text{mSC}$$（mean Score Contrast）：前景分数与背景分数的平均差异，范围 [-100%, 100%]。
+
        $$
        \text{mSC} = \text{mean}_c\text{mean}_s\big(\bar S_f - \bar S_b\big)
+
        $$
+
        值 < 0 表示“反向可视化”。
 
 2. **开放词汇语义分割**
@@ -454,20 +479,20 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
 * 复现关键步骤：
 
   1. 基于官方 CLIP 实现，拿到中间层输出（各 Block 的输入/输出）。
-  2. 从设定的深度 $$d$$ 开始，复制 Block 结构构造“新路径”：
+  2. 从设定的深度 \$$d$$ 开始，复制 Block 结构构造“新路径”：
 
      * 将 attention 部分替换为 v-v self-attention；
      * 去掉 FFN，只保留线性投影；
      * 使用 dual paths 逻辑合并残差。
-  3. 对新路径输出的 patch 特征 $$F_i$$ 和文本特征 $$F_t$$，实现 Feature Surgery（Eq.6–9）。
-  4. 分割任务：将 $$S$$ reshape + resize + argmax 得到像素级预测。
-  5. 多标签任务：对 class token $$F_c$$ 做 Feature Surgery，用 $$\hat S$$ 作为 logit 计算 mAP。
+  3. 对新路径输出的 patch 特征 \$$F_i$$ 和文本特征 \$$F_t$$，实现 Feature Surgery（Eq.6–9）。
+  4. 分割任务：将 \$$S$$ reshape + resize + argmax 得到像素级预测。
+  5. 多标签任务：对 class token \$$F_c$$ 做 Feature Surgery，用 \$$\hat S$$ 作为 logit 计算 mAP。
 
 ### 5.b 实现注意点（超参数 / 预处理 / 训练细节）
 
 * **超参数**
 
-  * 深度 $$d=7$$，logit scale $$\tau=2$$；作者说明性能对它们不敏感，一个合理区间即可（例如 $$d\in[1,10]$$ 只导致 mSC 变化约 0.4%）。
+  * 深度 \$$d=7$$，logit scale \$$\tau=2$$；作者说明性能对它们不敏感，一个合理区间即可（例如 \$$d\in[1,10]$$ 只导致 mSC 变化约 0.4%）。
 * **输入大小**
 
   * Explainability：通常 224×224 足够。
@@ -480,9 +505,9 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
   * Dual paths 里一定要保证原路径输入不被新路径覆盖，否则会导致深层 feature 失配。
   * Feature Surgery 中 expand 的维度要严格对齐：
 
-    * $$F^m: (N_i, N_t, C)$$
-    * $$\text{expand}(w): (N_i, N_t, C)$$
-    * $$F_r: (N_i, 1, C)$$ 再 expand 成 $(N_i, N_t, C)$。
+    * \$$F^m: (N_i, N_t, C)$$
+    * \$$\text{expand}(w): (N_i, N_t, C)$$
+    * \$$F_r: (N_i, 1, C)$$ 再 expand 成 \$$(N_i, N_t, C)$$。
 
 ### 5.c 迁移到其他任务的可能性
 

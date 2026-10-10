@@ -11,7 +11,12 @@ description: "本文整理“图论·单源最短路径·Bellman_ford +…”的
 
 [无负权回路例题](https://kamacoder.com/problempage.php?pid=1152)
 [带负权回路例题](https://kamacoder.com/problempage.php?pid=1153)
-# Bellman_ford算法：$O(nm)$
+# Bellman_ford算法
+
+$$
+O(nm)
+$$
+
 + ### 单源最短路径
 + ### 存在负权值边
 + ### 检测负权回路：如果第n次dist数组还有变化，说明出现了负权回路
@@ -86,7 +91,12 @@ for (auto item : edges) {
 + `dist[item.v1] != INT_MAX`**不可以省略**
 + `vector<Edge>edges;`存储方式既不是邻接矩阵也不是邻接表
 ---
-# 优化版SPFA：$O(KM)-O(NM)$
+# 优化版SPFA
+
+$$
+O(KM)-O(NM)
+$$
+
 ## 改进思路
 + 检查并松弛所有的边是没必要的，**只有少数结点的dist数组得到了更新**。
 + 使用更新后的dist数组来更新其他数组才是有效的操作。

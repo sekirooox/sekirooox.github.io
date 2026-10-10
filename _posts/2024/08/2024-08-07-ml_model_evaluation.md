@@ -18,7 +18,7 @@ x_cv,x_test,y_cv,y_test=train_test_split(x_train,y_train,test_size=0.5)
 ```
 
 ## 交叉验证-模型选择
->使用交叉验证计算模型的损失$J_{cv}(w,b)$来评估和选择表现最好的模型。
+>使用交叉验证计算模型的损失$$J_{cv}(w,b)$$来评估和选择表现最好的模型。
 >**不能使用测试集来选择模型：因为测试集是对模型效果的乐观估计！**
 ## 模型选择
 # 偏差和方差
@@ -29,13 +29,17 @@ x_cv,x_test,y_cv,y_test=train_test_split(x_train,y_train,test_size=0.5)
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/f19e6dfc021640c1926a1580a89e66f3.png){: referrerpolicy="no-referrer" }
 
 ## 高偏差bias
-$J_{train}=J_{cv}$，且 $J_{train}$ 较大
+$$J_{train}=J_{cv}$$，且 $$J_{train}$$ 较大
 >大小上训练集和验证集差不多，但是训练集的损失较大
 ## 高方差variance
-$J_{train}\ll J_{cv}$
+
+$$
+J_{train}\ll J_{cv}
+$$
+
 >验证集与训练集的损失有较大出入，且验证集明显大于训练集
 ## 正则化
->正则化系数$\lambda$越大，**拟合曲线就越趋于平缓，偏差越大。**
+>正则化系数$$\lambda$$越大，**拟合曲线就越趋于平缓，偏差越大。**
 ## 学习曲线
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/2665825ffa0846e0a79faad806d39081.png){: referrerpolicy="no-referrer" }
 # 模型改进
@@ -43,11 +47,11 @@ $J_{train}\ll J_{cv}$
 ## 高偏差
 + **增加训练集大小无用，模型欠拟合**
 + 增加更多特征：多项式化数据
-+ 减小正则化参数$\lambda$
++ 减小正则化参数\$$\lambda$$
 ## 高方差
 + **增加训练集大小**有效减少过拟合情况
 + 减小特征大小
-+ 增大正则化参数$\lambda$
++ 增大正则化参数\$$\lambda$$
 # 神经网络的改进
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/8c1038e7ba7044e3aaf4534a18f01d90.png){: referrerpolicy="no-referrer" }
 

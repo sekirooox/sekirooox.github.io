@@ -43,8 +43,6 @@ description: "本文整理“计算机基础·计算机组成原理”的核心�
 ### 32位系统和64位系统：代表<span class="text-danger">逻辑地址的位数</span>，<span class="text-danger">虚拟内存空间</span>的大小
 
 
-
-
 ## 字节排序：大端法和小端法
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/735a52cf84284d1392239910498f31b0.png){: referrerpolicy="no-referrer" }
 
@@ -69,10 +67,10 @@ char s[6] = "12345";
 # 整数的表示：有符号数和无符号数，符号位
 ## 原码，补码和反码：<span class="text-danger">默认使用二进制补码</span>表示<span class="text-danger">有符号整数</span>
 ### *正数转负数技巧：正数取反+1=负数
-### 反码-二进制反码：最高位为符号位，数值为$-x_{w-1}\cdot(2^{w-1}-1)$
+### 反码-二进制反码：最高位为符号位，数值为$$-x_{w-1}\cdot(2^{w-1}-1)$$
 + 正数的补码为其本身，负数的补码为正数的原码取反得到。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/2b7428f1785541589857570a2cbee70b.png){: referrerpolicy="no-referrer" }
-#### 补码-二进制补码：最高位为符号位，数值为$-x_{w-1}\cdot2^{w-1}$
+#### 补码-二进制补码：最高位为符号位，数值为$$-x_{w-1}\cdot2^{w-1}$$
 + 补码=反码+1
 
 
@@ -88,7 +86,7 @@ char s[6] = "12345";
 ## 截断：超出数据范围
 
 ## 加法运算：有符号加法和无符号加法
-### 无符号加法：mod $2^{w}$即可
+### 无符号加法：mod $$2^{w}$$即可
 ### 有符号加法：正溢出和负溢出
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/969a4823d8a9426da0f18a2d4ef6ac1b.png){: referrerpolicy="no-referrer" }
 
@@ -108,7 +106,11 @@ char s[6] = "12345";
        01111
        
 ```
-### 二进制拆分法：$a\cdot b=a<<(x_0\cdot 2^0+x_1\cdot 2^1+\cdots x_{w-1}\cdot 2^{w-1})$
+### 二进制拆分法
+
+$$
+a\cdot b=a<<(x_0\cdot 2^0+x_1\cdot 2^1+\cdots x_{w-1}\cdot 2^{w-1})
+$$
 
 
 #### 二的乘法：左移k位
@@ -117,20 +119,22 @@ char s[6] = "12345";
 
 # 浮点数的表示
 
-## `IEEE标准表示法`-二进制科学计数法：符号位$s$，指数部分$E$和有效数部分$M$
+## `IEEE标准表示法`-二进制科学计数法：符号位$$s$$，指数部分$$E$$和有效数部分$$M$$
 + 计算公式为：
+
 $$
-\begin{align}
+\begin{aligned}
 V=(-1)^s \cdot M \cdot 2^E
-\end{align}
+\end{aligned}
 $$
+
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a8eb14a72e2f4a33a1e66e0017e08764.png){: referrerpolicy="no-referrer" }
-### 指数位的偏置：偏置一般设置为$2^{k-1}-2=2^{7}-2=126$，排除2种特殊情况，全0和全1，float32中$E$的范围为[-126,127]
+### 指数位的偏置：偏置一般设置为$$2^{k-1}-2=2^{7}-2=126$$，排除2种特殊情况，全0和全1，float32中$$E$$的范围为[-126,127]
 
 
-### 规格化值：指数位非特殊情况(全0或者全1)，有效数定义为$M=f+1$，f为尾数转小数
+### 规格化值：指数位非特殊情况(全0或者全1)，有效数定义为$$M=f+1$$，f为尾数转小数
 
-### 非规格值：指数位全为0，有效数定义为$M=f$，f为尾数转小数
+### 非规格值：指数位全为0，有效数定义为$$M=f$$，f为尾数转小数
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/dbdbc78b37804f9da6798c3c404dd5af.png){: referrerpolicy="no-referrer" }
 ### 无穷值：指数位全为1，但是`尾数全为0`，<span class="text-danger">特殊定义值</span>。
 
@@ -208,23 +212,20 @@ $$
 
 ## 高速缓存存储器的通用架构
 
-### 缓存行与组：$(S,E,B,m)$，S代表组数，E代表缓存行，B代表数据块大小(字节)，m代表内存地址的位数，$t=m-s-e$代表标记位数，用于区分同一组不同缓存
+### 缓存行与组：$$(S,E,B,m)$$，S代表组数，E代表缓存行，B代表数据块大小(字节)，m代表内存地址的位数，$$t=m-s-e$$代表标记位数，用于区分同一组不同缓存
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/6e20641c31934a6cb186c6a596b0b99e.png){: referrerpolicy="no-referrer" }
-### 直接映射缓存：$E=1$，每一个组只对应一个缓存行，根据$s$，有效位和标记位$t$确定缓存是否存在
+### 直接映射缓存：$$E=1$$，每一个组只对应一个缓存行，根据$$s$$，有效位和标记位$$t$$确定缓存是否存在
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/71fa7949fb5641b58a14b3708cacea1c.png){: referrerpolicy="no-referrer" }
 
 
-### 组相联映射缓存：$E>1$，每一个组对应多个缓存行，根据$s$，有效位和标记位$t$对缓存行进行<span class="text-danger">一一匹配</span>，确定缓存是否存在。
+### 组相联映射缓存：$$E>1$$，每一个组对应多个缓存行，根据$$s$$，有效位和标记位$$t$$对缓存行进行<span class="text-danger">一一匹配</span>，确定缓存是否存在。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/f9deac18db8141aa94d90b24ca8702d4.png){: referrerpolicy="no-referrer" }
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/7226dce5900d4af0948e39d448212578.png){: referrerpolicy="no-referrer" }
 
 
-### 全相联映射缓存：$S=1$，只有一组，包含$E>1$个缓存行；使用有效位和标记位$t$并行地进行匹配，不需要组数位$s$。例如`TLB快表`。
+### 全相联映射缓存：$$S=1$$，只有一组，包含$$E>1$$个缓存行；使用有效位和标记位$$t$$并行地进行匹配，不需要组数位$$s$$。例如`TLB快表`。
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/e70e9fefd14b4a83b5d33dee61d481cd.png){: referrerpolicy="no-referrer" }
-
-
-
 
 

@@ -27,11 +27,8 @@ description: "本文整理“计算机基础·数据库系统”的核心知识�
 ### 内模式：存储模式，例如聚簇索引
 
 
-
 # 概念模型：现实世界模型->数据库模型
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/cf9aaacadebe4a37a74c4c4dd06b1900.png){: referrerpolicy="no-referrer" }
-
-
 
 
 ## 实体：例如职工，学生等对象
@@ -68,13 +65,12 @@ description: "本文整理“计算机基础·数据库系统”的核心知识�
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/be928525a1d2415daa3f9e6649011678.png){: referrerpolicy="no-referrer" }
 ## 关系模式(Schema)：抽象的关系
-### 定义：$R(U,D,DOM,F)$，U是属性集，D是域，DOM是域到值的映射，F是依赖关系
+### 定义：$$R(U,D,DOM,F)$$，U是属性集，D是域，DOM是域到值的映射，F是依赖关系
 ## ER关系图：实体用矩形，联系用菱形，属性用椭圆
 
 ### 绘制技巧：先确定实体集中的关系，<span class="text-danger">省略属性</span>，确定联系。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/854cab87b0c7448288ba7aee9cee08fa.png){: referrerpolicy="no-referrer" }
 ## 集合代数
-
 
 
 ### 集合运算：关系R和S具有<span class="text-danger">完全相同的关系模式</span>
@@ -99,18 +95,18 @@ $$
 #### 并，交，差，积
 
 $$
-\begin{align}
+\begin{aligned}
 R\cup S=\{t\mid t\in R \vee t\in S\}
-\end{align}
+\end{aligned}
 $$
 
 
 ---
 
 $$
-\begin{align}
+\begin{aligned}
 R\cap S=\{t\mid t\in R \wedge t\in S\}
-\end{align}
+\end{aligned}
 $$
 
 
@@ -118,9 +114,9 @@ $$
 
 
 $$
-\begin{align}
+\begin{aligned}
 R-S=\{t\mid t\in R \wedge t\notin S\}
-\end{align}
+\end{aligned}
 $$
 
 
@@ -128,10 +124,10 @@ $$
 
 
 $$
-\begin{align}
+\begin{aligned}
 R\times S=
 \{t\mid t=(t_R,t_S),t_R\in R,t_S\in S\}
-\end{align}
+\end{aligned}
 $$
 
 
@@ -148,6 +144,7 @@ $$
 $$
 |R|\times |S|
 $$
+
 ## 关系代数
 
 ### 选择（Selection）
@@ -155,15 +152,14 @@ $$
 选择满足条件的元组。
 
 
-
-
 定义：
 
 $$
-\begin{align}
+\begin{aligned}
 \sigma_F(R)=\{t\mid t\in R\land F(t)=true\}
-\end{align}
+\end{aligned}
 $$
+
 其中**F表示需要满足的表达式**，**R表示目标关系/表**
 
 
@@ -172,9 +168,9 @@ $$
 查询学生关系中系别为 CS 的学生：
 
 $$
-\begin{align}
+\begin{aligned}
 \sigma_{dept='CS'}(Student)
-\end{align}
+\end{aligned}
 $$
 
 ###  投影（Projection）
@@ -183,10 +179,11 @@ $$
 定义：
 
 $$
-\begin{align}
+\begin{aligned}
 \pi_A(R)=\{t[A]\mid t\in R\}
-\end{align}
+\end{aligned}
 $$
+
 其中**A表示属性名**
 
 例如：
@@ -194,9 +191,9 @@ $$
 查询学生姓名和系别：
 
 $$
-\begin{align}
+\begin{aligned}
 \pi_{name,dept}(Student)
-\end{align}
+\end{aligned}
 $$
 
 
@@ -210,14 +207,14 @@ $$
 一般形式：
 
 $$
-\begin{align}
+\begin{aligned}
 R\bowtie S=
 \{t\mid t_R\in R\land t_S\in S\land \theta(t_R,t_S)\}
-\end{align}
+\end{aligned}
 $$
 
 
-**其中$\theta$表示连接条件**，表示按照等值/不等值/自然条件连接关系。
+**其中$$\theta$$表示连接条件**，表示按照等值/不等值/自然条件连接关系。
 
 
 ---
@@ -225,9 +222,9 @@ $$
 #### 一般连接
 
 $$
-\begin{align}
+\begin{aligned}
 R\bowtie_{A<B}S
-\end{align}
+\end{aligned}
 $$
 
 
@@ -238,9 +235,9 @@ $$
 连接条件为等号：
 
 $$
-\begin{align}
+\begin{aligned}
 R\bowtie_{A=B}S
-\end{align}
+\end{aligned}
 $$
 
 
@@ -312,12 +309,12 @@ $$
 定义：
 
 $$
-\begin{align}
+\begin{aligned}
 R\div S=
 \{t_R|t_R\in R\land
 \forall t_S\in S,(t_R,t_S)\in R
 \}
-\end{align}
+\end{aligned}
 $$
 
 
@@ -347,9 +344,9 @@ $$
 选修全部课程的学生号：
 
 $$
-\begin{align}
+\begin{aligned}
 \pi_{Sno}(SC)\div \pi_{Cno}(Course)
-\end{align}
+\end{aligned}
 $$
 
 ### 例题
@@ -367,9 +364,9 @@ $$
 操作：
 
 $$
-\begin{align}
+\begin{aligned}
 \pi_{Sno}(\sigma_{Cno='001'}(SC))
-\end{align}
+\end{aligned}
 $$
 
 
@@ -380,26 +377,21 @@ $$
 分别求：
 
 $$
-\begin{align}
+\begin{aligned}
 R_1&=\pi_{Sno}(\sigma_{Cno='C1'}(SC))
 \\
 R_2&=\pi_{Sno}(\sigma_{Cno='C2'}(SC))
-\end{align}
+\end{aligned}
 $$
 
 
 结果：
 
 $$
-\begin{align}
+\begin{aligned}
 R_1\cap R_2
-\end{align}
+\end{aligned}
 $$
-
-
-
-
-
 
 
 # SQL
@@ -470,7 +462,6 @@ $$
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/0ee40b17d7144d01935ecdfcfc07b88e.png){: referrerpolicy="no-referrer" }
 
 
-
 ## 视图VIEW：`CREATE VIEW X WHERE ... AS Y`，根据Y中某些数据创建视图X，<span class="text-danger">本身不存储任何数据</span>，作为虚表
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/52c6e3339aba4d85a2255c0e813d2c5c.png){: referrerpolicy="no-referrer" }
 
@@ -517,7 +508,6 @@ $$
 #### 元组上的约束条件：CREATE TABLE(... CHECK(A AND B))
 
 
-
 ### CONSTRAINT约束语句：CONSTRAINT 约束名 CHECK语句
 #### 定义约束
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/0d246c4b053c42de95b5340af4e45274.png){: referrerpolicy="no-referrer" }
@@ -553,9 +543,9 @@ FOR EACH {ROW | STATEMENT}
 # 关系数据库理论
 
 ## 函数依赖
-### 完全函数依赖与部分函数依赖：$X\rightarrow Y$，但是$X$的任意一个<span class="text-danger">真子集</span>不能推出Y；否则为部分函数依赖
+### 完全函数依赖与部分函数依赖：$$X\rightarrow Y$$，但是$$X$$的任意一个<span class="text-danger">真子集</span>不能推出Y；否则为部分函数依赖
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/1f1c553b7e08442a93573dad72459391.png){: referrerpolicy="no-referrer" }
-### 传递函数依赖：$X\rightarrow Y,Y\rightarrow Z$，X，Y，Z互不包含。
+### 传递函数依赖：$$X\rightarrow Y,Y\rightarrow Z$$，X，Y，Z互不包含。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/dc25289c259749e8b9f07a3a57efa9c9.png){: referrerpolicy="no-referrer" }
 
 ## 主属性和非主属性：<span class="text-danger">包含在候选码</span>中的属性叫主属性，否则为非主属性
@@ -584,7 +574,7 @@ FOR EACH {ROW | STATEMENT}
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/492c35008e7b4651b02c796796cedf3b.png){: referrerpolicy="no-referrer" }
 
-### BCNF：$X\rightarrow Y$，每一个决定因素都含有候选码
+### BCNF：$$X\rightarrow Y$$，每一个决定因素都含有候选码
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ff0368e062024abab56830079cab5050.png){: referrerpolicy="no-referrer" }
 
 + 例子：STJ都是主属性，所以不存在对于非主属性的部分依赖和传递依赖
@@ -592,11 +582,6 @@ FOR EACH {ROW | STATEMENT}
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b90d378aed94466c8a892156fef1dac4.png){: referrerpolicy="no-referrer" }
 
 ### 4NF：略
-
-
-
-
-
 
 
 ## 规范化方法：低级范式通过<span class="text-danger">模式分解</span>转换为高级范式的过程
@@ -677,12 +662,12 @@ FOR EACH {ROW | STATEMENT}
 ### B+树索引
 #### B+树的性质
 ##### B+树是二叉排序树，B+树是平衡二叉树
-##### 节点的最大分支数$m$为B+树的阶或秩(Order)
-##### 非根节点的节点数至少为$m/2$，至多为$m-1$；有$m$个索引指针
-##### 叶子节点存储<span class="text-danger">元组</span>所在的指针和键：$Node(P_1,K_1,P_2,K_2 \cdots,P_n,K_n)$，$P_i$指向元组$t$，$P_n$指向兄弟节点
+##### 节点的最大分支数$$m$$为B+树的阶或秩(Order)
+##### 非根节点的节点数至少为$$m/2$$，至多为$$m-1$$；有$$m$$个索引指针
+##### 叶子节点存储<span class="text-danger">元组</span>所在的指针和键：$$Node(P_1,K_1,P_2,K_2 \cdots,P_n,K_n)$$，$$P_i$$指向元组$$t$$，$$P_n$$指向兄弟节点
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/9b9d86724c7e4f9288f2a7a84c47defe.png){: referrerpolicy="no-referrer" }
-##### 非叶子节点存储<span class="text-danger">下一级节点</span>所在的指针和键：$Node(P_1,K_1,P_2,K_2 \cdots,P_n,K_n)$，$P_i$指向下一级节点，$P_n$指向兄弟节点
+##### 非叶子节点存储<span class="text-danger">下一级节点</span>所在的指针和键：$$Node(P_1,K_1,P_2,K_2 \cdots,P_n,K_n)$$，$$P_i$$指向下一级节点，$$P_n$$指向兄弟节点
 + Pi指向的下一级节点的键范围**一定处于Ki-1和Ki之内**
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a66e30b696d64a24a5c87b0a910ed8aa.png){: referrerpolicy="no-referrer" }
@@ -695,11 +680,11 @@ FOR EACH {ROW | STATEMENT}
 
 
 ### B+树的维护
-#### 插入维护：插入元素时，首先确定插入位置。如果位置未满，则直接插入；否则将最后一个键$K_n$与插入元素$K$单独<span class="text-danger">组成新叶子节点</span>，$K_n$作为<span class="text-danger">父节点的新键</span>；如果父节点仍然满，则递归进行下去
+#### 插入维护：插入元素时，首先确定插入位置。如果位置未满，则直接插入；否则将最后一个键$$K_n$$与插入元素$$K$$单独<span class="text-danger">组成新叶子节点</span>，$$K_n$$作为<span class="text-danger">父节点的新键</span>；如果父节点仍然满，则递归进行下去
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/e706be0beb1945b1a379a5529f166337.png){: referrerpolicy="no-referrer" }
 
 
-#### 删除维护：删除元素时，首先确定删除位置。如果删除后节点仍能满足阶数要求($>m/2$)，则直接删除；否则在不影响左侧节点的情况下，向左侧兄弟节点借一个$K_n$键，扩充当前节点$Node(K_1,K_2,\cdots)\rightarrow Node(K_n,K_1,K_2,\cdots)$
+#### 删除维护：删除元素时，首先确定删除位置。如果删除后节点仍能满足阶数要求($$>m/2$$)，则直接删除；否则在不影响左侧节点的情况下，向左侧兄弟节点借一个$$K_n$$键，扩充当前节点$$Node(K_1,K_2,\cdots)\rightarrow Node(K_n,K_1,K_2,\cdots)$$
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/bcc60c593757474e9ed710ade953aa8b.png){: referrerpolicy="no-referrer" }
 ### 哈希索引
 #### 静态哈希索引：不适合数据动态扩充，容易溢出
@@ -841,7 +826,6 @@ COMMIT / ROLLBACK
 ### 一级封锁协议：修改数据前必须加X锁；解决"丢失修改"的问题
 
 
-
 ### 二级封锁协议：读取数据前加S锁，持续到<span class="text-danger">读取操作完成</span>；解决"读取脏数据"的问题，存在"不可重复读取的问题"
 + 读取也要加锁，确保读取过程中，**没有其他事务在修改数据，也就避免读取中间数据**。
 
@@ -901,19 +885,5 @@ COMMIT / ROLLBACK
 + 对于R1加S锁，则对于数据库也要加IS锁。此时**该表元组是否有X类型的锁尚不知道**，此时检查**同一级的节点R1**是否存在IX锁，**来判断元组间是否有X锁**。
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d3c89c433afa492987541565c9ce4092.png){: referrerpolicy="no-referrer" }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

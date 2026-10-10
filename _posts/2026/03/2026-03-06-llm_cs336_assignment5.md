@@ -152,8 +152,6 @@ def preprocess_data(
 # 3 Measuring Zero-Shot MATH Performance
 
 
-
-
 ## 3.1 使用 vLLM 进行离线语言模型推理
 ### vllm.generate函数
 + `outputs = vllm.generate(prompts, sampling_params)`
@@ -191,7 +189,7 @@ sampling_params = SamplingParams(
 ## 3.2 零样本 MATH 基线 - Zero-shot MATH Baseline
 ###  r1_zero prompt 函数的用法
 + 只接受**不带有cot的答案**
-+ 对于格式输入很敏感，检查 $</think> <answer>$ 是否在response中（**注意中间有空格**）
++ 对于格式输入很敏感，检查 \$$</think> <answer>$$ 是否在response中（**注意中间有空格**）
 
 ```python
 def r1_zero_reward_fn(
@@ -329,7 +327,7 @@ def evaluate_vllm(
 # 4. 对 MATH 数据集的监督微调（Supervised Finetuning, SFT ）
 ## 4.2 SFT 辅助方法
 + 采样一组数据
-+ 然后最大化标签的负数似然比，$\max \log\pi_{\theta}(a_t\mid x_t)$
++ 然后最大化标签的负数似然比，\$$\max \log\pi_{\theta}(a_t\mid x_t)$$
 + 反向传播和梯度更新即可
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/8007908011204c01a80137e9d2b6f363.png){: referrerpolicy="no-referrer" }
 
@@ -339,7 +337,7 @@ def evaluate_vllm(
 交付物：实现一个 tokenize_prompt_and_output 方法，分别对问题和输出字符串进行分词、拼接，并构建 response_mask。推荐接口如下：
 
 分析：
-+ LLM的预先练任务本质是预测下一个token，输入为$x_{1:n}$，预测标签为$x_{2:n+1}$.
++ LLM的预先练任务本质是预测下一个token，输入为\$$x_{1:n}$$，预测标签为\$$x_{2:n+1}$$.
 + SFT需要**将输入和输出拼在一起**，以同步预训练任务中这一形式
 + 同时我们需要对所有的输入进行填充，确保它们可以被batch处理，**填充的部分需要填充掩码**。
 + 我们不关心prompt部分的预测结果，因此**prompt的部分需要prompt掩码**。
@@ -1025,12 +1023,10 @@ trainer = SFTTrainer(
     vllm)
 
 
-
 trainer.train()
 wandb.finish()
 
 ```
-
 
 
 ### 实验结果
@@ -1490,7 +1486,7 @@ wandb.finish()
 
 ## 问题（compute_grpo_clip_loss）：GRPO-Clip损失（2分）
 
-+ 注意：我们一般得到的是`log_prob`，对于$\rho(\frac{a}{b})$的计算，使用**exp(loga-logb)** 的技巧
++ 注意：我们一般得到的是`log_prob`，对于\$$\rho(\frac{a}{b})$$的计算，使用**exp(loga-logb)** 的技巧
 + 原始的GRPO算法**还有一个KL散度的公式**，作为惩罚项。一般使用逐token的方式近似模型的**KL散度差别**。
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ce3715e10987429f826cb2c12779648e.png){: referrerpolicy="no-referrer" }
@@ -1498,7 +1494,6 @@ wandb.finish()
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a260f0dfccf14250b50cd9dbf278bc33.png){: referrerpolicy="no-referrer" }
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/5c9ce2c795a24d03a3e155a487b658b2.png){: referrerpolicy="no-referrer" }
-
 
 
 ```cpp

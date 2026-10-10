@@ -13,18 +13,31 @@ description: "本文围绕“机器学习·回归”整理基本原理、处理�
 ## 损失函数
 
 
-$$J(w,b)=\frac{1}{2m}\sum_{i=1}^{m}\left({f^{(i)}(w_1,w_2,\ldots,w_j,b)-y^{(i)}} \right)^2
 $$
+J(w,b)=\frac{1}{2m}\sum_{i=1}^{m}\left({f^{(i)}(w_1,w_2,\ldots,w_j,b)-y^{(i)}} \right)^2
+$$
+
 ## 梯度下降方法
-$$w_i=w_i-\alpha\frac{1}{m}\sum_{i=1}^{m}({f^{(i)}(w_1,w_2,\ldots,w_j,b)-y^{(i)}})w_i
+
 $$
-$$b=b-\alpha\frac{1}{m}\sum_{i=1}^{m}({f^{(i)}(w_1,w_2,\ldots,w_j,b)-y^{(i)}})
+w_i=w_i-\alpha\frac{1}{m}\sum_{i=1}^{m}({f^{(i)}(w_1,w_2,\ldots,w_j,b)-y^{(i)}})w_i
 $$
-$$i=1,2,\ldots,m\ 表示m组数据集\\j=1,2,\ldots,p\ 表示p个w_i\\\alpha\ 表示学习率，随着变量增多不宜过大
+
 $$
+b=b-\alpha\frac{1}{m}\sum_{i=1}^{m}({f^{(i)}(w_1,w_2,\ldots,w_j,b)-y^{(i)}})
+$$
+
+$$
+\begin{aligned}
+i &= 1,2,\ldots,m &&\text{表示 m 组数据集}\\
+j &= 1,2,\ldots,p &&\text{表示 p 个 }w_i\\
+\alpha & &&\text{表示学习率，随着变量增多不宜过大}
+\end{aligned}
+$$
+
 # 线性回归代码
-+ 损失函数两层循环，一层针对$\Sigma$一层针对所有$w_j$
-+ **时间复杂度：O($n^2m$)**	m是迭代次数
++ 损失函数两层循环，一层针对\$$\Sigma$$一层针对所有\$$w_j$$
++ **时间复杂度：O(\$$n^2m$$)**	m是迭代次数
 ## 一元线性回归代码
 
 ```python
@@ -144,35 +157,45 @@ def mutil_gradient_descent(X,Y,w0,b0,alpha,iteration,multi_cost,multi_gradient):
 ## 多项式函数
 >本质上也是线性回归
 ## 归一化
+
 $$
 \frac{x_i-\mu}{x_{max}-x_{min}}
 $$
+
 ## z-score标准化
+
 $$
 \frac{x_i-\mu}{\sigma}
 $$
-其中：$\mu$ 是均值，$\sigma$ 是方差
+
+其中：$$\mu$$ 是均值，$$\sigma$$ 是方差
 # 逻辑回归
 >使用线性函数预测连续值，映射到概率函数sigmoid，然后选择决策阈值即可判断**0-1问题**
 ## Sigmoid函数
 >输出为0-1之间的**概率函数**，具有良好性质
-$$f(x)=\frac{1}{1+e^{-x}}
+
 $$
+f(x)=\frac{1}{1+e^{-x}}
+$$
+
 ## 逻辑回归的损失函数
 >为了保证梯度下降法的准确性，我们必须保证损失函数是一个凸函数或者凹函数。
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/dcde73a393f74de993a3e67ea34dde16.png){: referrerpolicy="no-referrer" }
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/89fc7b68783047578e60475ac72229f6.png){: referrerpolicy="no-referrer" }
 ## 梯度
-与线性回归一致，但是注意这里的$f_{w,b}(x^{(i)})$已经改为了上述的概率**sigmoid函数**
+与线性回归一致，但是注意这里的$$f_{w,b}(x^{(i)})$$已经改为了上述的概率**sigmoid函数**
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/5619141df7fd40ab84fcfe1f700e566e.png){: referrerpolicy="no-referrer" }
 # 过拟合
 >在训练集表现良好，但在预测上表现糟糕
 >特征是**较高的方差**
 # 正则化
 >正则化是对复杂的拟合函数进行惩罚的一种方式，正则项的公式如下：
-$$\frac{\lambda}{2m}\sum_{i=0}^{m-1}w_i^2
+
 $$
+\frac{\lambda}{2m}\sum_{i=0}^{m-1}w_i^2
+$$
+
 >注意**训练集、测试集、交叉验证集计算损失时不需要考虑正则项。**
 ---
 # sklearn.processing
@@ -186,7 +209,7 @@ X_norm=scaler.transform(X_train)
 ```
 ## 多项式工具
 >机器学习中，多项式仍被视为一种线性回归
-作用是：将数据$x_1,x_2\to x_1,x_2,x_1x_2,x_1^2,x_2^2$
+作用是：将数据$$x_1,x_2\to x_1,x_2,x_1x_2,x_1^2,x_2^2$$
 
 `poly.fit_transform(x_train)`仍会储存多项式信息
 ```python

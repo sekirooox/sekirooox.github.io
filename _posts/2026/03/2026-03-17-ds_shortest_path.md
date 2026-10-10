@@ -10,7 +10,6 @@ description: "本文整理“图论·最短路径问题”的核心思路、典�
 ---
 
 
-
 # 最短路径问题的定义：搜索，单源和多源
 + 搜索中的最短路
 + 单源最短路问题
@@ -33,7 +32,7 @@ description: "本文整理“图论·最短路径问题”的核心思路、典�
 ### 例题
 + [849. Dijkstra求最短路 I](https://www.acwing.com/activity/content/problem/content/919/)
 + [850. Dijkstra求最短路 II](https://www.acwing.com/problem/content/description/852/)
-### 朴素实现：$O(n^2)$
+### 朴素实现：$$O(n^2)$$
 ```cpp
 int n, m, g[509][509], visited[509], dist[509];
 int dj() {
@@ -57,7 +56,7 @@ int dj() {
 	return dist[n] == MAX_VALUE ? -1 : dist[n];
 }
 ```
-### 堆优化版本：$O(mlogn)$
+### 堆优化版本：$$O(mlogn)$$
 + 朴素实现的问题：每次都需要**手动遍历寻找dist[i]最小的节点加入数组**，每一次都要遍历邻接矩阵中所有终点的边(**存在无效遍历**)。
 + **使用堆来获得dist[i]的数组**，使用**邻接表来优化邻接矩阵的存储**(减少无效边的遍历)。
 + 堆中存储当前加入节点和**离起点的距离**。
@@ -86,7 +85,7 @@ for (auto item : g[cur.first]) {
 
 
 #### 时间复杂度分析
-时间复杂度分析：更新邻接矩阵所有边，时间复杂度为$O(m)$，然后不需要遍历所有节点，通过堆来加入节点，堆中元素至多为m个(将所有相邻边的节点加入)，因此取出和插入操作复杂度为$O(logm)=O(logn)$，因此总共复杂度为$O(mlogn)$
+时间复杂度分析：更新邻接矩阵所有边，时间复杂度为$$O(m)$$，然后不需要遍历所有节点，通过堆来加入节点，堆中元素至多为m个(将所有相邻边的节点加入)，因此取出和插入操作复杂度为$$O(logm)=O(logn)$$，因此总共复杂度为$$O(mlogn)$$
 #### 链表前向星
 + 额外定义w数组，**w[i]表示存储与i位置的节点(**存储于i != 节点i)的**边权值**。
 
@@ -183,7 +182,7 @@ int dj() {
 + [853. 有边数限制的最短路](https://www.acwing.com/problem/content/855/)：有边数限制的含负权重图==只能使用BF算法
 + [图论·单源最短路径·Bellman_ford算法](https://www.acwing.com/problem/content/description/854/)：检测是否存在负回路。
 
-### 朴素实现：$O(nm)$
+### 朴素实现：$$O(nm)$$
 + 遍历每一个边进行松弛即可
 + 为了控制最短距离中路径的长度，需要定义一个二维数组，**确保使用的是之前的数据**。
 + 注意`dist[i][j]`**表示起点1**到点i**长度<=j**的路径所需要的最短距离。
@@ -218,7 +217,7 @@ void solve() {
 	bf();
 }
 ```
-### SPFA：$O(m)-O(nm)$
+### SPFA：$$O(m)-O(nm)$$
 + 优化思路：动态规划的更新方法中存在一些无效操作：**例如如果dist[x][i-1]在第i-1轮中没有更新，那么这一步更新操作可以省略**。
 + 我们可以**只记录更新过后的节点**，将其加入到队列中，确保**所有的更新操作都是高效的**。
 + 注意：队列中的元素表示**待处理的节点**。如果处理之前又被更新，既要**避免重复加入**，又要**确保及时更新**。
@@ -312,9 +311,9 @@ void bf() {
 
 
 # 多源最短路径
-## Johoson算法：$O(nmlogn)$
+## Johoson算法：$$O(nmlogn)$$
 + 循环n次dj算法。
-## Floyd算法：$O(n^3)$
+## Floyd算法：$$O(n^3)$$
 
 参考：[图论·多源最短路径Floyd&dijsktra](https://blog.csdn.net/2301_80132162/article/details/139984637?ops_request_misc=%257B%2522request%255Fid%2522%253A%25223b222656925a45171cfd68ee75f05672%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=3b222656925a45171cfd68ee75f05672&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-139984637-null-null.nonecase&utm_term=Floyd&spm=1018.2226.3001.4450)
 
@@ -325,7 +324,6 @@ void bf() {
 
 + 子问题：d[i][j]表示i到j的最短路径，于i-k,k-j的最短路径有关
 + 进行状态压缩，**删去d[i][j][k]中k这一维度**。
-
 
 
 ```cpp

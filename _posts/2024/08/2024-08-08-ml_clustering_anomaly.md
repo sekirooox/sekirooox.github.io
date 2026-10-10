@@ -53,12 +53,15 @@ def closest_centroid(X,centroids):
 ## 生成新的聚类中心
 >一般采取计算样本的均值，使用`np.mean()`即可
 >注意python的条件索引
-* Specifically, for every centroid $\mu_k$ we set
-$$\mu_k = \frac{1}{\lvert C_k\rvert} \sum_{i \in C_k} x^{(i)}$$
+* Specifically, for every centroid \$$\mu_k$$ we set
+
+$$
+\mu_k = \frac{1}{\lvert C_k\rvert} \sum_{i \in C_k} x^{(i)}
+$$
 
     where 
-    * $C_k$ is the set of examples that are assigned to centroid $k$
-    * $\lvert C_k\rvert$ is the number of examples in the set $C_k$
+    * \$$C_k$$ is the set of examples that are assigned to centroid \$$k$$
+    * \$$\lvert C_k\rvert$$ is the number of examples in the set \$$C_k$$
 ```python
 def update_centroids(X,idx,centroids):
     """
@@ -123,14 +126,22 @@ def normal_distribution(X):
 
 ## F1分数计算
 
-   $$\begin{aligned}
-   prec&=&\frac{tp}{tp+fp}\\
-   rec&=&\frac{tp}{tp+fn},
-   \end{aligned}$$ where
+$$
+\begin{aligned}
+prec &= \frac{tp}{tp+fp}\\
+rec &= \frac{tp}{tp+fn},
+\end{aligned}
+$$
+
+where
 
 
-  * The $F_1$ score is computed using precision ($prec$) and recall ($rec$) as follows:
-    $$F_1 = \frac{2\cdot prec \cdot rec}{prec + rec}$$ 
+  * The \$$F_1$$ score is computed using precision (\$$prec$$) and recall (\$$rec$$) as follows:
+
+$$
+F_1 = \frac{2\cdot prec \cdot rec}{prec + rec}
+$$
+
 >利用python的判断语法
 
 ```python

@@ -14,7 +14,6 @@ description: "本文整理“AlignZeg: Mitigating Ob…”涉及的模型原理�
 
 摘要。影响零射击视觉识别性能的一个严重问题被称为目标偏差，即学习目标优先于提高可见类的识别精度而不是未见类，而后者才是真正要追求的目标。这个问题在零镜头图像分割中变得更加重要，因为更强（即像素级）的监督会带来更大的可见类和未见类之间的差距。为了缓解这一问题，我们提出了一种名为AlignZeg的新架构，它体现了对分割管道的全面改进，包括提案提取、分类和校正，以更好地适应零采样分割的目标。(1)互精提案提取。AlignZeg利用掩码查询和视觉特征之间的相互作用，促进了详细的与类别无关的掩码建议提取。(2)泛化：增强提案分类。AlignZeg引入了合成数据，并结合了多个背景原型来分配更一般化的特征空间。(3)预测偏差校正。在推理阶段，AlignZeg使用类指示器来查找潜在的未见过的类建议，然后使用预测后处理来纠正预测偏差。实验表明，AlignZeg显著增强了零射击语义分割，hIoU平均提高了3.8%，这主要归因于识别未见类的效率提高了7.1%，我们进一步验证了这种提高来自于缓解客观错位问题。
 
-
 ### 设计思路：双阶段方法生成掩码的过程
 
 # GEPC
@@ -54,7 +53,6 @@ description: "本文整理“AlignZeg: Mitigating Ob…”涉及的模型原理�
    * 有助于减少对 seen 类特征的依赖，增强对 unseen 类的泛化。
    ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/8edd4d2435c94a41b51bc6a074d56eeb.png){: referrerpolicy="no-referrer" }
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/3bfa0dcc554c4fd599cbd8091223aaeb.png){: referrerpolicy="no-referrer" }
-
 
 2. **Generalization-Enhanced Proposal Classification (GEPC)**
 
@@ -97,9 +95,12 @@ description: "本文整理“AlignZeg: Mitigating Ob…”涉及的模型原理�
   3. **预测修正（PBC）**：在推理阶段判定并抑制偏向 seen 类的预测，输出最终分割图。
 
 优化目标为：
+
 $$
 \mathcal{L} = \mathcal{L}_{bc} + \lambda_1\mathcal{L}_{ce} + \lambda_2\mathcal{L}_{mask} + \lambda_3\mathcal{L}_{vir} + \lambda_4\mathcal{L}_{reg}
+
 $$
+
 其中各项分别对应偏置校正、分类、掩码、虚拟样本与背景正则损失。
 
 ---

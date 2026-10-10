@@ -12,7 +12,7 @@ description: "本文围绕“强化学习·策略学习-策略梯度定理和Rei
 
 # 策略学习方法
 策略参数化：
-The idea is to parameterize the policy. For instance, using a neural network $\pi(\theta)$, this policy will output a probability distribution over actions (stochastic policy).
+The idea is to parameterize the policy. For instance, using a neural network $$\pi(\theta)$$, this policy will output a probability distribution over actions (stochastic policy).
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/3c7ca8a9b2f045b7845bf6bd94b16b6f.png){: referrerpolicy="no-referrer" }
 接受一个状态网络输出的是**动作的分布**。
 
@@ -45,14 +45,14 @@ The idea is to parameterize the policy. For instance, using a neural network $\p
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/8fffd19aab224e998458472f7bb3cffc.png){: referrerpolicy="no-referrer" }
 ### 证明过程
-+ 首先将梯度提进去，然后提出一个$P(\tau;\theta)$，拼凑一个$logf(x)$求导的公式
++ 首先将梯度提进去，然后提出一个\$$P(\tau;\theta)$$，拼凑一个\$$logf(x)$$求导的公式
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/c22b517fd786460589d1bf2184b28e07.png){: referrerpolicy="no-referrer" }
 + 根据期望定义将上面的公式重新还原为期望
 + 对于这个期望，我们可以可以利用**大数定理对其采样求解其均值**。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/7cbb4d9515dd4239b8f57c294d725d46.png){: referrerpolicy="no-referrer" }
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/52e7c6bd76604cd398429e75d029bc67.png){: referrerpolicy="no-referrer" }
-+ 我们带入$P(\tau;\theta)$的定义，然后老老实实求梯度，发现除了$\pi(a_t\mid s_t)$之外，所有项不包含$\theta$，因此直接消去。
++ 我们带入\$$P(\tau;\theta)$$的定义，然后老老实实求梯度，发现除了\$$\pi(a_t\mid s_t)$$之外，所有项不包含\$$\theta$$，因此直接消去。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/611889abd6224ee4969d8a269ec984f1.png){: referrerpolicy="no-referrer" }
 
 # 蒙特卡洛MC Reinforce算法
@@ -67,30 +67,34 @@ The idea is to parameterize the policy. For instance, using a neural network $\p
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/621a4024af29449ba33824129b2b974a.png){: referrerpolicy="no-referrer" }
 ## 实现
 我们需要的是：
+
 $$
-\begin{align}
+\begin{aligned}
 \sum_t{\nabla_\theta\log\pi_\theta(a_t^{(i)}\mid s_t^{(i)}){R(\tau^{(i)})}}
-\end{align}
+\end{aligned}
 $$
+
 然后用其进行梯度上升。
 这转换为利用**torch对以下函数进行优化**(会自动求梯度并且执行梯度下降)
 
 $$
-\begin{align}
+\begin{aligned}
 -\sum_{t}{\log\pi_\theta(a_t^{(i)}\mid s_t^{(i)}){R(\tau^{(i)})}}
-\end{align}
+\end{aligned}
 $$
 
-### Reinforce算法的改进：使用$G_t$替代准确的$R(\tau)$
-+ 公平性：$R(\tau)$表示某轨迹的累积折扣奖励，对于所有的状态的动作都给相同的 $R(\tau)$ 是不公平的，因为前面的动作更加重要，因此采用$G_t$为每个动作概率根据执行顺序赋予不同的权重进行优化。
-+ 方差改进：$R(\tau)$偏差为0，所以方差必然很大。$G_t$作为当前动作的一种估计，以提高偏差为代价降低方差， 进而增强稳定性。
+### Reinforce算法的改进：使用$$G_t$$替代准确的$$R(\tau)$$
++ 公平性：\$$R(\tau)$$表示某轨迹的累积折扣奖励，对于所有的状态的动作都给相同的 \$$R(\tau)$$ 是不公平的，因为前面的动作更加重要，因此采用\$$G_t$$为每个动作概率根据执行顺序赋予不同的权重进行优化。
++ 方差改进：\$$R(\tau)$$偏差为0，所以方差必然很大。\$$G_t$$作为当前动作的一种估计，以提高偏差为代价降低方差， 进而增强稳定性。
 
 **我们最终需要优化的方程为：**
+
 $$
-\begin{align}
+\begin{aligned}
 \sum_{t}{\log\pi_\theta(a_t^{(i)}\mid s_t^{(i)}){G_t}}
-\end{align}
+\end{aligned}
 $$
+
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ee70599bed5c4b66b16bf162e2954ee1.png){: referrerpolicy="no-referrer" }
 
 ### 参数化策略代码

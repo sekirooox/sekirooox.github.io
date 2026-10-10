@@ -12,28 +12,32 @@ description: "本文整理“深度学习·基础知识”涉及的模型原理�
 # 交叉熵损失CE
 >只关心正确类别的预测概率
 + 先进行softmax得到logits
-+ 真实标签的**概率分布：**$y$，预测标签的**概率分布**：$\hat{y}$,$N$表示**类别数**，且$y_i\in\{0,1\}$
++ 真实标签的**概率分布：**\$$y$$，预测标签的**概率分布**：\$$\hat{y}$$,\$$N$$表示**类别数**，且\$$y_i\in\{0,1\}$$
 + 衡量**两个概率分布的距离或者差别**，类似**KL散度**
+
 $$
 \mathcal{L}(y,\hat{y})=-\frac{1}{N}\sum_{i=1}^Ny_i log(\hat{y}_i)
+
 $$
 
 # 二元交叉熵BCE
 >只需要**记忆BCE**就可，**CE是其的一种推广**
 >BCE确实**强制每个类别的输出趋近0或1**
 + 先对每一个类别预测结果应用softmax得到logits
-+ 每一个类别的$y_i$允许为1，意味着可以存在**多个分类结果**。
-+ 真实标签的**概率分布：**$y$，预测标签的**概率分布**：$\hat{y}$,$N$表示**样本数**，且$y_i\in\{0,1\}$
++ 每一个类别的\$$y_i$$允许为1，意味着可以存在**多个分类结果**。
++ 真实标签的**概率分布：**\$$y$$，预测标签的**概率分布**：\$$\hat{y}$$,\$$N$$表示**样本数**，且\$$y_i\in\{0,1\}$$
+
 $$
 \mathcal{L}(y,\hat{y})=-\frac{1}{N}\sum_{i=1}^Ny_i log(\hat{y}_i)+(1-y_i)log(1-\hat{y}_i)
+
 $$
 
 # Focal loss
 + 用于**解决数据集不平衡的问题**
 + 建立在**BCE**的基础之上
-+ $p_t$表明预测的置信度，**与类别无关**。(例如**p=1表示对于类别1的预测概率为1**，但是$p_t$表明了**对正确标签的预测概率**)
-+ $\alpha_t$定义与$p_t$类同，主要用平衡**正负样本权衡**。
-+ $(1-p_t)^{\gamma}$用于平衡**难易的样本权衡**。
++ \$$p_t$$表明预测的置信度，**与类别无关**。(例如**p=1表示对于类别1的预测概率为1**，但是\$$p_t$$表明了**对正确标签的预测概率**)
++ \$$\alpha_t$$定义与\$$p_t$$类同，主要用平衡**正负样本权衡**。
++ \$$(1-p_t)^{\gamma}$$用于平衡**难易的样本权衡**。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/467b61937e464f308a0f7af3992de837.png){: referrerpolicy="no-referrer" }
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/c3290dcc267446f6bc96dc6dd4aabcce.png){: referrerpolicy="no-referrer" }
@@ -42,13 +46,15 @@ $$
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/e4cac6fd88be44a1a01b0025e91de637.png){: referrerpolicy="no-referrer" }
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d993148c9c7349ba90fbd87fefdf7d90.png){: referrerpolicy="no-referrer" }
-这里的$y_i$是**预测结果**,$\hat{y}\in\{0,1\}$是**ground truth**，$\alpha_t$**一般不加**，不考虑正负样本；$\gamma=2$时效果最好。
+这里的$$y_i$$是**预测结果**,$$\hat{y}\in\{0,1\}$$是**ground truth**，$$\alpha_t$$**一般不加**，不考虑正负样本；$$\gamma=2$$时效果最好。
 
 # Dice loss
 + 解决**数据集不平衡**的问题
 标准公式：
+
 $$
 \mathcal{L}_{dice}=1-\frac{2|X\cap Y|}{|X|+|Y|}
+
 $$
 
 很明显如果完全重合损失为0，所以这个loss适用于**直接优化IOU指标**
@@ -56,7 +62,6 @@ $$
 + 针对每一个类别计算loss损失
 + **遍历每一个类别i**，`(ground_truth==i)*pred*2`得到上面的项，然后分别对掩码矩阵和预测矩阵求平方得到下面的项(技巧：转bool值)
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/34be589a3d87494f9dcd6d7b162e6f62.png){: referrerpolicy="no-referrer" }
-
 
 # GZLSS/ZLSS和FLSS/FLSS
 Zero-label=zero shot
