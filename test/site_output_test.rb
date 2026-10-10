@@ -26,6 +26,12 @@ checks = {
 
 post_path = Dir.glob(File.join(site, "posts", "**", "index.html")).first
 checks["至少生成一篇文章"] = !post_path.nil?
+source_posts = Dir.glob(File.join("_posts", "**", "*.{md,markdown,html}"))
+generated_posts = Dir.glob(File.join(site, "posts", "**", "index.html"))
+checks["文章均按年月目录存放"] = source_posts.all? do |path|
+  path.tr("\\", "/").match?(%r{\A_posts/\d{4}/\d{2}/\d{4}-\d{2}-\d{2}-.+\.(?:md|markdown|html)\z})
+end
+checks["递归目录中的文章全部生成"] = generated_posts.length == source_posts.length
 if post_path
   post = File.read(post_path, encoding: "UTF-8")
   checks["文章页不公开阅读次数"] = !post.include?('id="pageviews"')

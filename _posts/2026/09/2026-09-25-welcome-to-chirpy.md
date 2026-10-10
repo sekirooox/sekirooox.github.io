@@ -15,7 +15,7 @@ pin: false
 
 ## 试着做一次修改
 
-1. 打开 `_posts/2026-09-25-welcome-to-chirpy.md`。
+1. 打开 `_posts/2026/09/2026-09-25-welcome-to-chirpy.md`。
 2. 修改标题、摘要和正文。
 3. 把 `pin: true` 改为 `false`，观察首页排序。
 4. 提交后检查 GitHub Actions 的 Build and Deploy。

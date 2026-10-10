@@ -15,7 +15,7 @@ description: "本文整理“数理基础·线性代数及其应用”涉及的�
 
 # 线性变换
 ## 矩阵乘法
-### ⭐公式理解：线性组合，矩阵乘法划归为矩阵*向量
+### 公式理解：线性组合，矩阵乘法划归为矩阵*向量
 + Ax=b：等价于对于A中的列向量进行**线性组合**。
 $$
 \begin{align}
@@ -478,7 +478,7 @@ $$
 
 这说明 (u) 和 (v) 正交。
 
-### ⭐性质3：实对称矩阵一定可以进行正交相似化
+### 性质3：实对称矩阵一定可以进行正交相似化
 + 原因：特征值存在，且特征向量之间相互正交，足够构成**特征空间的基**：
 $$\begin{align} Q=\begin{bmatrix}\mathbf{q}_1 & \mathbf{q}_2 & \cdots & \mathbf{q}_n\end{bmatrix} \end{align}$$
 + 并且**正交矩阵一定可逆**。
@@ -543,7 +543,7 @@ $$\begin{align}\det(\lambda I-A)=\begin{vmatrix}\lambda&1\\-1&\lambda\end{vmatri
 ## 结论2：对称方阵一定有特征值和特征向量
 
 # 矩阵分解
-## ⭐相似对角化：特征值分解
+## 相似对角化：特征值分解
 
 ### 定义：特征方程的变形，$AV=V\Lambda\Leftrightarrow A=V\Lambda V^{-1}$
 + A有n个线性无关的向量，则A可以分解为以下形式：
@@ -553,7 +553,7 @@ $$\begin{align} P=\begin{pmatrix}v_1&v_2&\cdots&v_n\end{pmatrix} \end{align}$$
 $$\begin{align} \Lambda=\begin{pmatrix}\lambda_1&0&\cdots&0\\0&\lambda_2&\cdots&0\\\vdots&\vdots&\ddots&\vdots\\0&0&\cdots&\lambda_n\end{pmatrix} \end{align}$$
 
 
-### ⭐条件：对于 n×n 矩阵，需要有 n 个线性无关特征向量
+### 条件：对于 n×n 矩阵，需要有 n 个线性无关特征向量
 + 对于 n×n 矩阵，需要有 n 个线性无关特征向量：
 $$\begin{align} A\in\mathbb{R}^{n\times n} \end{align}$$
 $$\begin{align} A\text{ 可特征值分解}\Longleftrightarrow A\text{ 有 }n\text{ 个线性无关特征向量} \end{align}$$
@@ -564,7 +564,7 @@ $$\begin{align} A=Q\Lambda Q^T \end{align}$$
 
 #### 结论2：对于非方阵，`不可以特征值分解 `(不符合特征向量的定义)
 
-### ⭐定理：`不同特征值`对应的特征向量一定线性无关
+### 定理：`不同特征值`对应的特征向量一定线性无关
 可对角化常用的充分条件是存在 $n$ 个线性无关的特征向量；而有 $n$ 个不同的特征值时，这个条件自动满足。
 
 $$\begin{align}
@@ -587,7 +587,7 @@ $$\begin{align} \text{换到特征向量坐标系}\rightarrow \text{按特征值
 
 
 
-## ⭐SVD分解：非方阵的相似对角化
+## SVD分解：非方阵的相似对角化
 ### 定义
 #### 动机：广义特征方程的变形，$AV=U\Sigma \Leftrightarrow A=U\Sigma V^{-1} \Leftrightarrow A=U\Sigma V^{T}$
 + **动机**：给定**单位**向量$v\in \mathbb{R}^{m \times 1}$，使得$\lVert Av\rVert_2$的值最大，含义为经过A投影后，投影向量的**伸长程度最大**。
@@ -950,7 +950,7 @@ Q(\mathbf{x})\ge 0,\ \forall \mathbf{x}\neq\mathbf{0}
 
 其中，若该条件成立，则称 $Q(\mathbf{x})$ 半正定。
 
-### ⭐定理：正交对称矩阵的特征值一定为正
+### 定理：正交对称矩阵的特征值一定为正
 原笔记在这里给出了一条核心结论：对称矩阵的正定性可直接看特征值。
 
 $$\begin{align}

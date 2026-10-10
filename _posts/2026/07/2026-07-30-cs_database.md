@@ -28,7 +28,7 @@ description: "本文整理“计算机基础·数据库系统”的核心知识�
 
 
 
-# ⭐⭐⭐概念模型：现实世界模型->数据库模型
+# 概念模型：现实世界模型->数据库模型
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/cf9aaacadebe4a37a74c4c4dd06b1900.png){: referrerpolicy="no-referrer" }
 
 
@@ -402,7 +402,7 @@ $$
 
 
 
-# ⭐⭐SQL
+# SQL
 ## Schema：不同于关系型数据库的Schema，表示`视图`，表等多个`对象(例如关系)的集合`，主要用于`区分不同用户`
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/01dfa89fa9284d5893e6cd412294968b.png){: referrerpolicy="no-referrer" }
@@ -494,7 +494,7 @@ $$
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/4b1286271dca4eff9886a5e6899b1a61.png){: referrerpolicy="no-referrer" }
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/7e18d08a39c24cbab04c866bff8ceb51.png){: referrerpolicy="no-referrer" }
 
-# ⭐⭐⭐数据库的完整约束
+# 数据库的完整约束
 
 ## 实体完整性：每一个实体都是存在且可分的；`主码唯一且非空`
 + CREATE TABLE A(sname CHAR(20) PRIMARY KEY)：**确保姓名非空且唯一，列级定义**
@@ -527,7 +527,7 @@ $$
 ### ASSERTATION断言语句：ASSERATION 断言名 限制条件表达式
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/2a112a2194164404a1800277a6a54407.png){: referrerpolicy="no-referrer" }
 
-## ⭐⭐⭐触发器
+## 触发器
 
 ### 定义触发器名-触发时机(前或者后)-新旧行别名(用于更新/删除)-触发条件-执行语句
 
@@ -550,7 +550,7 @@ FOR EACH {ROW | STATEMENT}
 ### 多个触发器的竞争机制：BEFORE先于AFTER，`相同定义时机先创建先触发`
 
 
-# ⭐⭐⭐关系数据库理论
+# 关系数据库理论
 
 ## 函数依赖
 ### 完全函数依赖与部分函数依赖：$X\rightarrow Y$，但是$X$的任意一个`真子集`不能推出Y；否则为部分函数依赖
@@ -563,7 +563,7 @@ FOR EACH {ROW | STATEMENT}
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b4a9e96ec213463480b71aab0d5fc700.png){: referrerpolicy="no-referrer" }
 ## 多值依赖
 
-## ⭐⭐⭐范式
+## 范式
 ### 1NF：第一范式，属性/元组的成分不可再分，具有原子性；
 + 例如教师这一属性不能再细分为语文教师和数学教师
 ### 2NF：第二范式，非主属性必须`完全函数依赖`于`任何`一个候选码；暗示候选码至少有`两个属性`
@@ -615,7 +615,7 @@ FOR EACH {ROW | STATEMENT}
 ## 概念模型设计：ER图和UML
 ### ER图
 ### ❓UML：统一建模语言
-### ⭐概念结构设计
+### 概念结构设计
 #### 实体还是属性：如果可再分或者存在相互联系用实体；不可再分/1对1的特征用属性
 + 职称和病房都可以进一步细分，因此需要作为一个实体
 + **病人和病房需要相互联系**，因此病房只能是一个实体
@@ -626,7 +626,7 @@ FOR EACH {ROW | STATEMENT}
 #### 系统集成：多个ER图的集成
 
 ## 逻辑结构设计
-### ⭐⭐⭐ER图转关系模型
+### ER图转关系模型
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a0f4236d58804c8a95cdcc9aec6a93f0.png){: referrerpolicy="no-referrer" }
 #### 对于实体：实体+属性直接转关系(表)
 #### 对于联系：单独建表或者合并
@@ -656,14 +656,14 @@ FOR EACH {ROW | STATEMENT}
 ##### 分段：分为数据区和索引区
 ##### 数据块：分为数据块或者索引块
 
-#### ⭐物理存储方式：文件-块-元组
+#### 物理存储方式：文件-块-元组
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/78556015171841f7b1a65a45fc93e1ff.png){: referrerpolicy="no-referrer" }
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ce9db70d0926448e87897ef5dd397c04.png){: referrerpolicy="no-referrer" }
 #### 多表聚簇：多个表按照某个键依次存放；例如Student表和SC表依次存储Sno相等的两个表的元组；连接块查询慢
 + 优点：连接操作很快
 + 缺点：一个元组更着来自其他表的连接元组，因此每一个物理块存储的存储的某一个表的元组数量显著降低，因此普通的查询更慢！ 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/c8a8b8155c5f4456949f71633539c3ff.png){: referrerpolicy="no-referrer" }
-### ⭐⭐⭐索引原理
+### 索引原理
 
 
 #### 有序表的索引
@@ -674,7 +674,7 @@ FOR EACH {ROW | STATEMENT}
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ede8127d44e442329375064b83798a97.png){: referrerpolicy="no-referrer" }
 ##### 多级索引：系数索引+稠密索引；索引维护代价高
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ec3ded9efea147e5849f48a6fc0cf705.png){: referrerpolicy="no-referrer" }
-### ⭐⭐⭐B+树索引
+### B+树索引
 #### B+树的性质
 ##### B+树是二叉排序树，B+树是平衡二叉树
 ##### 节点的最大分支数$m$为B+树的阶或秩(Order)
@@ -717,14 +717,14 @@ FOR EACH {ROW | STATEMENT}
 
 # ❌数据库编程
 
-# ⭐⭐⭐查询处理和查询优化
+# 查询处理和查询优化
 ## 关系数据库的查询处理(如何查询)
 ### 查询处理的步骤：查询分析(语法/句法)-查询检查(完整性初步检查)-查询优化-查询结果
 
-### ⭐选择操作的处理：索引扫描(B+树)和全表扫描
+### 选择操作的处理：索引扫描(B+树)和全表扫描
 #### 全表扫描：适合选择率高(>=10%)，顺序读取完整数据块，选择率高时IO效率更高
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/23fe0ea061e34ca69b2a7f327a83b827.png){: referrerpolicy="no-referrer" }
-### ⭐连接操作的处理：嵌套循环，排序-合并，`索引连接`，`哈希连接`算法
+### 连接操作的处理：嵌套循环，排序-合并，`索引连接`，`哈希连接`算法
 
 #### 嵌套循环和排序-合并：按照规则依次读取关系表，先排序性能会有提高
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/18fa576c82564cecb9205717f7406066.png){: referrerpolicy="no-referrer" }
@@ -735,7 +735,7 @@ FOR EACH {ROW | STATEMENT}
 #### 哈希连接：基于同一个连接属性建立哈希表，由第一个关系表确立，第二个关系表进行哈希查询，找到对应的元组
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/15a3136f925f4f289de783c48a3e4632.png){: referrerpolicy="no-referrer" }
 
-#### ⭐索引扫描：适合选择率很低(<10%)，需要先读取根-孩子-叶子节点，然后根据叶子节点的主码寻找完整数据行，更加精确但是是随机索引
+#### 索引扫描：适合选择率很低(<10%)，需要先读取根-孩子-叶子节点，然后根据叶子节点的主码寻找完整数据行，更加精确但是是随机索引
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/3bb12dc4f0544e289bca5bd240c20db6.png){: referrerpolicy="no-referrer" }
 
 
@@ -745,7 +745,7 @@ FOR EACH {ROW | STATEMENT}
 + Q3**先进行选择操作**，然后再拼接相对小的表，最后投影，效率最高。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/90393ef335bd40989b02da27d8fb9941.png){: referrerpolicy="no-referrer" }
 
-### ⭐代数优化：通过关系代数进行优化
+### 代数优化：通过关系代数进行优化
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/5571d5decb924aefa478af59eea7d01f.png){: referrerpolicy="no-referrer" }
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/f9ee7de4179848669dce9cb8eecbed61.png){: referrerpolicy="no-referrer" }
@@ -753,12 +753,12 @@ FOR EACH {ROW | STATEMENT}
 #### 启发式的优化方法：选择和投影优先做，自然连接替代笛卡尔积
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/be3119d1f47b4378879b3fc89d7725b6.png){: referrerpolicy="no-referrer" }
 ### 物理优化
-#### ⭐基于启发式(规则)的优化
+#### 基于启发式(规则)的优化
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/686345df99f24e0ea51e4dca765ff1cf.png){: referrerpolicy="no-referrer" }
 #### 基于代价估算
 
-# ⭐⭐⭐数据库的恢复
-## ⭐事务(TRANSACTION)：一系列数据库操作
+# 数据库的恢复
+## 事务(TRANSACTION)：一系列数据库操作
 ### 事务的代码定义
 
 ```cpp
@@ -771,7 +771,7 @@ COMMIT / ROLLBACK
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ee740258ddcf43caa9724d541bb7e66e.png){: referrerpolicy="no-referrer" }
 
-### ⭐事务的ACID特征
+### 事务的ACID特征
 #### A-原子性：事务里的所有操作要么都做，要么全都不做
 
 #### C-一致性：事务里的所有操作都完成/都没有执行时的数据库状态，部分完成部分没有完成称之为非一致性状态
@@ -783,7 +783,7 @@ COMMIT / ROLLBACK
 ## 恢复技术
 ### 数据转存：存储数据的后备副本，又分为静态转存和动态转存(转存中可以处理其他事务)
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ecee2c3897454b1fa8d725649c6c570a.png){: referrerpolicy="no-referrer" }
-### ⭐日志：记录对于数据库更新和操作的文件，`边执行事务操作，边记录！`
+### 日志：记录对于数据库更新和操作的文件，`边执行事务操作，边记录！`
 #### 日志记录的内容：事务名，操作类型和对象，旧值和新值
 + 例如`<T,UPDATE,A,1000,700>`，表示事务T，**修改对象A的取值从1000至700**
 
@@ -794,31 +794,31 @@ COMMIT / ROLLBACK
 
 ## 恢复策略
 ### 事务故障：事务执行了一半
-#### ⭐反向扫描，撤销(UNDO)修改=逆操作
+#### 反向扫描，撤销(UNDO)修改=逆操作
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/e80d60db7f7b4f7a935c0984c471fb3a.png){: referrerpolicy="no-referrer" }
 ### 系统故障：1.事务执行了一半，修改了数据库 2.事务提交了未执行(在缓存区)，未修改数据库
 #### 1.事务执行一半：加入撤销队列，反向扫描进行逆操作
-#### ⭐2.事务提交未执行：加入重做(REDO)队列，正向扫描进行重做
+#### 2.事务提交未执行：加入重做(REDO)队列，正向扫描进行重做
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/9c290b2511ea4bed92f44ec1316d1566.png){: referrerpolicy="no-referrer" }
 
 
 ### 介质故障(硬件故障)
 
 
-## ⭐检查点：日志中的特殊记录
+## 检查点：日志中的特殊记录
 
 ### 动机：需要搜索日志文件，`遍历整个日志文件`查找所需事务记录，效率低下
 ### 检查点的结构：<`正在执行`的事务，对应日志记录地址> + 重新开始文件(新文件，记录检查点及其所在的地址，用于最近版本的恢复)
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/36f7e03947404ba9a0e045677fd9710f.png){: referrerpolicy="no-referrer" }
 
 
-### ⭐恢复逻辑：检查点前提交不管；`检查点后，故障点前`提交了都重做，故障发生后仍未提交，直接撤销。
+### 恢复逻辑：检查点前提交不管；`检查点后，故障点前`提交了都重做，故障发生后仍未提交，直接撤销。
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/07812e87567148d8bcc2e102da981863.png){: referrerpolicy="no-referrer" }
 ## 数据库镜像技术
 
 # 数据库的并发控制
-## ⭐数据不一致：丢失修改，不可重复读，读取脏数据
+## 数据不一致：丢失修改，不可重复读，读取脏数据
 ### 丢失修改：事务T1的修改`被事务T2覆盖`
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b355f85d3dce41cbadc39a8bb5254eae.png){: referrerpolicy="no-referrer" }
 ### 不可重复读：事务T1读取A记录，其中`A被事务T2修改/删除/插入新记录`，导致A记录`前后不一致`
@@ -828,7 +828,7 @@ COMMIT / ROLLBACK
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/8e4106f2121e4a05ae4055fafdc801b1.png){: referrerpolicy="no-referrer" }
 
 
-## ⭐封锁：多个读写者的同步问题
+## 封锁：多个读写者的同步问题
 ### 排他锁-写锁-X锁：持有后其他不能再对A进行任何的`读和写操作`(注意读操作写不行)
 
 
@@ -869,20 +869,20 @@ COMMIT / ROLLBACK
 #### 死锁检测：超时法，等待图法
 #### 死锁解决：释放资源，终止并恢复事务
 
-## ⭐并发事务的可串行化
+## 并发事务的可串行化
 ### 串行调度的结果：按照`一定顺序`严格执行事务，例如T1,T2,T3或T2,T1,T3；`存在多种串行调度结果`
 ### 可串行化的调度：`并发`事务的执行结果等于`某一种`串行调度的结果
 + (c)的执行结果：A=3,B=3不符合任意一种串行调度结果(T1,T2或者T2,T1)，因此结果是错误的。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d80fe02721304cf09383a3edc4e03d1e.png){: referrerpolicy="no-referrer" }
 
-### ⭐冲突操作：`不同`事务Ti和Tj对于`同一个`对象A的读写和写写操作；冲突操作是`不可以交换的`
+### 冲突操作：`不同`事务Ti和Tj对于`同一个`对象A的读写和写写操作；冲突操作是`不可以交换的`
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/acd88f5958a5489689b64561389e5cbe.png){: referrerpolicy="no-referrer" }
 
 #### 冲突可串行化调度：通过交换`非冲突操作`，实现事务之间的串行化调度
 + r2(A)和w2(A)与r1(B)与w1(B)是非冲突操作，可以进行交换
 + 交换后，第一组操作来自于T1，第二组来自于T2，则他们之间可认为是T1,T2串行的结果。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/bbff51422ed944ac9bd71f18b317c247.png){: referrerpolicy="no-referrer" }
-## ⭐封锁粒度
+## 封锁粒度
 
 ### 封锁粒度和并发性的关系：封锁粒度越大(例如封锁整个数据库)，并发性越低
 
@@ -891,7 +891,7 @@ COMMIT / ROLLBACK
 #### 冲突检查：需要`同时检查父节点的锁(隐式封锁)和孩子节点的锁`(其显示锁与本事务所加隐式锁是否冲突)；效率较低
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/788c5ac6619741b78b487979a603d68b.png){: referrerpolicy="no-referrer" }
-### ⭐意向锁：解决向`下层节点`检查(元组数很多)时效率低下的问题
+### 意向锁：解决向`下层节点`检查(元组数很多)时效率低下的问题
 + 对于本节点加锁时，需要对`父节点`(例如关系，数据库等)加入意向锁，避免`逐一检查`下一级的锁
 #### IS：对当前节点加入IS锁，对孩子节点加入S锁
 #### IX：对当前节点加入IX锁，对孩子节点加入X锁

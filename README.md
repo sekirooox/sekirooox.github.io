@@ -54,7 +54,7 @@
 
 | 想做什么 | 从哪里开始 |
 | --- | --- |
-| 新增文章 | 复制 [文章模板](templates/post.md) 到 `_posts/YYYY-MM-DD-english-slug.md` |
+| 新增文章 | 复制 [文章模板](templates/post.md) 到 `_posts/YYYY/MM/YYYY-MM-DD-english-slug.md` |
 | 修改站点名称、简介、时区 | 编辑 [`_config.yml`](_config.yml) |
 | 修改首页简短介绍 | 编辑 [`_includes/profile-intro.html`](_includes/profile-intro.html) |
 | 修改完整个人介绍 | 编辑 [`_tabs/about.md`](_tabs/about.md) |
@@ -68,9 +68,9 @@
 
 仓库保留了第一篇 `MyFirstBlog`，并提供三篇操作示例：
 
-- [博客入门](./_posts/2026-09-25-welcome-to-chirpy.md)：置顶、导航和文章互链。
-- [Markdown 排版](./_posts/2026-09-24-markdown-playground.md)：代码、表格、提示块和图片。
-- [公式与流程图](./_posts/2026-09-23-math-and-diagrams.md)：数学公式与 Mermaid。
+- [博客入门](./_posts/2026/09/2026-09-25-welcome-to-chirpy.md)：置顶、导航和文章互链。
+- [Markdown 排版](./_posts/2026/09/2026-09-24-markdown-playground.md)：代码、表格、提示块和图片。
+- [公式与流程图](./_posts/2026/09/2026-09-23-math-and-diagrams.md)：数学公式与 Mermaid。
 
 示例可按需修改或删除；删除前请一并处理其他文章对它的引用。
 
@@ -79,7 +79,7 @@
 ```text
 .
 ├── _config.yml                 站点配置与功能开关
-├── _posts/                     博客文章
+├── _posts/YYYY/MM/             按年月分组的博客文章
 ├── _tabs/                      分类、标签、归档、关于等栏目
 ├── _data/                      社交链接与访客统计回退数据
 ├── _includes/                  首页介绍、统计地图和主题扩展钩子

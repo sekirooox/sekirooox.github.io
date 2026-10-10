@@ -74,7 +74,7 @@ bash tools/test.sh
 ├── Gemfile / Gemfile.lock     主题及锁定的 Ruby 依赖
 ├── .ruby-version              Ruby 版本
 ├── index.html                 独立个人首页入口和旧项目地址跳转
-├── _posts/                    已发布文章
+├── _posts/YYYY/MM/            按年月分组的已发布文章
 ├── _drafts/                   草稿（需要时创建）
 ├── _tabs/                     侧栏栏目：分类、标签、归档、关于
 ├── _data/contact.yml          侧栏社交链接
@@ -119,7 +119,9 @@ timezone: Asia/Shanghai
 
 ## 6. 新增、修改和删除文章
 
-复制 `templates/post.md` 到 `_posts/YYYY-MM-DD-english-slug.md`。例如：
+复制 `templates/post.md` 到 `_posts/YYYY/MM/YYYY-MM-DD-english-slug.md`。例如，
+`2026-09-16-example.md` 应放在 `_posts/2026/09/`。Jekyll 会递归读取
+`_posts`，年月目录只用于整理源文件，不会改变当前的 `/posts/:title/` 地址或文章分类。
 
 ```yaml
 ---
