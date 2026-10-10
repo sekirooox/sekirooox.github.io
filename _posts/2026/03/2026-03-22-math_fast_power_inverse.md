@@ -9,7 +9,7 @@ math: true
 description: "本文整理“数论·快速幂和逆元”涉及的基本原理、计算方法与应用思路，便于学习复习和建模参考。"
 ---
 
-@[toc]
+
 # 快速幂：$O(\log b)$
 [875. 快速幂](https://www.acwing.com/problem/content/877/)
 ## 数学定义

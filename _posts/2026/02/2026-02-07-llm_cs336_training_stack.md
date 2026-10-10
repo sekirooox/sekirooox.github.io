@@ -9,7 +9,7 @@ math: true
 description: "本文围绕“计算机基础·cs336·损失函数,优化器,调度器…”梳理核心概念、算法思路与实践要点，便于系统学习和后续查阅。"
 ---
 
-@[toc]
+
 # Entropy:
 $$H(x)=x\cdot logx$$
 ## BCE:二分类损失

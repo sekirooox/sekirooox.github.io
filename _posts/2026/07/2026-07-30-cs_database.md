@@ -9,7 +9,7 @@ math: true
 description: "本文整理“计算机基础·数据库系统”的核心知识、常用方法与实践注意事项，便于学习复习和开发查阅。"
 ---
 
-@[toc]
+
 # 数据库的概况
 ## 数据库系统DBS，数据库管理系统DBMS，操作系统OS，硬件的关系
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/9e4cab88cc764069a0d1b0609c5ddea7.png){: referrerpolicy="no-referrer" }
@@ -38,7 +38,7 @@ description: "本文整理“计算机基础·数据库系统”的核心知识�
 
 ## 属性：实体拥有的一个特征
 
-## 码(Key)：唯一标识一个实体的`属性`，具有`唯一性`，`非空性`；
+## 码(Key)：唯一标识一个实体的<span class="text-danger">属性</span>，具有<span class="text-danger">唯一性</span>，<span class="text-danger">非空性</span>；
 ### 候选码：可以标识实体的码；`"码"一般都指代候选码`
 
 ### 主码：选定的唯一标识实体的一个候选码
@@ -48,11 +48,11 @@ description: "本文整理“计算机基础·数据库系统”的核心知识�
 
 ## 域(Domain)：属性的取值范围，例如年龄的域为10-29岁
 
-## 实体型：具有`相同属性`的实体所组成的`集合`
+## 实体型：具有<span class="text-danger">相同属性</span>的实体所组成的<span class="text-danger">集合</span>
 
-## 实体集：`同一类型`的实体的集合
+## 实体集：<span class="text-danger">同一类型</span>的实体的集合
 
-## 联系：多个`实体集`中的相互关联
+## 联系：多个<span class="text-danger">实体集</span>中的相互关联
 ### 1:1联系：一个班长领导一个班级，一个班级对应一个班长
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/c0743de89fdb46f680473b0cf0051d40.png){: referrerpolicy="no-referrer" }
 ### 1:n：一个班级对应多个学生，一个学生只能对应一个班级
@@ -71,13 +71,13 @@ description: "本文整理“计算机基础·数据库系统”的核心知识�
 ### 定义：$R(U,D,DOM,F)$，U是属性集，D是域，DOM是域到值的映射，F是依赖关系
 ## ER关系图：实体用矩形，联系用菱形，属性用椭圆
 
-### 绘制技巧：先确定实体集中的关系，`省略属性`，确定联系。
+### 绘制技巧：先确定实体集中的关系，<span class="text-danger">省略属性</span>，确定联系。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/854cab87b0c7448288ba7aee9cee08fa.png){: referrerpolicy="no-referrer" }
 ## 集合代数
 
 
 
-### 集合运算：关系R和S具有`完全相同的关系模式`
+### 集合运算：关系R和S具有<span class="text-danger">完全相同的关系模式</span>
 
 设：
 
@@ -294,7 +294,7 @@ $$
 ---
 
 ### 外连接：用于保留无法匹配的元组
-#### 悬空元组：`不满足匹配条件`的元组
+#### 悬空元组：<span class="text-danger">不满足匹配条件</span>的元组
 
 #### 左外连接：保留左关系的悬空元组
 #### 右外连接：保留右关系的悬空元组
@@ -302,7 +302,7 @@ $$
 #### 全外连接：完全保留悬空元组
 
 
-###  除运算（Division）：包含`某些属性组`的元组
+###  除运算（Division）：包含<span class="text-danger">某些属性组</span>的元组
 
 用于查询：
 
@@ -403,10 +403,10 @@ $$
 
 
 # SQL
-## Schema：不同于关系型数据库的Schema，表示`视图`，表等多个`对象(例如关系)的集合`，主要用于`区分不同用户`
+## Schema：不同于关系型数据库的Schema，表示<span class="text-danger">视图</span>，表等多个`对象(例如关系)的集合`，主要用于<span class="text-danger">区分不同用户</span>
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/01dfa89fa9284d5893e6cd412294968b.png){: referrerpolicy="no-referrer" }
-### 搜索路径：决定表默认`归属于哪一个模式`，手动指定，自动搜索指定
+### 搜索路径：决定表默认<span class="text-danger">归属于哪一个模式</span>，手动指定，自动搜索指定
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b893512055cd427a828506e7fe9a0a6a.png){: referrerpolicy="no-referrer" }
 
@@ -418,7 +418,7 @@ $$
 ## 聚合函数：SUM，COUNT，AVG等
 ## GROUP BY：分组函数，结果`只能是分组依据+聚合函数`
 ### HAVING：·GROUP BY的条件语句·，相当于WHERE，可以与聚合函数搭配
-### WHERE：一般性的条件语句，`不能与聚合函数搭配`
+### WHERE：一般性的条件语句，<span class="text-danger">不能与聚合函数搭配</span>
 
 ## 连接查询
 ### `WHERE R.A=S.A`语句会自动进行连接，创建虚表
@@ -471,13 +471,13 @@ $$
 
 
 
-## 视图VIEW：`CREATE VIEW X WHERE ... AS Y`，根据Y中某些数据创建视图X，`本身不存储任何数据`，作为虚表
+## 视图VIEW：`CREATE VIEW X WHERE ... AS Y`，根据Y中某些数据创建视图X，<span class="text-danger">本身不存储任何数据</span>，作为虚表
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/52c6e3339aba4d85a2255c0e813d2c5c.png){: referrerpolicy="no-referrer" }
 
 ### WITH CHECK OPTION：创建视图时检查`WHERE的约束条件`，用于后续更新
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/6a9ace6ec9894200a1922ec7da4f64f9.png){: referrerpolicy="no-referrer" }
 
-### 视图的更删改查：`转换为对于基本表的操作`，不影响视图本身
+### 视图的更删改查：<span class="text-danger">转换为对于基本表的操作</span>，不影响视图本身
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/dae28c0b9734412a8f526ef2bc70cc24.png){: referrerpolicy="no-referrer" }
 
 
@@ -496,7 +496,7 @@ $$
 
 # 数据库的完整约束
 
-## 实体完整性：每一个实体都是存在且可分的；`主码唯一且非空`
+## 实体完整性：每一个实体都是存在且可分的；<span class="text-danger">主码唯一且非空</span>
 + CREATE TABLE A(sname CHAR(20) PRIMARY KEY)：**确保姓名非空且唯一，列级定义**
 + CREATE TABLE A(.. PRIMARY KEY(sname))：表格级别的定义
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/1f15437ee423402d9b1fa2a4cb878567.png){: referrerpolicy="no-referrer" }
@@ -547,18 +547,18 @@ FOR EACH {ROW | STATEMENT}
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/90a9c2a048d547088195c57c31dd3f68.png){: referrerpolicy="no-referrer" }
 
-### 多个触发器的竞争机制：BEFORE先于AFTER，`相同定义时机先创建先触发`
+### 多个触发器的竞争机制：BEFORE先于AFTER，<span class="text-danger">相同定义时机先创建先触发</span>
 
 
 # 关系数据库理论
 
 ## 函数依赖
-### 完全函数依赖与部分函数依赖：$X\rightarrow Y$，但是$X$的任意一个`真子集`不能推出Y；否则为部分函数依赖
+### 完全函数依赖与部分函数依赖：$X\rightarrow Y$，但是$X$的任意一个<span class="text-danger">真子集</span>不能推出Y；否则为部分函数依赖
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/1f1c553b7e08442a93573dad72459391.png){: referrerpolicy="no-referrer" }
 ### 传递函数依赖：$X\rightarrow Y,Y\rightarrow Z$，X，Y，Z互不包含。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/dc25289c259749e8b9f07a3a57efa9c9.png){: referrerpolicy="no-referrer" }
 
-## 主属性和非主属性：`包含在候选码`中的属性叫主属性，否则为非主属性
+## 主属性和非主属性：<span class="text-danger">包含在候选码</span>中的属性叫主属性，否则为非主属性
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b4a9e96ec213463480b71aab0d5fc700.png){: referrerpolicy="no-referrer" }
 ## 多值依赖
@@ -566,7 +566,7 @@ FOR EACH {ROW | STATEMENT}
 ## 范式
 ### 1NF：第一范式，属性/元组的成分不可再分，具有原子性；
 + 例如教师这一属性不能再细分为语文教师和数学教师
-### 2NF：第二范式，非主属性必须`完全函数依赖`于`任何`一个候选码；暗示候选码至少有`两个属性`
+### 2NF：第二范式，非主属性必须<span class="text-danger">完全函数依赖</span>于<span class="text-danger">任何</span>一个候选码；暗示候选码至少有<span class="text-danger">两个属性</span>
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/0daf7cff74d84888842c63395f8ac87a.png){: referrerpolicy="no-referrer" }
 + Sdept部分依赖于**任意一个/所有的候选码(Sno，Cno)**，不属于第二范式
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a07bc005e0af4dda97db7178cb15549a.png){: referrerpolicy="no-referrer" }
@@ -599,7 +599,7 @@ FOR EACH {ROW | STATEMENT}
 
 
 
-## 规范化方法：低级范式通过`模式分解`转换为高级范式的过程
+## 规范化方法：低级范式通过<span class="text-danger">模式分解</span>转换为高级范式的过程
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/9f24b217a14b4c709d9c7118f6e9aa92.png){: referrerpolicy="no-referrer" }
 
 ### 投影分解：将部分依赖的主属性拆开，单独成立一个关系
@@ -679,10 +679,10 @@ FOR EACH {ROW | STATEMENT}
 ##### B+树是二叉排序树，B+树是平衡二叉树
 ##### 节点的最大分支数$m$为B+树的阶或秩(Order)
 ##### 非根节点的节点数至少为$m/2$，至多为$m-1$；有$m$个索引指针
-##### 叶子节点存储`元组`所在的指针和键：$Node(P_1,K_1,P_2,K_2 \cdots,P_n,K_n)$，$P_i$指向元组$t$，$P_n$指向兄弟节点
+##### 叶子节点存储<span class="text-danger">元组</span>所在的指针和键：$Node(P_1,K_1,P_2,K_2 \cdots,P_n,K_n)$，$P_i$指向元组$t$，$P_n$指向兄弟节点
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/9b9d86724c7e4f9288f2a7a84c47defe.png){: referrerpolicy="no-referrer" }
-##### 非叶子节点存储`下一级节点`所在的指针和键：$Node(P_1,K_1,P_2,K_2 \cdots,P_n,K_n)$，$P_i$指向下一级节点，$P_n$指向兄弟节点
+##### 非叶子节点存储<span class="text-danger">下一级节点</span>所在的指针和键：$Node(P_1,K_1,P_2,K_2 \cdots,P_n,K_n)$，$P_i$指向下一级节点，$P_n$指向兄弟节点
 + Pi指向的下一级节点的键范围**一定处于Ki-1和Ki之内**
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a66e30b696d64a24a5c87b0a910ed8aa.png){: referrerpolicy="no-referrer" }
@@ -695,7 +695,7 @@ FOR EACH {ROW | STATEMENT}
 
 
 ### B+树的维护
-#### 插入维护：插入元素时，首先确定插入位置。如果位置未满，则直接插入；否则将最后一个键$K_n$与插入元素$K$单独`组成新叶子节点`，$K_n$作为`父节点的新键`；如果父节点仍然满，则递归进行下去
+#### 插入维护：插入元素时，首先确定插入位置。如果位置未满，则直接插入；否则将最后一个键$K_n$与插入元素$K$单独<span class="text-danger">组成新叶子节点</span>，$K_n$作为<span class="text-danger">父节点的新键</span>；如果父节点仍然满，则递归进行下去
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/e706be0beb1945b1a379a5529f166337.png){: referrerpolicy="no-referrer" }
 
 
@@ -711,7 +711,7 @@ FOR EACH {ROW | STATEMENT}
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/c5c3fb4849704c03a9f630b2fbafe1c3.png){: referrerpolicy="no-referrer" }
 ### 动态哈希：使用二进制方法动态扩充桶的数量
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/208935fadf8f4a4a84e7bf7769ea443c.png){: referrerpolicy="no-referrer" }
-#### 聚簇索引：将索引`聚集保存`于数据块中，集中读取
+#### 聚簇索引：将索引<span class="text-danger">聚集保存</span>于数据块中，集中读取
 
 ---
 
@@ -724,7 +724,7 @@ FOR EACH {ROW | STATEMENT}
 ### 选择操作的处理：索引扫描(B+树)和全表扫描
 #### 全表扫描：适合选择率高(>=10%)，顺序读取完整数据块，选择率高时IO效率更高
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/23fe0ea061e34ca69b2a7f327a83b827.png){: referrerpolicy="no-referrer" }
-### 连接操作的处理：嵌套循环，排序-合并，`索引连接`，`哈希连接`算法
+### 连接操作的处理：嵌套循环，排序-合并，<span class="text-danger">索引连接</span>，<span class="text-danger">哈希连接</span>算法
 
 #### 嵌套循环和排序-合并：按照规则依次读取关系表，先排序性能会有提高
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/18fa576c82564cecb9205717f7406066.png){: referrerpolicy="no-referrer" }
@@ -807,8 +807,8 @@ COMMIT / ROLLBACK
 
 ## 检查点：日志中的特殊记录
 
-### 动机：需要搜索日志文件，`遍历整个日志文件`查找所需事务记录，效率低下
-### 检查点的结构：<`正在执行`的事务，对应日志记录地址> + 重新开始文件(新文件，记录检查点及其所在的地址，用于最近版本的恢复)
+### 动机：需要搜索日志文件，<span class="text-danger">遍历整个日志文件</span>查找所需事务记录，效率低下
+### 检查点的结构：<<span class="text-danger">正在执行</span>的事务，对应日志记录地址> + 重新开始文件(新文件，记录检查点及其所在的地址，用于最近版本的恢复)
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/36f7e03947404ba9a0e045677fd9710f.png){: referrerpolicy="no-referrer" }
 
 
@@ -821,7 +821,7 @@ COMMIT / ROLLBACK
 ## 数据不一致：丢失修改，不可重复读，读取脏数据
 ### 丢失修改：事务T1的修改`被事务T2覆盖`
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b355f85d3dce41cbadc39a8bb5254eae.png){: referrerpolicy="no-referrer" }
-### 不可重复读：事务T1读取A记录，其中`A被事务T2修改/删除/插入新记录`，导致A记录`前后不一致`
+### 不可重复读：事务T1读取A记录，其中`A被事务T2修改/删除/插入新记录`，导致A记录<span class="text-danger">前后不一致</span>
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/9838efd53abd431fa6c317960c5a8429.png){: referrerpolicy="no-referrer" }
 
 ### 读取脏数据：事务T1修改A记录，T2此时读取A记录，但是T1被撤销，导致`T2读取的A记录(中间值)`无意义
@@ -829,12 +829,12 @@ COMMIT / ROLLBACK
 
 
 ## 封锁：多个读写者的同步问题
-### 排他锁-写锁-X锁：持有后其他不能再对A进行任何的`读和写操作`(注意读操作写不行)
+### 排他锁-写锁-X锁：持有后其他不能再对A进行任何的<span class="text-danger">读和写操作</span>(注意读操作写不行)
 
 
-### 共享锁-读锁-S锁：对A的`读操作`可以继续`共享锁`，但是写操作被禁止
+### 共享锁-读锁-S锁：对A的<span class="text-danger">读操作</span>可以继续<span class="text-danger">共享锁</span>，但是写操作被禁止
 
-### 注意：排他锁和共享锁同一时刻`只能有一个事务`拥有一个
+### 注意：排他锁和共享锁同一时刻<span class="text-danger">只能有一个事务</span>拥有一个
 
 ## 封锁协议
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/62f1b8a71e5b4160921e7332c9e880c1.png){: referrerpolicy="no-referrer" }
@@ -842,20 +842,20 @@ COMMIT / ROLLBACK
 
 
 
-### 二级封锁协议：读取数据前加S锁，持续到`读取操作完成`；解决"读取脏数据"的问题，存在"不可重复读取的问题"
+### 二级封锁协议：读取数据前加S锁，持续到<span class="text-danger">读取操作完成</span>；解决"读取脏数据"的问题，存在"不可重复读取的问题"
 + 读取也要加锁，确保读取过程中，**没有其他事务在修改数据，也就避免读取中间数据**。
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/31eba437809a4ec6afefb826d50587a2.png){: referrerpolicy="no-referrer" }
 
 
-### 三级封锁协议：读取数据前加S锁，持续到`事务完成`；解决"不可重复读取的问题"
+### 三级封锁协议：读取数据前加S锁，持续到<span class="text-danger">事务完成</span>；解决"不可重复读取的问题"
 + 二级协议读取完成后锁会被释放，其他事务可以趁机修改数据，容易造成前后不一致的问题
 + 三级封锁协议确保在整个事务结束后再释放，确保读取的数据符合操作序列的流程，不会出现前后不一致的问题。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b84e0461a4ba4f2cbedd42548a8a942f.png){: referrerpolicy="no-referrer" }
 
 ## 活锁和死锁
 
-### 活锁：某事务一直请求不到资源(但理论上仍能请求资源)，属于`公平性`问题
+### 活锁：某事务一直请求不到资源(但理论上仍能请求资源)，属于<span class="text-danger">公平性</span>问题
 + T2一直想要请求资源R，但是一直被其他事务封锁
 + 但理论上T2始终有计划请求资源R
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d46faec681a8496a91fc400217850c90.png){: referrerpolicy="no-referrer" }
@@ -870,15 +870,15 @@ COMMIT / ROLLBACK
 #### 死锁解决：释放资源，终止并恢复事务
 
 ## 并发事务的可串行化
-### 串行调度的结果：按照`一定顺序`严格执行事务，例如T1,T2,T3或T2,T1,T3；`存在多种串行调度结果`
-### 可串行化的调度：`并发`事务的执行结果等于`某一种`串行调度的结果
+### 串行调度的结果：按照<span class="text-danger">一定顺序</span>严格执行事务，例如T1,T2,T3或T2,T1,T3；<span class="text-danger">存在多种串行调度结果</span>
+### 可串行化的调度：<span class="text-danger">并发</span>事务的执行结果等于<span class="text-danger">某一种</span>串行调度的结果
 + (c)的执行结果：A=3,B=3不符合任意一种串行调度结果(T1,T2或者T2,T1)，因此结果是错误的。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d80fe02721304cf09383a3edc4e03d1e.png){: referrerpolicy="no-referrer" }
 
-### 冲突操作：`不同`事务Ti和Tj对于`同一个`对象A的读写和写写操作；冲突操作是`不可以交换的`
+### 冲突操作：<span class="text-danger">不同</span>事务Ti和Tj对于<span class="text-danger">同一个</span>对象A的读写和写写操作；冲突操作是<span class="text-danger">不可以交换的</span>
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/acd88f5958a5489689b64561389e5cbe.png){: referrerpolicy="no-referrer" }
 
-#### 冲突可串行化调度：通过交换`非冲突操作`，实现事务之间的串行化调度
+#### 冲突可串行化调度：通过交换<span class="text-danger">非冲突操作</span>，实现事务之间的串行化调度
 + r2(A)和w2(A)与r1(B)与w1(B)是非冲突操作，可以进行交换
 + 交换后，第一组操作来自于T1，第二组来自于T2，则他们之间可认为是T1,T2串行的结果。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/bbff51422ed944ac9bd71f18b317c247.png){: referrerpolicy="no-referrer" }
@@ -886,13 +886,13 @@ COMMIT / ROLLBACK
 
 ### 封锁粒度和并发性的关系：封锁粒度越大(例如封锁整个数据库)，并发性越低
 
-### 多粒度封锁：`封锁树`的每一个节点都可以加锁
+### 多粒度封锁：<span class="text-danger">封锁树</span>的每一个节点都可以加锁
 #### 显示加锁和隐式加锁：显示-自身加锁，隐式-子节点加锁
 #### 冲突检查：需要`同时检查父节点的锁(隐式封锁)和孩子节点的锁`(其显示锁与本事务所加隐式锁是否冲突)；效率较低
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/788c5ac6619741b78b487979a603d68b.png){: referrerpolicy="no-referrer" }
-### 意向锁：解决向`下层节点`检查(元组数很多)时效率低下的问题
-+ 对于本节点加锁时，需要对`父节点`(例如关系，数据库等)加入意向锁，避免`逐一检查`下一级的锁
+### 意向锁：解决向<span class="text-danger">下层节点</span>检查(元组数很多)时效率低下的问题
++ 对于本节点加锁时，需要对<span class="text-danger">父节点</span>(例如关系，数据库等)加入意向锁，避免<span class="text-danger">逐一检查</span>下一级的锁
 #### IS：对当前节点加入IS锁，对孩子节点加入S锁
 #### IX：对当前节点加入IX锁，对孩子节点加入X锁
 #### SIX：对于当前节点加入S锁和IX锁，表示既要读取当前表，还需要修改部分元组

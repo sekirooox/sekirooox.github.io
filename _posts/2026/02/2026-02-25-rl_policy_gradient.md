@@ -9,7 +9,7 @@ math: true
 description: "本文围绕“强化学习·策略学习-策略梯度定理和Reinfor…”梳理核心概念、算法思路与实践要点，便于系统学习和后续查阅。"
 ---
 
-@[toc]
+
 # 策略学习方法
 策略参数化：
 The idea is to parameterize the policy. For instance, using a neural network $\pi(\theta)$, this policy will output a probability distribution over actions (stochastic policy).

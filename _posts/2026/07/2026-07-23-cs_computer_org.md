@@ -9,7 +9,7 @@ math: true
 description: "本文整理“计算机基础·计算机组成原理”的核心知识、常用方法与实践注意事项，便于学习复习和开发查阅。"
 ---
 
-@[toc]
+
 # 体系结构通识
 ## 冯诺依曼架构：计算单元+存储器+输入/输出设备+控制器
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/5ef8534b77834373b6bbfa5271daf6fb.png){: referrerpolicy="no-referrer" }
@@ -22,25 +22,25 @@ description: "本文整理“计算机基础·计算机组成原理”的核心�
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/7940e24c72d9496b8e954bc19679864d.png){: referrerpolicy="no-referrer" }
 
-### 编译器：将`高级程序`语言(C语言)替换为`低级通用`的程序语言(汇编语言)
+### 编译器：将<span class="text-danger">高级程序</span>语言(C语言)替换为<span class="text-danger">低级通用</span>的程序语言(汇编语言)
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/591564699c7f41a79149f865f5b1baa6.png){: referrerpolicy="no-referrer" }
 
-### 汇编器(Assembler)：将低级通用程序语言(汇编语言)替换为`机器能理解`的`字节码`(二进制串)
+### 汇编器(Assembler)：将低级通用程序语言(汇编语言)替换为<span class="text-danger">机器能理解</span>的<span class="text-danger">字节码</span>(二进制串)
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/6135fe4e915d4865b3f9b4966634cab6.png){: referrerpolicy="no-referrer" }
 
-### 链接器：外部函数的符号解析和地址重定位(确定外部函数对应`所在程序的地址`)
+### 链接器：外部函数的符号解析和地址重定位(确定外部函数对应<span class="text-danger">所在程序的地址</span>)
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/932a5d438bae4f4a8d0cca70625ce238.png){: referrerpolicy="no-referrer" }
 
 # 内存地址和字节
-## 字节-寻址的内存组织结构：视同为`字节数组`，寻址单位`为1个字节`
+## 字节-寻址的内存组织结构：视同为<span class="text-danger">字节数组</span>，寻址单位`为1个字节`
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/2567161bb9c941df8874dfb876121437.png){: referrerpolicy="no-referrer" }
 ### 寻址单位：每一个内存地址代表几个字节，例如`2字节寻址`
 
 
-### 32位系统和64位系统：代表`逻辑地址的位数`，`虚拟内存空间`的大小
+### 32位系统和64位系统：代表<span class="text-danger">逻辑地址的位数</span>，<span class="text-danger">虚拟内存空间</span>的大小
 
 
 
@@ -49,7 +49,7 @@ description: "本文整理“计算机基础·计算机组成原理”的核心�
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/735a52cf84284d1392239910498f31b0.png){: referrerpolicy="no-referrer" }
 
 ### 大端法：最不重要的字节在高位-顺序存储
-### 小端法：最不重要的字节在低位-逆序存储，`更加常用`
+### 小端法：最不重要的字节在低位-逆序存储，<span class="text-danger">更加常用</span>
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/243b6e847ee34c80aaf8d8d64b2af8ce.png){: referrerpolicy="no-referrer" }
 
@@ -67,7 +67,7 @@ char s[6] = "12345";
 
 
 # 整数的表示：有符号数和无符号数，符号位
-## 原码，补码和反码：`默认使用二进制补码`表示`有符号整数`
+## 原码，补码和反码：<span class="text-danger">默认使用二进制补码</span>表示<span class="text-danger">有符号整数</span>
 ### *正数转负数技巧：正数取反+1=负数
 ### 反码-二进制反码：最高位为符号位，数值为$-x_{w-1}\cdot(2^{w-1}-1)$
 + 正数的补码为其本身，负数的补码为正数的原码取反得到。
@@ -94,7 +94,7 @@ char s[6] = "12345";
 
 
 ## 乘法运算
-### 有符号整数的`通用方法`：`先定符号位`，`转正数`，使用`算盘法`求解，最后构造有符号整数(是负数则取反+1)
+### 有符号整数的<span class="text-danger">通用方法</span>：<span class="text-danger">先定符号位</span>，<span class="text-danger">转正数</span>，使用<span class="text-danger">算盘法</span>求解，最后构造有符号整数(是负数则取反+1)
 
 ```cpp
         0101
@@ -113,7 +113,7 @@ char s[6] = "12345";
 
 #### 二的乘法：左移k位
 
-#### 二的除法：右移k位，右移后`空出位全部填充符号位`
+#### 二的除法：右移k位，右移后<span class="text-danger">空出位全部填充符号位</span>
 
 # 浮点数的表示
 
@@ -132,19 +132,19 @@ $$
 
 ### 非规格值：指数位全为0，有效数定义为$M=f$，f为尾数转小数
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/dbdbc78b37804f9da6798c3c404dd5af.png){: referrerpolicy="no-referrer" }
-### 无穷值：指数位全为1，但是`尾数全为0`，`特殊定义值`。
+### 无穷值：指数位全为1，但是`尾数全为0`，<span class="text-danger">特殊定义值</span>。
 
-### 非有效数字NaN：指数位全1，但是尾数`非0`，`特殊定义值`。
+### 非有效数字NaN：指数位全1，但是尾数`非0`，<span class="text-danger">特殊定义值</span>。
 
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/12fee9eea16e4a758da53ad613ba769e.png){: referrerpolicy="no-referrer" }
 
-### 舍入-rounding：浮点数只能近似表达某些实数，涉及到近似到`具体小数位` / `整数`的问题
+### 舍入-rounding：浮点数只能近似表达某些实数，涉及到近似到<span class="text-danger">具体小数位</span> / <span class="text-danger">整数</span>的问题
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/3e45d677261440dfa181c8ba2cb7f360.png){: referrerpolicy="no-referrer" }
 
-### 浮点数加法：`变为规范数`，对齐指数部分，还原为浮点数表示
+### 浮点数加法：<span class="text-danger">变为规范数</span>，对齐指数部分，还原为浮点数表示
 
-### 浮点数的乘法：`变为规范数`，计算重要数的乘法结果，还原为浮点数表示
+### 浮点数的乘法：<span class="text-danger">变为规范数</span>，计算重要数的乘法结果，还原为浮点数表示
 
 
 ---
@@ -179,12 +179,12 @@ $$
 
 ## 非易失存储器：断电不会丢失数据
 ### PROM：只可以被编程一次
-### *ROM："只读"存储，实际上`可读可写`。
+### *ROM："只读"存储，实际上<span class="text-danger">可读可写</span>。
 #### EEPROM：可读可写，例如闪存(手机存储和SSD)。
 
 ## 易失存储器：断电会丢失数据
 ### RAM：随机访问内存
-#### DRAM：依靠电容器存储状态，电容器电量会流失，需要`定期刷新`；速度较慢，但容量大
+#### DRAM：依靠电容器存储状态，电容器电量会流失，需要<span class="text-danger">定期刷新</span>；速度较慢，但容量大
 + ##### 存储单位为单元/超单元，16x8的DRAM芯片表示16个单元，每个单元8个bit
 + 通过内存控制器索引DRAM的supercell，**按照二维结构组织，分别需要行索引和列索引**
 + 每次进行行索引时，会将这一行的supercells全部缓存下来。
@@ -198,11 +198,11 @@ $$
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/4d8ac5e393924b278eb677fc0e563f0a.png){: referrerpolicy="no-referrer" }
 
 ## 存储器层次中的"缓存"
-### 缓存交换抽象原理：不同级别存储(例如L1和L2)，以`数据块`为单位交换缓存；缓存命中和缓存不命中。
+### 缓存交换抽象原理：不同级别存储(例如L1和L2)，以<span class="text-danger">数据块</span>为单位交换缓存；缓存命中和缓存不命中。
  + 缓存：SRAM，以数据块的形式存储和交换数据
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/c23ec23d2b414139b2152b210bed58e0.png){: referrerpolicy="no-referrer" }
-### 缓存未命中：冷启动(启动时无缓存)，映射冲突(`哈希冲突`，相互覆盖)和容量冲突(需要`缓存太多数据`)
+### 缓存未命中：冷启动(启动时无缓存)，映射冲突(<span class="text-danger">哈希冲突</span>，相互覆盖)和容量冲突(需要<span class="text-danger">缓存太多数据</span>)
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/4ee5b14dfc094c8297b14dba66dc3495.png){: referrerpolicy="no-referrer" }
 
 
@@ -215,7 +215,7 @@ $$
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/71fa7949fb5641b58a14b3708cacea1c.png){: referrerpolicy="no-referrer" }
 
 
-### 组相联映射缓存：$E>1$，每一个组对应多个缓存行，根据$s$，有效位和标记位$t$对缓存行进行`一一匹配`，确定缓存是否存在。
+### 组相联映射缓存：$E>1$，每一个组对应多个缓存行，根据$s$，有效位和标记位$t$对缓存行进行<span class="text-danger">一一匹配</span>，确定缓存是否存在。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/f9deac18db8141aa94d90b24ca8702d4.png){: referrerpolicy="no-referrer" }
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/7226dce5900d4af0948e39d448212578.png){: referrerpolicy="no-referrer" }
 

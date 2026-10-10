@@ -9,7 +9,7 @@ math: true
 description: "本文围绕“计算机基础·cs336·推理和训练”梳理核心概念、算法思路与实践要点，便于系统学习和后续查阅。"
 ---
 
-@[toc]
+
 # torch前置知识
 ## max，sort和topk操作：返回一个元组`(values，indices)`
 + 对于数组特定维度进行求和或排序

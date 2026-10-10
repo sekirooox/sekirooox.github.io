@@ -9,7 +9,7 @@ math: true
 description: "本文整理“数理基础·概率论与数理统计”涉及的基本原理、计算方法与应用思路，便于学习复习和建模参考。"
 ---
 
-@[toc]
+
 # 概率论
 
 
@@ -246,7 +246,7 @@ $$
 #### $Z_{\alpha}$：右尾部分的面积为$\alpha$的分位点
 + 用途计算标准正太
 
-### 泊松分布的含义：$X$表示一段时间内`事件发生的次数`
+### 泊松分布的含义：$X$表示一段时间内<span class="text-danger">事件发生的次数</span>
 $$\begin{align}P(X=k)=\frac{\lambda^k}{k!}e^{-\lambda},\quad k=0,1,2,\cdots\end{align}$$
 + 随机变量X表示：**1h内**公交车**到站次数**，**1h事件**的**发生次数**
 + $\lambda$：1h公交车平均到站次数。
@@ -300,7 +300,7 @@ $$\begin{align}
 \mathrm{Var}(x)=\mathbb{E}\left[(x-\mathbb{E}[x])^2\right]
 \end{align}$$
 
-### 随机向量的方差和协方差：`随机向量`之间`不同分量组合`的相关程度
+### 随机向量的方差和协方差：<span class="text-danger">随机向量</span>之间<span class="text-danger">不同分量组合</span>的相关程度
 + 元素表示每一个随机变量之间的**关联程度** / **波动程度**：
 + 注意：协方差矩阵为**nxn**的，所以是**列向量乘以行向量**
 $$\begin{align}
@@ -325,7 +325,7 @@ $$\begin{align}
 =\mathbb{E}\left[(x-\mathbb{E}[x])(y-\mathbb{E}[y])^T\right]
 \end{align}$$
 
-### 协方差矩阵 $\Sigma_x$：随机变量`不同分量`的波动程度和相关性
+### 协方差矩阵 $\Sigma_x$：随机变量<span class="text-danger">不同分量</span>的波动程度和相关性
 + 不同分量：例如身高，体重的相关程度和波动。
 
 $$\begin{align}
@@ -335,9 +335,9 @@ $$\begin{align}
 \end{align}$$
 
 
-### 期望和方差/协方差的性质：多个随机变量$X_1,X_2,\cdots,X_n$`线性组合`
+### 期望和方差/协方差的性质：多个随机变量$X_1,X_2,\cdots,X_n$<span class="text-danger">线性组合</span>
 
-#### 期望的线性组合性质：`无条件`
+#### 期望的线性组合性质：<span class="text-danger">无条件</span>
 $$
 \begin{align}
 \mathbb{E}[Ax+By+c]
@@ -348,7 +348,7 @@ $$
 
 
 
-#### 协方差的线性组合性质：`通用`和`独立`版本
+#### 协方差的线性组合性质：<span class="text-danger">通用</span>和<span class="text-danger">独立</span>版本
 
 
 
@@ -376,7 +376,7 @@ $$
 这就是协方差矩阵在线性组合下的**通用公式**。
 
 
-#### 高斯分布的线性组合仍然是`高斯分布`
+#### 高斯分布的线性组合仍然是<span class="text-danger">高斯分布</span>
 + 给定n个**不同参数的高斯分布**：$X_1,X_2,\cdots,X_n$，其中$X_i$服从均值为$\mu_i$，方差为$\sigma_i^2$的高斯分布。
 + 高斯分布的线性组合$a_1X_1+a_2X_2+\cdots a_nX_n$**仍然服从均值为$\sum{a_i\mu_i}$，方差为$\sum{a_i^2\sigma_i^2}$的高斯分布**。
 
@@ -401,7 +401,7 @@ $$
 P(X)P(Y)=P(X,Y)
 \end{align}
 $$
-### 独立vs相关：独立必不相关，`线性相关`不一定独立
+### 独立vs相关：独立必不相关，<span class="text-danger">线性相关</span>不一定独立
 
 
 
@@ -409,7 +409,7 @@ $$
 
 ## 方向1：样本分布推断总体分布
 
-### 样本与总体：`共享`参数，参数未知
+### 样本与总体：<span class="text-danger">共享</span>参数，参数未知
 总体和样本来自同一个分布，并**共享同一组总体参数**；只是这些**总体参数未知**，需要通过样本来估计
 ### 大数定律：$\bar{X}$的均值 / 估计未知均值$\mu=\bar{X}$
 

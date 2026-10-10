@@ -9,7 +9,7 @@ math: true
 description: "本文整理“深度学习·生成式模型”涉及的模型原理、关键方法与实践要点，便于理解和复习相关技术。"
 ---
 
-@[toc]
+
 # 生成模型
 + 生成模型的本质是让模型学习到输入的概率分布$p(x)$。然而，这个**概率分布非常复杂**，无法**形式化表示出来**。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/293c1fddf9c74359809a2f8c696b0412.png){: referrerpolicy="no-referrer" }
@@ -105,7 +105,7 @@ $$
 ### 去噪公式
 $$
 \mu=\frac{1}{\sqrt{\alpha_{t}}}\left(x_{t}-\frac{1-\alpha_{t}}{\sqrt{1-\overline{\alpha}_{t}}}\cdot\epsilon\right)
-\\\sigma^{2}=\frac{(1-\alpha_{t})(1-\overline{\alpha}_{t-1})}{1-\overline{\alpha}_{t}}
+\sigma^{2}=\frac{(1-\alpha_{t})(1-\overline{\alpha}_{t-1})}{1-\overline{\alpha}_{t}}
 $$
 + 现在我们就是求解：$q(x_{t-1}\mid x_t,x_0)$
 + 基本理论：**先验概率是正态分布，后验概率也是正态分布。**

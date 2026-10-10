@@ -8,7 +8,7 @@ render_with_liquid: false
 description: "本文围绕“LLM·minimind-预训练”梳理核心概念、算法思路与实践要点，便于系统学习和后续查阅。"
 ---
 
-@[toc]
+
 >**所有的代码都基于`transformers`库。**
 # 预训练
 ## 初始化模型和分词器
@@ -93,7 +93,7 @@ DatasetDict({
 ```
 ### Dataset
 + **数组和字典的混合体**。
-+ **可以理解为`List[Dict]`或者`Dict[List]`的形式**，支持下标索引和键值对索引。
++ **可以理解为 `List[Dict]` <span class="text-danger">或者</span> `Dict[List]` 的形式**，支持下标索引和键值对索引。
 
 
 ```cpp
@@ -105,7 +105,7 @@ Dataset({
 
 
 ### 数据预处理
-+ 我们期望的预训练格式如下：首先是将原始文本`str`转换为`input_ids:List[int]`
++ 我们期望的预训练格式如下：首先是将原始文本 `str` <span class="text-danger">转换为</span> `input_ids:List[int]`
 
 #### 数据预先处理函数
 + 输入参数：`batched=True`时为examples：类型为`Dict[str,List[Any]]`
@@ -119,7 +119,7 @@ examples = {
     ]
 }
 ```
-+ 返回参数：`batched=True`时返回类型为`Dict[str,List[Any]]`
++ 返回参数：`batched=True` <span class="text-danger">时返回类型为</span> `Dict[str,List[Any]]`
 + 注意**tokenizer处理batch时会返回字典**`Dict[str,List[Any]]`。
 ```cpp
 {
@@ -254,5 +254,4 @@ trainer = Trainer(
     data_collator=default_data_collator, # MLM：掩码语言建模,完型填空, 不会随机掩码;
 )
 ```
-
 

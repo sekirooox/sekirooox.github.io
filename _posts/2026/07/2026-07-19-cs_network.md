@@ -9,15 +9,15 @@ math: true
 description: "本文整理“计算机基础·计算机网络”的核心知识、常用方法与实践注意事项，便于学习复习和开发查阅。"
 ---
 
-@[toc]
+
 # 网络的模型
 ## OSI模型：七层模型
 + ### 应用层：向用户提供应用程序服务
-+ ### 表示层：对`格式进行转换`，例如`加密/解密`，`压缩和解压缩`
-+ ### 会话层：建立和管理`通信双方的会话`，例如`腾讯会议双方的通信`。
-+ ### 传输层：提供`进程为单位`的端到端的传输服务。
-+ ### 网际层：`不同网络`之间的通信服务，IP协议，路由和转发。
-+ ### 链路层：`同一局域网下`的通信服务，例如成帧，`差错检验`，`信道冲突`和`无线网络`。
++ ### 表示层：对<span class="text-danger">格式进行转换</span>，例如`加密/解密`，<span class="text-danger">压缩和解压缩</span>
++ ### 会话层：建立和管理<span class="text-danger">通信双方的会话</span>，例如<span class="text-danger">腾讯会议双方的通信</span>。
++ ### 传输层：提供<span class="text-danger">进程为单位</span>的端到端的传输服务。
++ ### 网际层：<span class="text-danger">不同网络</span>之间的通信服务，IP协议，路由和转发。
++ ### 链路层：<span class="text-danger">同一局域网下</span>的通信服务，例如成帧，<span class="text-danger">差错检验</span>，<span class="text-danger">信道冲突</span>和<span class="text-danger">无线网络</span>。
 + ### 物理层：二进制比特流的传输服务。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/f333458546f04468ab1332df8654630f.png){: referrerpolicy="no-referrer" }
 
@@ -28,10 +28,10 @@ description: "本文整理“计算机基础·计算机网络”的核心知识�
 
 # 物理层
 ## *链路类型：全双工，半双工，单工
-### 单工：谁能发送、谁能接收，是固定的；数据流只能`沿一个固定方向传输`；应用：家庭电话。
-### 半双工：谁发送、谁接收，可以变化，但必须轮流；数据流可以沿两个相反方向传输，但同一时间`只能传输一个方向`的数据流；应用：无限局域网
+### 单工：谁能发送、谁能接收，是固定的；数据流只能<span class="text-danger">沿一个固定方向传输</span>；应用：家庭电话。
+### 半双工：谁发送、谁接收，可以变化，但必须轮流；数据流可以沿两个相反方向传输，但同一时间<span class="text-danger">只能传输一个方向</span>的数据流；应用：无限局域网
 
-### 全双工：谁发送、谁接收，可以变化，并且可以同时进行；数据流可以沿两个相反方向传输，同一时间`可以传输相反方向`的数据流；应用：TCP双向连接。
+### 全双工：谁发送、谁接收，可以变化，并且可以同时进行；数据流可以沿两个相反方向传输，同一时间<span class="text-danger">可以传输相反方向</span>的数据流；应用：TCP双向连接。
 
 ## 信道传输速率
 ### 奈奎斯特定律 
@@ -72,7 +72,7 @@ description: "本文整理“计算机基础·计算机网络”的核心知识�
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/cfc78901981547cebab32fcaacbe7948.png){: referrerpolicy="no-referrer" }
 ### 循环冗余码：使用多项式除法决定冗余位
-+ 给定**生成多项式$G(x)$**，取生成多项式最高位的系数例如4，扩充原始`码字`的位数
++ 给定**生成多项式$G(x)$**，取生成多项式最高位的系数例如4，扩充原始<span class="text-danger">码字</span>的位数
 + 进行多项式的除法，得到最后余数，余数的位数**不超过生成多项式的最高系数+1**(注意0位)
 + 使用该结果填充**冗余位**。
 + 如果没有差错，则**接受的数据应该能整除生成多项式**；否则则说明出现差错。
@@ -83,7 +83,7 @@ description: "本文整理“计算机基础·计算机网络”的核心知识�
 ### 重要的点
 #### 捎带确认：在传输数据时顺便传输ACK确认，不单独发送一个ACK确认报文
 #### 累计确认：ACKx表示对于前x个报文的累计确认
-#### 窗口大小：$W_s+W_R\leq2^{m}$, $m$表示用于编码报文的位数；防止：窗口移动，`相同编号`报文带来的歧义问题。
+#### 窗口大小：$W_s+W_R\leq2^{m}$, $m$表示用于编码报文的位数；防止：窗口移动，<span class="text-danger">相同编号</span>报文带来的歧义问题。
 + 假设m=2，那么**窗口的编号为0,1,2和3.**
 + 假设发送方窗口为1，接受为4，4+1>4，出现冲突的问题
 + 发送方发送1，但是出现拥塞问题未及时传递。此时重新发送1，正常接受，然后接连发送2，3，4和1。此时**滞留的1号报文和新发送的1号报文都传递来了**，就会出现二义性的问题。
@@ -112,9 +112,9 @@ description: "本文整理“计算机基础·计算机网络”的核心知识�
 #### 静态划分：时分/频分/码分复用信道
 #### 动态划分：CSMA/CD协议
 
-### CSMA/CD协议：载波监听，如果`有冲突不发送`；冲突避免，发送后还需要`检测冲突`，如果`有冲突随机等待`并且重发
+### CSMA/CD协议：载波监听，如果<span class="text-danger">有冲突不发送</span>；冲突避免，发送后还需要<span class="text-danger">检测冲突</span>，如果<span class="text-danger">有冲突随机等待</span>并且重发
 
-#### 冲突检测时间和如何避免`冲突检测不及时`：规定数据大小，约束帧的`传输时间`>信道上的往返`传播时延`
+#### 冲突检测时间和如何避免<span class="text-danger">冲突检测不及时</span>：规定数据大小，约束帧的<span class="text-danger">传输时间</span>>信道上的往返<span class="text-danger">传播时延</span>
 
 + 冲突检测时间：**往返传播时间** RTT
 
@@ -124,18 +124,18 @@ description: "本文整理“计算机基础·计算机网络”的核心知识�
 + 长度为1536个字节左右
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/21cf3aa4b06c463c9f96a5ee677dc887.png){: referrerpolicy="no-referrer" }
 
-#### MTU：单个网络中最大传输单元，表示为`以太网帧的负载`
+#### MTU：单个网络中最大传输单元，表示为<span class="text-danger">以太网帧的负载</span>
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ae8d3489b7a54cc292eea8e4886f9e87.png){: referrerpolicy="no-referrer" }
-##### 透明传输：每一个路由器负责包裹的`拆分和整合`
+##### 透明传输：每一个路由器负责包裹的<span class="text-danger">拆分和整合</span>
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d8e5ec413fa74a7abb2d4b1f78022e78.png){: referrerpolicy="no-referrer" }
 
-##### 非透明传输：每一个路由器`只负责包裹的拆分`，整合工作在接受方
+##### 非透明传输：每一个路由器<span class="text-danger">只负责包裹的拆分</span>，整合工作在接受方
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d2db31c5ed3b4c5a8c1929357a62c07f.png){: referrerpolicy="no-referrer" }
 
 
-#### 以太网的`传输`速率：标准以太网10Mbps，快速100Mbps等
+#### 以太网的<span class="text-danger">传输</span>速率：标准以太网10Mbps，快速100Mbps等
 
 
 ### WIFI：802.11
@@ -177,7 +177,7 @@ IP协议（Internet Protocol，网际协议）是TCP/IP体系中的网络层协�
 + **前几位是固定**，避免出现相同前缀的网络
 + 分类标准是：**网络id的范围增大，但主机id的范围缩小**。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/58d9f17ddb564fa08a5e8be78fd96a49.png){: referrerpolicy="no-referrer" }
-#### 子网寻址：确定网络id+子网id+主机id，固定/可变子网划分，默认网关和`子网掩码`
+#### 子网寻址：确定网络id+子网id+主机id，固定/可变子网划分，默认网关和<span class="text-danger">子网掩码</span>
 + 出了网络id后，还需要进一步划分不同的子网id，最后才是主机id
 + 固定子网：**子网的大小是完全一致的**
 + 可变子网：根据所需要的主机数(例如8-3位，16-4位)，定义子网的大小。
@@ -190,7 +190,7 @@ IP协议（Internet Protocol，网际协议）是TCP/IP体系中的网络层协�
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/91c6ca8c64b742e48c5b020ec088b392.png){: referrerpolicy="no-referrer" }
 
 
-#### CIDR：无分类域间路由，只区分前缀id和主机id，路由聚合确定`共同前缀和掩码`和最长前缀匹配确定`网络`
+#### CIDR：无分类域间路由，只区分前缀id和主机id，路由聚合确定<span class="text-danger">共同前缀和掩码</span>和最长前缀匹配确定<span class="text-danger">网络</span>
 + 不区分网络，子网和主机。
 + **只区分前缀id和主机id**。使用206.0.68.0/22**中的22标记前缀长度**。
 
@@ -210,7 +210,7 @@ IP协议（Internet Protocol，网际协议）是TCP/IP体系中的网络层协�
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/6dd3be82fdc243c5a01433ba488520d9.png){: referrerpolicy="no-referrer" }
 
 ## 互联网控制协议
-### ICMP：互联网控制消息协议，用于`错误报告`和`回复请求`(`ping`命令)
+### ICMP：互联网控制消息协议，用于<span class="text-danger">错误报告</span>和<span class="text-danger">回复请求</span>(`ping`命令)
 
 ### ARP：MAC地址寻求协议，用于查询某个IP地址对应的MAC地址，如果不属于一个局域网，则改为`发送默认网关的ARP请求`。
 + 局域网内广播ARP请求
@@ -243,13 +243,13 @@ IP协议（Internet Protocol，网际协议）是TCP/IP体系中的网络层协�
 ##### 缺点：维护全局拓扑结构的代价昂贵
 
 #### 边界路由算法：自治系统，内层边界路由算法，外层边界路由算法
-##### 自治系统：不同路由器所连接的一个`网络整体`
+##### 自治系统：不同路由器所连接的一个<span class="text-danger">网络整体</span>
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/3eaa41652e5e4ec6a61fbe705c987055.png){: referrerpolicy="no-referrer" }
 
 
 ##### 内层边界路由算法：每一个网络整体所使用的路由算法，例如OBPF和RIP算法
 
-##### 外层边界路由算法：`边界路由器`，不同网络整体所使用的路由算法，`公平性且非最优`
+##### 外层边界路由算法：<span class="text-danger">边界路由器</span>，不同网络整体所使用的路由算法，<span class="text-danger">公平性且非最优</span>
 #### 网际层中的多播和广播(泛洪)
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/790b6e724c23417f8355eaa93e037eca.png){: referrerpolicy="no-referrer" }
@@ -264,10 +264,10 @@ IP协议（Internet Protocol，网际协议）是TCP/IP体系中的网络层协�
 ### 数据格式：TCP Segment-TCP段
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/de17c359afff4db1a62da7c0d8f94db4.png){: referrerpolicy="no-referrer" }
 ### TCP Header结构：端口号，SYN/FIN/ACK表示，序列号字段
-#### 序列号-Sequence Number：负载中`第一个字节`的序号，例如Seq=100，表示负载中下一次传递的第一个字节序号为100
+#### 序列号-Sequence Number：负载中<span class="text-danger">第一个字节</span>的序号，例如Seq=100，表示负载中下一次传递的第一个字节序号为100
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/c90d07ffd2f7448fb8b0690d9ea6dcd5.png){: referrerpolicy="no-referrer" }
 
-#### 确认码-ACK Number：期待接受的`下一个字节`的序号，例如序号101，表示预期接受导的下一个字节序号为101
+#### 确认码-ACK Number：期待接受的<span class="text-danger">下一个字节</span>的序号，例如序号101，表示预期接受导的下一个字节序号为101
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/99a91e6f65b04c0c99d841fd3f21d9c1.png){: referrerpolicy="no-referrer" }
 
 ### TCP连接建立：三次握手，SYN占据一个字节
@@ -277,7 +277,7 @@ IP协议（Internet Protocol，网际协议）是TCP/IP体系中的网络层协�
 + 只有**最后一步可以通过捎带ACK的方式实现**。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/0ad6e65fba284091bbfdb254a92c4ae2.png){: referrerpolicy="no-referrer" }
 
-#### 为什么不能改为二次握手：`滞留的`TCP连接建立请求
+#### 为什么不能改为二次握手：<span class="text-danger">滞留的</span>TCP连接建立请求
 
 ### TCP连接取消：四次挥手，FIN占据一个字节
 + 客户端发起TCP连接取消请求FIN=1
@@ -310,7 +310,7 @@ IP协议（Internet Protocol，网际协议）是TCP/IP体系中的网络层协�
 + 在拥塞窗口小于拥塞阈值时，每收到一个ACK就增加窗口大小
 #### 拥塞避免：大于等于拥塞阈值时，每一个`RTT`，窗口大小+1，线性增加
 
-#### 快回复：遇到连续三个重复的ACK时，窗口和阈值缩小为`一半`
+#### 快回复：遇到连续三个重复的ACK时，窗口和阈值缩小为<span class="text-danger">一半</span>
 #### 快重传：遇到连续三个重复的ACK时，直接重传`丢失的TCP段`
 
 #### 超时处理：阈值变为一半，窗口变为1
@@ -360,13 +360,13 @@ IP协议（Internet Protocol，网际协议）是TCP/IP体系中的网络层协�
 ## 邮件系统：用户代理和邮件服务器
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/f7690f848b4a46e0b9fbc39f1b20fe6e.png){: referrerpolicy="no-referrer" }
 
-### 发送协议：简单邮件传输协议-SMTP，`只能发送文本类数据`；MIME，可以`发送多媒体数据`
+### 发送协议：简单邮件传输协议-SMTP，<span class="text-danger">只能发送文本类数据</span>；MIME，可以<span class="text-danger">发送多媒体数据</span>
 
 ### 接受协议：POP3协议，IMAP-允许用户以文件夹形式管理邮件
 # 网络设备
 
 ## 集线器：存在冲突，信道共享，需要开启CSMA/CD协议
-## 交换器和网桥：不存在冲突，信道独立，分割`冲突域`
+## 交换器和网桥：不存在冲突，信道独立，分割<span class="text-danger">冲突域</span>
 
 ## 直接转发 / 存储转发机制
 + 直接转发：只**读取/下载目的地址(MAC地址)**，然后根据MAC地址将数据转发到下一个链路
@@ -379,8 +379,8 @@ IP协议（Internet Protocol，网际协议）是TCP/IP体系中的网络层协�
 | 路由器 Router | 必须存储转发         |
 
 
-### 为什么路由器需要存储转发：根据IP地址查找路由表(非根本)，`检验数据`，`修改条数`,等
-## 路由器：分割`不同网络`/`广播域`
+### 为什么路由器需要存储转发：根据IP地址查找路由表(非根本)，<span class="text-danger">检验数据</span>，<span class="text-danger">修改条数</span>,等
+## 路由器：分割<span class="text-danger">不同网络</span>/<span class="text-danger">广播域</span>
 ### 路由功能：交换控制信息，更新路由表
 ### 转发功能：根据路由表+路由算法决定下一跳
 

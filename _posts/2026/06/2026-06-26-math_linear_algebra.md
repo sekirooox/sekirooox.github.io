@@ -9,7 +9,7 @@ math: true
 description: "本文整理“数理基础·线性代数及其应用”涉及的基本原理、计算方法与应用思路，便于学习复习和建模参考。"
 ---
 
-@[toc]
+
 
 
 
@@ -64,7 +64,7 @@ $$
 
 
 # 行列式
-## 几何意义：线性变换后对于`坐标基`所围成的`体积`的缩放程度
+## 几何意义：线性变换后对于<span class="text-danger">坐标基</span>所围成的<span class="text-danger">体积</span>的缩放程度
 + 2D：面积的缩放
 + 3D：体积的缩放
 
@@ -131,7 +131,7 @@ $$
 
 
 # 线性空间
-## 线性空间的定义：元素满足线性运算规则的`集合`
+## 线性空间的定义：元素满足线性运算规则的<span class="text-danger">集合</span>
 + 集合元素**简称向量**，但**不一定指代一般含义的向量**。
 + **向量空间是一种特殊的线性空间**，其中的元素满足加法/数乘封闭。
 $$
@@ -206,8 +206,8 @@ $$
 ## 与向量空间的关系：向量空间是一种特殊的线性空间
 # 向量空间
 
-## 向量空间的定义：由`向量`组成的`集合`
-## 向量空间的维度：向量空间中`线性无关向量`的个数
+## 向量空间的定义：由<span class="text-danger">向量</span>组成的<span class="text-danger">集合</span>
+## 向量空间的维度：向量空间中<span class="text-danger">线性无关向量</span>的个数
 + 向量空间的维度$\dim$ 指的是**向量空间中线性无关向量的个数**。
 $$
 \begin{align}
@@ -216,14 +216,14 @@ $$
 $$
 
 ## 向量空间的基
-### 定义：找出n个`线性无关`的向量可以`张成`该空间
+### 定义：找出n个<span class="text-danger">线性无关</span>的向量可以<span class="text-danger">张成</span>该空间
 + 性质1：找出n个向量**可以张成空间V**：
 $$\begin{align} \mathbf{v}_1,\mathbf{v}_2,\cdots,\mathbf{v}_n \end{align}$$
 $$\begin{align} V=\operatorname{span}\{\mathbf{v}_1,\mathbf{v}_2,\cdots,\mathbf{v}_n\} \end{align}$$
 + 性质2：任意一个向量都**与其他向量线性无关**：
 $$\begin{align} k_1\mathbf{v}_1+k_2\mathbf{v}_2+\cdots+k_n\mathbf{v}_n=\mathbf{0}\Rightarrow k_1=k_2=\cdots=k_n=0 \end{align}$$
 ## 列空间
-### 定义：矩阵A的`列向量`所`张成`的向量空间
+### 定义：矩阵A的<span class="text-danger">列向量</span>所<span class="text-danger">张成</span>的向量空间
 + A的列空间指的是由**A的列向量所组成的向量空间**。
 + 假设有如下矩阵$A$：
 $$
@@ -282,7 +282,7 @@ $$
 
 ## 零空间
 
-### 定义：在矩阵A作用下`会变成零向量的向量`所`张成`的向量空间
+### 定义：在矩阵A作用下<span class="text-danger">会变成零向量的向量</span>所<span class="text-danger">张成</span>的向量空间
 + 给定矩阵A：
 $$
 \begin{align}
@@ -324,7 +324,7 @@ $$
 
 # 线性方程组
 
-## 线性方程组有解的条件：矩阵A的秩等于`增广矩阵`[A b]的秩 
+## 线性方程组有解的条件：矩阵A的秩等于<span class="text-danger">增广矩阵</span>[A b]的秩
 $$
 \begin{align}
 \operatorname{rank}(A)=\operatorname{rank}([A\ b])
@@ -334,7 +334,7 @@ $$
 ### 线性方程组有惟一解的条件：满秩 / 可逆
 ### 线性方程组有无穷个解的条件：不满秩 / 不可逆
 # 秩
-## 含义：经过线性变换后保留`多少维度的信息`
+## 含义：经过线性变换后保留<span class="text-danger">多少维度的信息</span>
 + **线性无关的方向/向量数**
 + 非零子式最高阶数
 
@@ -365,10 +365,10 @@ $$
 
 # 向量运算
 ## 内积
-### 内积的定义：向量的`相似程度`
+### 内积的定义：向量的<span class="text-danger">相似程度</span>
 $$\begin{align} \mathbf{a}\cdot\mathbf{b}=\|\mathbf{a}\|\|\mathbf{b}\|\cos\theta \end{align}$$
 ## 叉乘
-### 叉乘的定义：向量所围成的`体积`，使用`行列式`表示
+### 叉乘的定义：向量所围成的<span class="text-danger">体积</span>，使用<span class="text-danger">行列式</span>表示
 + 在2D向量中：**a和b**的叉乘表示向量a和b围成的**平行四边形的面积**，使用**行列式**计算
 $$
 \begin{align}
@@ -485,7 +485,7 @@ $$\begin{align} Q=\begin{bmatrix}\mathbf{q}_1 & \mathbf{q}_2 & \cdots & \mathbf{
 
 
 ## 正交矩阵
-### 定义：由`单位正交向量`所组成的矩阵
+### 定义：由<span class="text-danger">单位正交向量</span>所组成的矩阵
 $$\begin{align} Q=\begin{bmatrix}\mathbf{q}_1 & \mathbf{q}_2 & \cdots & \mathbf{q}_n\end{bmatrix} \end{align}$$
 
 ### 性质：正交矩阵的转置=正交矩阵的逆
@@ -497,7 +497,7 @@ $$\begin{align} Q^{-1}=Q^T \end{align}$$
 
 ## 正定矩阵
 
-### 定义：使得任意`非零向量`在`A下叉乘`结果大于0的对称矩阵
+### 定义：使得任意<span class="text-danger">非零向量</span>在`A下叉乘`结果大于0的对称矩阵
 $$\begin{align} \mathbf{x}^TA\mathbf{x}>0,\quad \mathbf{x}\neq \mathbf{0} \end{align}$$
 ### 性质1：特征值一定存在且大于0
 $$\begin{align} A\mathbf{v}=\lambda \mathbf{v},\quad \mathbf{v}\neq \mathbf{0} \end{align}$$
@@ -510,7 +510,7 @@ $$\begin{align} \det(A)=\lambda_1\lambda_2\cdots\lambda_n \end{align}$$
 
 ## 相似矩阵
 如果存在一个矩阵P，使得矩阵P 的逆乘矩阵A 乘矩阵P 等于矩阵B，那么矩阵A 相似于矩阵B。相似矩阵A 和B 它们的特征值相同
-### 定义：`作用效果相似`的矩阵
+### 定义：<span class="text-danger">作用效果相似</span>的矩阵
 + A和B相似，指的是存在可逆矩阵P，使得：
 $$\begin{align} B=P^{-1}AP \end{align}$$
 $$\begin{align} A\sim B \end{align}$$
@@ -518,14 +518,14 @@ $$\begin{align} A\sim B \end{align}$$
 + A和B相似，如果B是一个对角化矩阵，那么这个过程称为：**相似对角化**
 
 
-### 意义1：同一个线性变换在`新基`下的矩阵表示
+### 意义1：同一个线性变换在<span class="text-danger">新基</span>下的矩阵表示
 $$\begin{align} \mathbf{y}_{\text{new}}=P^{-1}A P\mathbf{x}_{\text{new}} \end{align}$$
-### 意义2：对于矩阵`作用效果的分解`
+### 意义2：对于矩阵<span class="text-danger">作用效果的分解</span>
 
-### 性质1：相似矩阵具有相同的秩、迹、行列式、`特征值`
+### 性质1：相似矩阵具有相同的秩、迹、行列式、<span class="text-danger">特征值</span>
 + 理解：**作用效果一致，只是坐标基不同**，因此特征值(缩放程度)，行列式和秩(信息量)不会出现丢失。
 
-### 性质2：相似矩阵可能具有`不同的特征向量`
+### 性质2：相似矩阵可能具有<span class="text-danger">不同的特征向量</span>
 + 不同坐标系下的基向量不一样，所以**对应的特征向量也不同**。**例如旋转90度的坐标基**。
 
 ### 作用：简化幂函数的运算
@@ -558,13 +558,13 @@ $$\begin{align} \Lambda=\begin{pmatrix}\lambda_1&0&\cdots&0\\0&\lambda_2&\cdots&
 $$\begin{align} A\in\mathbb{R}^{n\times n} \end{align}$$
 $$\begin{align} A\text{ 可特征值分解}\Longleftrightarrow A\text{ 有 }n\text{ 个线性无关特征向量} \end{align}$$
 
-#### 结论1：`对称矩阵`一定可以特征值分解
+#### 结论1：<span class="text-danger">对称矩阵</span>一定可以特征值分解
 $$\begin{align} A=A^T \end{align}$$
 $$\begin{align} A=Q\Lambda Q^T \end{align}$$
 
 #### 结论2：对于非方阵，`不可以特征值分解 `(不符合特征向量的定义)
 
-### 定理：`不同特征值`对应的特征向量一定线性无关
+### 定理：<span class="text-danger">不同特征值</span>对应的特征向量一定线性无关
 可对角化常用的充分条件是存在 $n$ 个线性无关的特征向量；而有 $n$ 个不同的特征值时，这个条件自动满足。
 
 $$\begin{align}
@@ -572,12 +572,12 @@ $$\begin{align}
 \end{align}$$
 
 其中，$\mathbf{v}_1,\mathbf{v}_2$ 分别是特征值 $\lambda_1,\lambda_2$ 对应的特征向量。
-### 意义1：同一个线性变换在`单位正交特征向量基`下的矩阵表示
+### 意义1：同一个线性变换在<span class="text-danger">单位正交特征向量基</span>下的矩阵表示
 + 观察：分解后的矩阵形式**只和中间的对角矩阵有关**。
 $$\begin{align} A^k=P\Lambda^kP^{-1} \end{align}$$
 $$\begin{align} \Lambda^k=\operatorname{diag}(\lambda_1^k,\lambda_2^k,\dots,\lambda_n^k) \end{align}$$
 
-### 意义2：`分解矩阵`的作用效果 $\rightarrow$ 切换坐标系-缩放坐标基-切回原坐标系
+### 意义2：<span class="text-danger">分解矩阵</span>的作用效果 $\rightarrow$ 切换坐标系-缩放坐标基-切回原坐标系
 + 对于矩阵的效果进行分解。
 $$\begin{align} \text{换到特征向量坐标系}\rightarrow \text{按特征值缩放}\rightarrow \text{换回原坐标系} \end{align}$$
 
@@ -609,10 +609,10 @@ $$\begin{align} V^TV=I \end{align}$$
 + 注意：**奇异值是排序过的**
 
 
-### 特点：任意`实矩阵`都可以做 SVD 分解
-### 含义：`矩阵效果的分解`：输入方向旋转 + 各方向缩放 + 输出方向旋转
+### 特点：任意<span class="text-danger">实矩阵</span>都可以做 SVD 分解
+### 含义：<span class="text-danger">矩阵效果的分解</span>：输入方向旋转 + 各方向缩放 + 输出方向旋转
 
-### 作用：理解重要信息和进行`信息压缩`
+### 作用：理解重要信息和进行<span class="text-danger">信息压缩</span>
 $$\begin{align} A\approx \sigma_1u_1v_1^T+\sigma_2u_2v_2^T+\cdots+\sigma_ku_kv_k^T \end{align}$$
 #### 作用1：PCA
 #### 作用2：低rank近似
@@ -632,7 +632,7 @@ $$\begin{align} A\approx U_k\Sigma_kV_k^T \end{align}$$
 | 几何解释   | 在特征向量方向上缩放          | 旋转/反射 (\rightarrow) 缩放 (\rightarrow) 旋转/反射 |
 | 正交性    | 一般 (P) 不一定正交        | (U,V) 都是正交矩阵                               |
 | 稳定性    | 对一般矩阵不一定稳定          | 数值计算中通常更稳定                                 |
-| 常见用途   | 对角化、矩阵幂、线性系统稳定性分析   | 降维、PCA、图像压缩、推荐系统、低秩近似   
+| 常见用途   | 对角化、矩阵幂、线性系统稳定性分析   | 降维、PCA、图像压缩、推荐系统、低秩近似
 
 
 # 基变换

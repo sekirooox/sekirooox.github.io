@@ -9,7 +9,7 @@ math: true
 description: "本文围绕“计算机基础·cs336-现代Transforme…”梳理核心概念、算法思路与实践要点，便于系统学习和后续查阅。"
 ---
 
-@[toc]
+
 # 现代Transformer架构
 ## PreNorm vs PostNorm
 + **在计算残差前就进行归一化 vs 在残差后进行归一化**
@@ -27,7 +27,7 @@ description: "本文围绕“计算机基础·cs336-现代Transforme…”梳理
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/f732b56168f849cb89a50fd62f1eb73d.png){: referrerpolicy="no-referrer" }
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a0fb30ad8f4243748b20be295a36518d.png){: referrerpolicy="no-referrer" }
 ## FFN vs SwiGLU
-+ Swish函数：`torch.SELU()`等价于`sigmoid(x)*x`
++ Swish函数：`torch.SELU()`<span class="text-danger">等价于</span>`sigmoid(x)*x`
 + GLU：表示门控，使用学习单独的门控映射矩阵V，与激活值进行逐元素乘法。
 + ### 8/3 原则：引入门控矩阵带来额外的参数，为了确保参数量仍然保持一致，FFN中的线性层维度从4倍d_model缩小为8/3倍d_model(同时保持64的倍数)。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/96fed546f15042f3b5e0396d8a803c91.png){: referrerpolicy="no-referrer" }
@@ -191,7 +191,7 @@ def scaled_dot_product(q,k,v,mask=None):
 ```
 ### 注意力机制
 + 兼容交叉注意力
-+ **建议使用`einops `中的`rearrange`操作避免转置等改变矩阵维度的操作。**
++ **建议使用 `einops` <span class="text-danger">中的</span> `rearrange` 操作避免转置等改变矩阵维度的操作。**
 
 ```cpp
 from einops import rearrange# 建议使用
@@ -369,4 +369,3 @@ class TransformerLM(nn.Module):
             x = self.output_head(x)
             return x
 ```
-

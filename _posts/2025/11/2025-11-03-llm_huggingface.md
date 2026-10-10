@@ -8,7 +8,6 @@ render_with_liquid: false
 description: "本文围绕“LLM基础·Huggingface使用教程”梳理核心概念、算法思路与实践要点，便于系统学习和后续查阅。"
 ---
 
-@[toc]
 # Pipeline
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/022d335f5d3147208393f4af1ebd0248.png){: referrerpolicy="no-referrer" }
 

@@ -8,7 +8,6 @@ render_with_liquid: false
 description: "本文围绕“LLM·transformers库”梳理核心概念、算法思路与实践要点，便于系统学习和后续查阅。"
 ---
 
-@[toc]
 # HuggingFace Transformers
 
 > 本文档整合 Pipeline、Tokenizer、Model、Dataset、Evaluate、Training 六大模块，涵盖从模型加载到训练上线的完整流程。

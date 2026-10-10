@@ -8,7 +8,7 @@ render_with_liquid: false
 description: "本文围绕“计算机基础·cs336-编码基础和分词”梳理核心概念、算法思路与实践要点，便于系统学习和后续查阅。"
 ---
 
-@[toc]
+
 # python基础
 ## DefaultDict和Counter
 + DefaultDict：继承自python字典，主要区别是可以用`DefaultDict(int)`**指定默认值**(当为int时，返回0)，例如`DefaultDict(list)`可以**直接往键里面append元素**
