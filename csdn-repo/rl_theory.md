@@ -84,7 +84,7 @@ $$
 
 ---
 
-## ⭐价值函数（Value Function）：未来期望回报，取决于策略$\pi$
+## 价值函数（Value Function）：未来期望回报，取决于策略$\pi$
 
 价值函数用于评价某个状态或者动作未来能够获得的期望收益。
 
@@ -133,7 +133,7 @@ $$
 
 ---
 
-# ⭐⭐⭐Bellman 方程：价值函数满足的递归关系。
+# Bellman 方程：价值函数满足的递归关系。
 
 ## Bellman 期望方程：策略迭代
 
@@ -858,7 +858,7 @@ $$
 
 为便于统一记号，下面将状态记为向量 $\mathbf{s}_t\in\mathbb{R}^{d_s}$，动作记为向量 $\mathbf{a}_t\in\mathbb{R}^{d_a}$，奖励 $r_t\in\mathbb{R}$ 为标量，轨迹记为 $\tau$。这只是在上下文中统一符号，公式结构保持原笔记含义不变。
 
-## ⭐策略梯度的目标函数：$J(\theta)=\mathbb{E}_{\tau\sim p_\theta(\tau)}[G_0]$
+## 策略梯度的目标函数：$J(\theta)=\mathbb{E}_{\tau\sim p_\theta(\tau)}[G_0]$
 
 目标是让任意轨迹 $\tau\sim p_\theta(\tau)$ 下的累计回报期望尽量大。原笔记中将它写成策略梯度的优化目标。
 
@@ -868,7 +868,7 @@ J(\theta)=\mathbb{E}_{\tau\sim p_\theta(\tau)}[G_0],\qquad G_0=\sum_{t=0}^{T-1}\
 
 其中，$\theta$ 是策略参数，$p_\theta(\tau)$ 是由策略 $\pi_\theta$ 诱导出的轨迹分布，$G_0$ 是从初始时刻开始的折扣累计回报，$\gamma\in(0,1]$ 是折扣因子。
 
-## ⭐⭐⭐策略梯度定理：目标函数的导数等于logprob的`期望`$\frac{\partial J(\theta)}{\partial\theta}=\mathbb{E}_{\tau\sim p_\theta(\tau)}\left[\sum_{t=0}^{T}\frac{\partial\log\pi_\theta(\mathbf{a}_t|\mathbf{s}_t)}{\partial\theta}\gamma^t G_t\right]$
+## 策略梯度定理：目标函数的导数等于logprob的`期望`$\frac{\partial J(\theta)}{\partial\theta}=\mathbb{E}_{\tau\sim p_\theta(\tau)}\left[\sum_{t=0}^{T}\frac{\partial\log\pi_\theta(\mathbf{a}_t|\mathbf{s}_t)}{\partial\theta}\gamma^t G_t\right]$
 
 策略梯度定理的核心是把梯度导数改写成关于轨迹分布的期望形式，便于后续做采样估计。
 
@@ -1098,7 +1098,7 @@ $$\begin{align}
 其中，A2C 用 TD 误差近似优势，能够继续用于 PPO 等后续方法。
 
 ## 信赖域优化：近似On-policy
-### ⭐动机：样本利用差；重复利用样本时由于新旧模型差异，原来的优势估计失效
+### 动机：样本利用差；重复利用样本时由于新旧模型差异，原来的优势估计失效
 
 原笔记指出，普通策略梯度还存在更新幅度和样本利用率方面的问题。
 
@@ -1106,7 +1106,7 @@ $$\begin{align}
 - 当前样本的更新时效较短，常常“即用即弃”。
 - 缺少显式约束。
 
-### ⭐重要性采样：如何利用旧策略采样得到的数据
+### 重要性采样：如何利用旧策略采样得到的数据
 
 为复用旧样本，可以把新策略下的期望转成旧策略分布下的期望。
 
@@ -1151,7 +1151,7 @@ $$\begin{align}
 >
 > **旧轨迹可以复用，方向也与原始策略梯度保持接近。**
 
-## ⭐PPO：经过裁剪约束信赖域，确保使用旧数据更新当前模型时，方向仍然合适
+## PPO：经过裁剪约束信赖域，确保使用旧数据更新当前模型时，方向仍然合适
 
 PPO 先从重要性采样的代理目标出发，再加上裁剪约束近似信赖域。
 
