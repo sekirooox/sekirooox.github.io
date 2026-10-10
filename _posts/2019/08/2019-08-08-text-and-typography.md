@@ -142,10 +142,10 @@ fi;
 数学公式由 [**MathJax**](https://www.mathjax.org/) 提供支持：
 
 $$
-\begin{equation}
-  \sum_{n=1}^\infty 1/n^2 = \frac{\pi^2}{6}
+\begin{align}
+  \sum_{n=1}^\infty \frac{1}{n^2} &= \frac{\pi^2}{6}
   \label{eq:series}
-\end{equation}
+\end{align}
 $$
 
 可以通过 \eqref{eq:series} 引用该公式。
@@ -153,7 +153,9 @@ $$
 当 $$a \ne 0$$ 时，方程 $$ax^2 + bx + c = 0$$ 有两个解，分别为
 
 $$
-x = {-b \pm \sqrt{b^2-4ac} \over 2a}
+\begin{align}
+x &= \frac{-b \pm \sqrt{b^2-4ac}}{2a}
+\end{align}
 $$
 
 ## Mermaid SVG 图表

@@ -21,14 +21,22 @@ description: "本文围绕“机器学习·L3W2-协同过滤”整理基本原�
 ## 计算公式
 
 $$
-J({\mathbf{x}^{(0)},...,\mathbf{x}^{(n_m-1)},\mathbf{w}^{(0)},b^{(0)},...,\mathbf{w}^{(n_u-1)},b^{(n_u-1)}})= \left[ \frac{1}{2}\sum_{(i,j):r(i,j)=1}(\mathbf{w}^{(j)} \cdot \mathbf{x}^{(i)} + b^{(j)} - y^{(i,j)})^2 \right]+ \underbrace{\left[\frac{\lambda}{2}\sum_{j=0}^{n_u-1}\sum_{k=0}^{n-1}(\mathbf{w}^{(j)}_k)^2+ \frac{\lambda}{2}\sum_{i=0}^{n_m-1}\sum_{k=0}^{n-1}(\mathbf{x}_k^{(i)})^2\right]}_{regularization}
+\begin{align}
+J(&\mathbf{x}^{(0)},\ldots,\mathbf{x}^{(n_m-1)},\mathbf{w}^{(0)},b^{(0)},\ldots,\mathbf{w}^{(n_u-1)},b^{(n_u-1)}) \notag\\
+&= \frac{1}{2}\sum_{(i,j):r(i,j)=1}\left(\mathbf{w}^{(j)} \cdot \mathbf{x}^{(i)} + b^{(j)} - y^{(i,j)}\right)^2 \notag\\
+&\quad + \underbrace{\frac{\lambda}{2}\sum_{j=0}^{n_u-1}\sum_{k=0}^{n-1}(\mathbf{w}^{(j)}_k)^2
++ \frac{\lambda}{2}\sum_{i=0}^{n_m-1}\sum_{k=0}^{n-1}(\mathbf{x}_k^{(i)})^2}_{\text{regularization}}
+\end{align}
 $$
 
 The first summation in (1) is "for all $$i$$, $$j$$ where $$r(i,j)$$ equals $$1$$" and could be written:
 
 $$
-= \left[ \frac{1}{2}\sum_{j=0}^{n_u-1} \sum_{i=0}^{n_m-1}r(i,j)*(\mathbf{w}^{(j)} \cdot \mathbf{x}^{(i)} + b^{(j)} - y^{(i,j)})^2 \right]
-+\text{regularization}
+\begin{align}
+J &= \frac{1}{2}\sum_{j=0}^{n_u-1}\sum_{i=0}^{n_m-1}r(i,j)
+\left(\mathbf{w}^{(j)} \cdot \mathbf{x}^{(i)} + b^{(j)} - y^{(i,j)}\right)^2 \notag\\
+&\quad + \text{regularization}
+\end{align}
 $$
 
 ## 代码

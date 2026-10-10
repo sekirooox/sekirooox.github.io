@@ -13,13 +13,17 @@ description: "本文围绕“计算机基础·cs336·损失函数,优化器,调�
 # Entropy:
 
 $$
+\begin{align}
 H(x)=x\cdot logx
+\end{align}
 $$
 
 ## BCE:二分类损失
 
 $$
+\begin{align}
 L=- y\cdot logy_{pred}+(1-y) \cdot log(1-y_{pred})
+\end{align}
 $$
 
 + 一句话概括:**y为正,看预测正类的概率;y为负类,预测负类的概率**
@@ -39,22 +43,22 @@ $$
 + 经过(2)的等价操作，我们只需要计算(3)中的**log-sum-exp项**，然后减去**标签维度的输出**(注意这里不是概率)即可。
 
 $$
-\begin{aligned}
+\begin{align}
   &\ell=-\log\left(\mathrm{Softmax}(o)_y\right)=-\log\left(\frac{\exp(o_y)}{\sum_j\exp(o_j)}\right)\\
  & \ell=-\left(\log(\exp(o_{y}))-\log\sum_{j}\exp(o_{j})\right) \\
  & \ell=\underbrace{\log\left(\sum_{j}\exp(o_{j})\right)}_{\text{LogSumExp 项}}-o_{y}
-\end{aligned}
+\end{align}
 $$
 
 + 但是直接计算log-sum-exp项的数值不稳定，例如某些输出可能很大>89，造成inf移除，有的情况下，输出都很小，导致分母接近于0。
 + 我们对每一个输出的结果减去最大值\$$m$$得到稳定计算log-sum-exp项的公式：
 
 $$
-\begin{aligned}\begin{gathered}
+\begin{align}\begin{gathered}
 &\mathrm{LogSumExp}(o)=\log\left(\sum\exp(o_{j}-M+M)\right) \\
 &\mathrm{LogSumExp}(o)=\log\left(\exp(M)\cdot\sum\exp(o_{j}-M)\right) \\
 &\mathrm{LogSumExp}(o)=M+\log\sum\exp(o_{j}-M)
-\end{gathered}\end{aligned}
+\end{gathered}\end{align}
 $$
 
 ```python
@@ -76,11 +80,11 @@ def cross_entropy_loss(logits,targets):
 + 结果等价，但是数值更加稳定。
 
 $$
-\begin{aligned}
+\begin{align}
 Softmax&=\frac{e^z}{\sum_ie^i}\\
 &=\frac{e^{z-m}}{\sum_ie^{i-m}}
 &=\frac{e^m}{e^m}\frac{e^{z-m}}{\sum_ie^{i-m}}
-\end{aligned}
+\end{align}
 $$
 
 ```python
@@ -97,16 +101,18 @@ def softmax(x,dim):
 + \$$v_t$$代表第t次优化的缩放系数，就是历史梯度的加权**二阶矩估计**。
 
 $$
-\begin{aligned}
+\begin{align}
 m_t&=\beta_1m_{t-1}+(1-\beta_1)g_t \\
 v_{t}&=\beta_{2}v_{t-1}+(1-\beta_{2})g_{t}^{2}
-\end{aligned}
+\end{align}
 $$
 
 + 冷启动：当优化次数t区域无穷时，没有影响；当t较小时，原来的动力和缩放系数会被适当增大
 
 $$
+\begin{align}
 \hat{m}_t=\frac{m_t}{1-\beta_1^t},\quad\hat{v}_t=\frac{v_t}{1-\beta_2^t}
+\end{align}
 $$
 
 
@@ -115,8 +121,10 @@ $$
 + 参数更新公式：**先更新Adam，再更新权重衰减**
 
 $$
+\begin{align}
 \Delta\theta_t=\eta\frac{\hat{m}_t}{\sqrt{\hat{v}_t}+\epsilon}\\
 \theta_{t+1}=\theta_t-\Delta\theta_t-\underbrace{\eta\lambda\theta_t}_{\text{解耦的衰减项}}
+\end{align}
 $$
 
 ## Optimizer的原理
@@ -184,12 +192,14 @@ class AdamW(Optimizer):
 >
 
 $$
+\begin{align}
 \alpha(t)=
 \begin{cases}
 \alpha_{\max}\cdot\frac{t}{T_w}, & 0\leq t<T_w \\
 \alpha_{\min}+\frac{1}{2}\left(1+\cos\left(\pi\cdot\frac{t-T_w}{T_c-T_w}\right)\right)(\alpha_{\max}-\alpha_{\min}), & T_w\leq t\leq T_c \\
 \alpha_{\min}, & t>T_c & 
 \end{cases}
+\end{align}
 $$
 
 ## Warmup
@@ -228,7 +238,9 @@ def get_lr_cosine_schedule_with_warmup(
 + 对所有参数的梯度进行norm-2计算，然后进行裁剪
 
 $$
+\begin{align}
 g_{new}=g_{old}\times\frac{M}{\|g\|_2+\epsilon}
+\end{align}
 $$
 
 

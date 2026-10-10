@@ -56,7 +56,7 @@ NACLIP的高斯注意力虽然提高了空间局部性，但是却有个致命�
 
 ### 0. 摘要原文翻译
 
-[cite_start]尽管像CLIP这样的视觉-语言模型在开放词汇任务中取得了显著成功，但它们的应用目前仅限于图像级任务，并且在密集预测方面仍然存在困难。最近的工作通常将密集预测的这种不足归因于最终块中的自注意力层，并通过将原始的查询-键注意力修改为自相关注意力（例如，查询-查询和键-键注意力）取得了令人称赞的结果。然而，这些方法忽略了捕获丰富空间对应关系的交叉相关注意力（查询-键）的特性。在本文中，我们揭示了CLIP非最终层中自注意力的交叉相关性也表现出定位特性。因此，我们提出了**残差交叉相关自注意力（Residual Cross-correlation Self-attention, RCS）**模块，它利用来自中间层的交叉相关自注意力来重塑最终块中的注意力。RCS模块有效地重组了空间信息，释放了CLIP中用于密集视觉-语言推理的定位潜力。此外，为了增强对相同类别区域和局部一致性的关注，我们提出了**语义反馈细化（Semantic Feedback Refinement, SFR）**模块，它利用语义分割图来进一步调整注意力分数。通过整合这两种策略，我们的方法——**ResCLIP**，可以很容易地作为即插即用模块集成到现有方法中，显著提升它们在密集视觉-语言推理中的性能。广泛的实验证明，我们的方法超越了最先进的免训练方法，验证了所提出方法的有效性。代码可在 $$\text{[https://github.com/yvhangyang/ResCLIP](https://github.com/yvhangyang/ResCLIP)}$$ 获取 [cite: 1-4, 10-19]。
+[cite_start]尽管像CLIP这样的视觉-语言模型在开放词汇任务中取得了显著成功，但它们的应用目前仅限于图像级任务，并且在密集预测方面仍然存在困难。最近的工作通常将密集预测的这种不足归因于最终块中的自注意力层，并通过将原始的查询-键注意力修改为自相关注意力（例如，查询-查询和键-键注意力）取得了令人称赞的结果。然而，这些方法忽略了捕获丰富空间对应关系的交叉相关注意力（查询-键）的特性。在本文中，我们揭示了CLIP非最终层中自注意力的交叉相关性也表现出定位特性。因此，我们提出了**残差交叉相关自注意力（Residual Cross-correlation Self-attention, RCS）**模块，它利用来自中间层的交叉相关自注意力来重塑最终块中的注意力。RCS模块有效地重组了空间信息，释放了CLIP中用于密集视觉-语言推理的定位潜力。此外，为了增强对相同类别区域和局部一致性的关注，我们提出了**语义反馈细化（Semantic Feedback Refinement, SFR）**模块，它利用语义分割图来进一步调整注意力分数。通过整合这两种策略，我们的方法——**ResCLIP**，可以很容易地作为即插即用模块集成到现有方法中，显著提升它们在密集视觉-语言推理中的性能。广泛的实验证明，我们的方法超越了最先进的免训练方法，验证了所提出方法的有效性。代码可在 [ResCLIP](https://github.com/yvhangyang/ResCLIP) 获取 [cite: 1-4, 10-19]。
 
 ---
 
@@ -97,13 +97,17 @@ NACLIP的高斯注意力虽然提高了空间局部性，但是却有个致命�
         * [cite_start]**中间层\$$C^2SA$$聚合：** 提取从起始层 \$$s$$ 到结束层 \$$e$$ 的 \$$N$$ 个中间层中的 \$$C^2SA$$ 注意力图 \$$Attn^i(S_{qk})$$，并进行**平均聚合**得到 \$$\mathcal{A}_c$$ [cite: 205-207, 209]。
 
         $$
+        \begin{align}
         \mathcal{A}_c = \frac{1}{N} \sum_{i=s}^e \mathcal{A}_{qk}^i
+        \end{align}
         $$
 
         * [cite_start]**残差融合：** 将聚合的交叉相关注意力 \$$\mathcal{A}_c$$ 与现有方法（如NACLIP）使用的最后一层自相关注意力 \$$\mathcal{A}_s$$ 进行**残差连接（Fusion）**，得到RCS注意力 \$$\mathcal{A}_{Res}$$ [cite: 110, 199, 217, 256, 259]。
 
         $$
+        \begin{align}
         \mathcal{A}_{Res} = (1 - \lambda_{res}) \mathcal{A}_s + \lambda_{res} \mathcal{A}_c
+        \end{align}
         $$
 
     * **输出：** 融合了空间对应信息的RCS注意力权重 \$$\mathcal{A}_{Res}$$。
@@ -117,13 +121,17 @@ NACLIP的高斯注意力虽然提高了空间局部性，但是却有个致命�
         * [cite_start]**注意力细化：** 将语义掩码 \$$S^i$$ 与衰减函数 \$$h(V, D)$$ **逐元素相乘**（\$$\odot$$），然后通过**高斯核** \$$\phi$$ 平滑，得到细化后的注意力分数 \$$\hat{S}$$ [cite: 292-294]。
 
         $$
+        \begin{align}
         \hat{S}^i = \phi(S^i \odot h(V, D))
+        \end{align}
         $$
 
         * [cite_start]**最终分数融合：** 将细化后的 \$$\hat{S}$$ 与 SCSA 分数 \$$S_s$$ 按权重 \$$\lambda_{sfr}$$ 融合，得到语义细化分数 \$$S_r$$，再经过 \$$\text{softmax}$$ 得到 \$$\mathcal{A}_{sfr}$$ [cite: 297, 298, 301]。
 
         $$
+        \begin{align}
         S_r = (1-\lambda_{sfr}) \cdot S_s + \lambda_{sfr} \cdot \hat{S}
+        \end{align}
         $$
 
     * **输出：** 增强了类内一致性和局部性的 \$$\mathcal{A}_{sfr}$$。
@@ -132,7 +140,9 @@ NACLIP的高斯注意力虽然提高了空间局部性，但是却有个致命�
     * [cite_start]**处理：** 将 \$$\mathcal{A}_{c}$$ 和 \$$\mathcal{A}_{sfr}$$ 再次进行残差连接，得到最终的 ResCLIP 注意力 \$$\mathcal{A}_{ResCLIP}$$ [cite: 300, 301]。
 
     $$
+    \begin{align}
     \mathcal{A}_{ResCLIP} = (1 - \lambda_{res}) \mathcal{A}_{sfr} + \lambda_{res} \mathcal{A}_c
+    \end{align}
     $$
 
     * [cite_start]**输出：** 使用 \$$\mathcal{A}_{ResCLIP}$$ 替换CLIP最后一层的注意力机制，生成最终的密集预测（Final Predictions）[cite: 215, 255]。
@@ -155,7 +165,9 @@ NACLIP的高斯注意力虽然提高了空间局部性，但是却有个致命�
 1.  **交叉相关自注意力 \$$\mathcal{A}_c$$ 的聚合（公式 5）：**
 
     $$
+    \begin{align}
     \mathcal{A}_c = \frac{1}{N} \sum_{i=s}^e \mathcal{A}_{qk}^i
+    \end{align}
     $$
 
     * **意义：** 这是从CLIP的 \$$s$$ 层到 \$$e$$ 层所有**标准**（Query-Key）自注意力图的**平均值**。
@@ -164,7 +176,9 @@ NACLIP的高斯注意力虽然提高了空间局部性，但是却有个致命�
 2.  **RCS 残差融合（公式 6）：**
 
     $$
+    \begin{align}
     \mathcal{A}_{Res} = (1 - \lambda_{res}) \mathcal{A}_s + \lambda_{res} \mathcal{A}_c
+    \end{align}
     $$
 
     * **意义：** 将现有SCSA方法（如NACLIP）的注意力 \$$\mathcal{A}_s$$（侧重局部和自相似）与中间层定位注意力 \$$\mathcal{A}_c$$（侧重空间对应）进行**加权求和**。
@@ -173,7 +187,9 @@ NACLIP的高斯注意力虽然提高了空间局部性，但是却有个致命�
 3.  **SFR 局部一致性衰减函数 \$$h(V, D)$$（公式 8）：**
 
     $$
+    \begin{align}
     h(V, D) = V + (1-V) \cdot D
+    \end{align}
     $$
 
     * [cite_start]**意义：** 这是用于调整注意力分数，以**增强同语义区域**和**局部邻近性**的复合函数 [cite: 279, 280]。
@@ -266,7 +282,7 @@ NACLIP的高斯注意力虽然提高了空间局部性，但是却有个致命�
 
 #### a) 论文是否开源？如果我想实现/复现这个方法，关键步骤是什么？
 
-* [cite_start]**开源情况：** 论文明确指出代码是**开源**的：\$$\text{[https://github.com/yvhangyang/ResCLIP](https://github.com/yvhangyang/ResCLIP)}$$ [cite: 19]。
+* [cite_start]**开源情况：** 论文明确指出代码是**开源**的：[ResCLIP](https://github.com/yvhangyang/ResCLIP) [cite: 19]。
 * **复现关键步骤：**
     1.  [cite_start]**中间层 \$$C^2SA$$ 提取与聚合：** 确定CLIP视觉编码器中的中间层（如 \$$4 \rightarrow 7$$ 或 \$$6 \rightarrow 9$$ 层效果较好），并实现对这些层标准 Query-Key 自注意力图的提取和平均操作（公式 5）[cite: 206, 390]。
     2.  [cite_start]**RCS 残差连接：** 实现 \$$\mathcal{A}_c$$ 与现有SCSA注意力 \$$\mathcal{A}_s$$ 的加权融合（公式 6）[cite: 256]。

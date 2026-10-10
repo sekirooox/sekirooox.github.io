@@ -14,7 +14,9 @@ description: "本文整理“图论·单源最短路径·Bellman_ford +…”的
 # Bellman_ford算法
 
 $$
+\begin{align}
 O(nm)
+\end{align}
 $$
 
 + ### 单源最短路径
@@ -94,7 +96,9 @@ for (auto item : edges) {
 # 优化版SPFA
 
 $$
-O(KM)-O(NM)
+\begin{align}
+O(KM) - O(NM)
+\end{align}
 $$
 
 ## 改进思路

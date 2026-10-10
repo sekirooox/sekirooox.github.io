@@ -33,7 +33,7 @@ description: "本文整理“计算机视觉·ZegFormer”涉及的模型原理�
 # 方法
 ## 块嵌入
 + 作者借助了**MaskFormer**的经典思想，引入N个可以学习的块嵌入，用于**编码图像中的嵌入**，\$$G\in R^{ N \times D}$$
-+ 借助一个视觉模型如ResNet+像素级解码器得到特征图\$$F (I) ∈ R^{D×H×W}$$，**这个特征图大小与原始图像一致**。
++ 借助一个视觉模型如ResNet+像素级解码器得到特征图\$$F(I) \in \mathbb{R}^{D\times H\times W}$$，**这个特征图大小与原始图像一致**。
 
 + 将块嵌入和特征图送入一个解码器得到**学习后的块嵌入**\$$G\in R^{ N \times D}$$，这个块嵌入可以直接用于CLIP的分类。
 
@@ -61,4 +61,3 @@ description: "本文整理“计算机视觉·ZegFormer”涉及的模型原理�
 + 未完待续
 推理阶段就是结合两个概率分布，乘以得到掩码，进行求和。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/70dbbb800de84f2784ae65b5224ce662.png){: referrerpolicy="no-referrer" }
-

@@ -15,7 +15,9 @@ mermaid: true
 平方和展开：
 
 $$
+\begin{align}
 (a+b)^2 = a^2 + 2ab + b^2
+\end{align}
 $$
 
 公式用于解释推导过程。没有数学内容的文章可以省略 `math`。

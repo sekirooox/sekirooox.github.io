@@ -16,8 +16,10 @@ description: "本文整理“深度学习·基础知识”涉及的模型原理�
 + 衡量**两个概率分布的距离或者差别**，类似**KL散度**
 
 $$
+\begin{align}
 \mathcal{L}(y,\hat{y})=-\frac{1}{N}\sum_{i=1}^Ny_i log(\hat{y}_i)
 
+\end{align}
 $$
 
 # 二元交叉熵BCE
@@ -28,8 +30,10 @@ $$
 + 真实标签的**概率分布：**\$$y$$，预测标签的**概率分布**：\$$\hat{y}$$,\$$N$$表示**样本数**，且\$$y_i\in\{0,1\}$$
 
 $$
+\begin{align}
 \mathcal{L}(y,\hat{y})=-\frac{1}{N}\sum_{i=1}^Ny_i log(\hat{y}_i)+(1-y_i)log(1-\hat{y}_i)
 
+\end{align}
 $$
 
 # Focal loss
@@ -53,8 +57,10 @@ $$
 标准公式：
 
 $$
+\begin{align}
 \mathcal{L}_{dice}=1-\frac{2|X\cap Y|}{|X|+|Y|}
 
+\end{align}
 $$
 
 很明显如果完全重合损失为0，所以这个loss适用于**直接优化IOU指标**

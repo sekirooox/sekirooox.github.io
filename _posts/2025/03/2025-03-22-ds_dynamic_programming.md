@@ -162,10 +162,12 @@ void solve() {
 + 状态转移函数：`dp[i][j]=max(dp[i-1][j],dp[i][j-w[i]])`，注意`dp[i][j-w[i]]`由以下公式推导得到，这也就是了为什么1D-dp**应该从小到大遍历**。
 
 $$
+\begin{align}
 dp[i][j]=max(dp[i-1][j-0\times w[i]]+0\times v[i],...,dp[i-1][j-k\times w[i]]+k\times v[i],...)\\
 dp[i][j-w[i]]=max(dp[i-1][j-1\times w[i]]+1\times v[i],...,dp[i-1][j-k\times w[i]]+k\times v[i],...)\\
 dp[i][j]=max(dp[i-1][j],dp[i][j-w[i]])
 
+\end{align}
 $$
 
 ## 多重背包问题：$$O(nmk)$$，$$O(n)-O(nm)$$
@@ -207,7 +209,7 @@ void solve() {
 ---
 
 # 状态机DP
-## DP数组的定义：解决问题<span class="text-danger">依赖</span>哪些有限状态，状态定义上一般是互斥的
+## DP数组的定义：解决问题<span style="color:red">依赖</span>哪些有限状态，状态定义上一般是互斥的
 
 ## 买卖股票问题
 
@@ -337,7 +339,7 @@ void solve() {
 ```
 
 # 多维度动态规划问题
-## 公共子序列问题：$$O(nm)，O(nm)$$
+## 公共子序列问题：$$ O(nm), O(nm) $$
 ## DP数组的定义：考虑目标`A[0,i]`和`B[0,j]`之间的属性
 + dp数组：`dp[i][j]`，考虑`[0，i]`和`[0，j]`的子串属性。
 + 子集划分依据：可以不包含i，不包含j，也可以不包含i和j(被前者囊括进去)，同时包含i和j。
@@ -648,7 +650,7 @@ void solve() {
 ## 做法1：后序遍历的形式转译为DP问题
 ### 例题
 + [树的重心](https://pgcode.cn/problem/2705)：树上差分+注意区分子节点和父节点的路径
-## 做法2：转换为一般数组问题，但是要记录<span class="text-danger">父亲节点</span>
+## 做法2：转换为一般数组问题，但是要记录<span style="color:red">父亲节点</span>
 ### 例题
 + [285. 没有上司的舞会](https://www.acwing.com/problem/content/description/287/)
 
@@ -663,4 +665,3 @@ void solve() {
 ### 多维(3D及以上)背包问题
 
 + [474. 一和零](https://leetcode.cn/problems/ones-and-zeroes/description/)
-

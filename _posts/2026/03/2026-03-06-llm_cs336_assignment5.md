@@ -1592,8 +1592,8 @@ def grpo_microbatch_train_step(
 ## Off-policy的train_step函数
 + `rollout_size`：总共包含多个采样样本(包括重复的prompt)
 + `micro_batch_size`：**实际训练时的batch_size**，控制显存占用
-+ 首先是**离线采样**：采用vllm采样多个回答，**要求这些回答的相对优势不能都为0**。采样到指定数量后，分 `micro_batch_size` <span class="text-danger">计算相对优势和对数概率</span> `old_log_prob`（不需要梯度）。
-+ 然后分每个 `micro_bacth_size` <span class="text-danger">计算</span> `log_prob`，然后调用`grpo_microbatch_train_step`进行梯度累积。**每累积到一定次数的梯度时，进行梯度更新**。
++ 首先是**离线采样**：采用vllm采样多个回答，**要求这些回答的相对优势不能都为0**。采样到指定数量后，分 `micro_batch_size` <span style="color:red">计算相对优势和对数概率</span> `old_log_prob`（不需要梯度）。
++ 然后分每个 `micro_bacth_size` <span style="color:red">计算</span> `log_prob`，然后调用`grpo_microbatch_train_step`进行梯度累积。**每累积到一定次数的梯度时，进行梯度更新**。
 + 在线更新：遍历两边我们的离线采样样本，**然后在线更新策略模型**。很显然，我们的样本是VLLM中的示例采样得到的，但是**我们的策略模型一直在利用该样本进行更新**，因此我们的策略是**Off-policy的**。
 
 ```cpp
@@ -1732,5 +1732,4 @@ def train_step(self,global_it:int)->dict[str:float,str:float]:
         }
 
 ```
-
 

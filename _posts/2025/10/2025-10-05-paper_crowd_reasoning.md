@@ -5,6 +5,7 @@ date: 2025-10-05
 categories: ["论文阅读与科研", "大模型评测"]
 tags: ["大模型评测", "llm", "llm-as-a-judge", "论文阅读"]
 render_with_liquid: false
+math: true
 description: "本文记录“论文精读·Crowd Comparative…”的研究问题、主要方法与实验结论，便于理解论文并开展后续研究。"
 ---
 
@@ -36,7 +37,7 @@ description: "本文记录“论文精读·Crowd Comparative…”的研究问�
 
 1. **生成群众响应（Crowd Response Generation）**
 
-   * 给定任务指令 (x)，利用多个LLM（如Qwen、Mistral等）和不同温度参数生成多样化的响应集合。
+   * 给定任务指令 \$$x$$，利用多个LLM（如Qwen、Mistral等）和不同温度参数生成多样化的响应集合。
    * 这些“crowd responses”作为评估锚点，用以揭示候选响应（A/B）中更多隐含细节。
 
 2. **生成群众判断（Crowd Judgment Generation）**
@@ -96,6 +97,4 @@ CCE技术还扩展到蒸馏和微调两个场景：
    * 蒸馏实验显示：CCE生成的CoT使小型Judge模型（如Qwen2.5-7B）精度提升约 **4.5–5.6%**。
    * crowd rejection sampling 能有效提升SFT训练效率与结果质量。
    * 分析表明CCE在推理计算扩展时性能随之提升，具备良好的**scaling特性**。
-
-
 

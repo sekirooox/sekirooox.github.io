@@ -19,7 +19,7 @@ description: "本文整理“CorrCLIP”涉及的模型原理、关键方法与�
 ## 验证实验
 只保留 类内 / 物体内部 的 patch 相关性，分割性能显著提升；
 逐渐加入类间相关性，性能持续下降，哪怕是“最相似的类间 patch 互动”也会伤害分割。
-图2 (a)中，作者往相似度矩阵(**来自DINO的特征**)逐步增加了类间相关性。具体来说，完美的注意力矩阵，类间patch之间不会有任何互动，作者对分别加入**与某一个patch最高和最低相似度的另外一个patch**
+图2(a)中，作者往相似度矩阵(**来自DINO的特征**)逐步增加了类间相关性。具体来说，完美的注意力矩阵，类间patch之间不会有任何互动，作者对分别加入**与某一个patch最高和最低相似度的另外一个patch**
 (例如对于狗的patch，加入猫的patch，加入公路的patch，一个高相似度，一个低相似度。)以实现增加类间相关性。
 作者得出结论，**即使是高相似度的类间patch，例如狗和猫的patch相似度较高，这种类间相关性仍然会大幅度影响分割性能**。
 
@@ -192,45 +192,64 @@ MCT的数量和融合后的掩码数量一致，经过ViT编码后，将与自�
 
    * 输入图像被切成 N 个 patch，经线性层变成 token：
 
-     * 记为 (X_C \in \mathbb{R}^{N \times d})（d 是通道维）。
+     * 记为 \$$ X_C \in \mathbb{R}^{N \times d} $$（d 是通道维）。
    * 加上位置编码，送入 CLIP 的 ViT 视觉编码器。
 
 2. **最后一层 self-attention**
 
    * 在最后一层，把 token 映射成 Q、K、V：
 
-     * (Q_C, K_C, V_C \in \mathbb{R}^{N \times d})。
+     * \$$ Q_C, K_C, V_C \in \mathbb{R}^{N \times d} $$。
    * ClearCLIP 的做法：用 **Q·Qᵀ** 来构造相似度矩阵 S：
-     [
+
+     $$
+     \begin{align}
      S = Q_C Q_C^\top \in \mathbb{R}^{N \times N}
-     ]
+     \end{align}
+     $$
+
    * 这是 patch 与 patch 之间的相关性。
 
 3. **注意力 & 图像特征**
 
    * 注意力图：
-     [
+
+     $$
+     \begin{align}
      \text{Attn}=\text{Softmax}(S/\sqrt{d})
-     ]
+     \end{align}
+     $$
+
    * 用注意力加权 V 得到聚合后的图像 patch 特征：
-     [
+
+     $$
+     \begin{align}
      F_\text{img} = \text{Proj}(\text{Attn}, V_C)
-     ]
+     \end{align}
+     $$
+
    * 此处 ClearCLIP 会把最后一层的 FFN、残差都去掉，只保留这一步。
 
 4. **文本侧：类别描述 → 文本 embedding**
 
    * K 个类别名称 + ImageNet prompt 模板，输入 CLIP 文本编码器，得到：
-     [
+
+     $$
+     \begin{align}
      F_\text{text} \in \mathbb{R}^{K \times d}
-     ]
+     \end{align}
+     $$
 
 5. **分类：patch 特征 × 文本向量**
 
-   * 把 (F_\text{img}) 投影到与文本相同空间，然后做点积，取 argmax：
-     [
+   * 把 \$$ F_\text{img} $$ 投影到与文本相同空间，然后做点积，取 argmax：
+
+     $$
+     \begin{align}
      \text{pred} = \arg\max_K\big(\text{Proj}(F_\text{img}) F_\text{text}^\top\big)
-     ]
+     \end{align}
+     $$
+
    * 得到每个 patch 的类别预测，reshape 为分割图。
 
 > CorrCLIP 就是在“如何构造 S 和 Attn、如何得到更好的 F_img 和 pred”这几步上，插入 4 个模块。
@@ -253,56 +272,74 @@ MCT的数量和融合后的掩码数量一致，经过ViT编码后，将与自�
 2. 下采样掩码到与 CLIP 最后一层 feature map 同大小（N 个 patch）：
 
    * 得到 Z 个**互不重叠**的区域掩码：
-     [
-     M={m_1,\dots,m_Z},\quad m_i \in {0,1}^{N}
-     ]
-   * 未被任何 SAM 掩码覆盖的 patch 合并成一个“背景区域” (m_0)。
+
+     $$
+     \begin{align}
+     M=\{m_1,\dots,m_Z\},\quad m_i \in \{0,1\}^{N}
+     \end{align}
+     $$
+
+   * 未被任何 SAM 掩码覆盖的 patch 合并成一个“背景区域” \$$ m_0 $$。
 
 #### 2.2.2 区域特征 & 掩码聚类（mask merging）
 
-1. 先从某个“语义更连贯”的特征序列 (F_S) 上做 mask average pooling：
+1. 先从某个“语义更连贯”的特征序列 \$$ F_S $$ 上做 mask average pooling：
 
-   * (f_i = \text{Mean}(m_i \odot F_S))，得到每个区域的特征 (f_i \in \mathbb{R}^d)。
-2. 对 ({f_i}) 用 DBSCAN 聚类（eps=0.2，min_samples=1），把语义相似的区域合并：
+   * \$$ f_i = \text{Mean}(m_i \odot F_S) $$，得到每个区域的特征 \$$ f_i \in \mathbb{R}^d $$。
+2. 对 \$$ {f_i} $$ 用 DBSCAN 聚类（eps=0.2，min_samples=1），把语义相似的区域合并：
 
-   * 得到合并后的区域掩码集合 (\hat{M}={\hat{m}_1,\dots,\hat{m}_z})。
+   * 得到合并后的区域掩码集合 \$$ \hat{M}={\hat{m}_1,\dots,\hat{m}_z} $$。
 
 > 注意：合并之后的掩码里可能包含多个类别的像素，但它们在特征空间应该“很像”，类间相关的负面影响较小。消除更多噪声和伪分割区域带来的收益更大。实验表明“开聚类”比“不聚类”在所有数据集上都有提升。
 
 #### 2.2.3 构造交互矩阵 E：定义“允许交互的 patch 对”
 
-现在，我们用 (\hat{M}) 来定义一个二值矩阵 (E \in {0,1}^{N\times N})：
+现在，我们用 $$ \hat{M} $$ 来定义一个二值矩阵 $$ E \in \{0,1\}^{N\times N} $$：
 
-1. 对每个合并区域 (\hat{m}_i)：
+1. 对每个合并区域 \$$ \hat{m}_i $$：
 
-   * 外积 (\hat{m}_i \otimes \hat{m}_i) 生成一个区域内部的“完全连通图”：
+   * 外积 \$$ \hat{m}_i \otimes \hat{m}_i $$ 生成一个区域内部的“完全连通图”：
 
      * 行列为 1 的位置表示“这两个 patch 在同一 region，可以互相注意”。
    * 把这些区域的外积累加起来：
-     [
-     \sum_{i=1}^{z} \hat{m}_i \otimes \hat{m}_i
-     ]
 
-2. 对未分割区域 (m_0)：
+     $$
+     \begin{align}
+     \sum_{i=1}^{z} \hat{m}_i \otimes \hat{m}_i
+     \end{align}
+     $$
+
+2. 对未分割区域 \$$ m_0 $$：
 
    * 不能简单地让所有背景 patch 互相连通，否则类间相关会太多。
    * 作者做法：
-     [
+
+     $$
+     \begin{align}
      (m_0 \otimes m_0) \odot (S > \text{Mean}(S))
-     ]
+     \end{align}
+     $$
+
      只允许**相似度高于全局平均值**的 pairs 在背景内部交互。
 
 3. 最终交互矩阵：
-   [
+
+   $$
+   \begin{align}
    E = \sum_{i=1}^{z} \hat{m}_i \otimes \hat{m}_i + (m_0 \otimes m_0) \odot (S > \text{Mean}(S))
-   ]
+   \end{align}
+   $$
 
 #### 2.2.4 用 Masked Softmax 限制注意力范围
 
 * 把 E 当作 attention mask，只对 E=1 的位置做 softmax：
-  [
+
+  $$
+  \begin{align}
   \text{Attn} = \text{MaskedSoftmax}\big(S/\sqrt{d}, E\big)
-  ]
+  \end{align}
+  $$
+
 * 直观理解：
 
   * 每个 patch 只能在**同一 SAM 区域内**（或背景里极少数高相似 patch）聚合信息；
@@ -322,17 +359,23 @@ SAM 区域可能依然包含多个类别，即使我们把交互限制在区域�
 
 1. 在 DINO 的 ViT 上，得到 token 序列，在最后一层映射成：
 
-   * (Q_D, K_D, V_D \in \mathbb{R}^{N \times d})（长度和 patch 大小通过插值对齐 CLIP）。
+   * \$$ Q_D, K_D, V_D \in \mathbb{R}^{N \times d} $$（长度和 patch 大小通过插值对齐 CLIP）。
 
-2. 构造“语义特征” (F_S = Q_D + K_D)，然后用它做 cosine 相似：
-   [
+2. 构造“语义特征” \$$ F_S = Q_D + K_D $$，然后用它做 cosine 相似：
+
+   $$
+   \begin{align}
    S = \frac{F_S F_S^\top}{|F_S|^2}
-   ]
+   \end{align}
+   $$
 
 3. 与 SR 中的 E 结合，用温度系数 τ 调节“尖锐程度”：
-   [
-   \text{Attn} = \text{MaskedSoftmax}(S / \tau,, E), \quad \tau < 1
-   ]
+
+   $$
+   \begin{align}
+   \text{Attn} = \text{MaskedSoftmax}(S / \tau, E), \quad \tau < 1
+   \end{align}
+   $$
 
    * τ=0.25，使得“高相似 patch 的权重更大，低相似更小”。
 
@@ -354,18 +397,21 @@ SAM 区域可能依然包含多个类别，即使我们把交互限制在区域�
 * patch 的**区域级语义**（每个掩码的全局语义）。
 
 CorrCLIP 定义当前 F_img 的“主干分支”为：
-[
+
+$$
+\begin{align}
 F_\text{main} = \text{Proj}(\text{Attn} V_C)
-]
+\end{align}
+$$
 
 然后加两个分支：
 
 #### 2.4.1 空间分支（Spatial branch）
 
-* 利用 CLIP **较低层**的 patch 特征 (V'_C)：
+* 利用 CLIP **较低层**的 patch 特征 \$$ V'_C $$：
 
   * 低层特征含有更细致的纹理和位置信息。
-* 先用最后一层的 value-projection 把 (V'_C) 映射到同一空间，再用同一 Attn 聚合：
+* 先用最后一层的 value-projection 把 \$$ V'_C $$ 映射到同一空间，再用同一 Attn 聚合：
 
   * 得到增强空间维度的特征分支。
 
@@ -390,9 +436,13 @@ F_\text{main} = \text{Proj}(\text{Attn} V_C)
      * 相当于每个 patch 获得一个“区域全局语义总结”。
 
 记这 z 个 mask class token 的输出为 MCT，最后整体 F_img 变为：
-[
+
+$$
+\begin{align}
 F_\text{img} = \text{Proj}(\text{Attn} V_C) + \alpha \cdot \text{Proj}(\text{Attn} V'_C) + \beta \cdot \text{MCT}
-]
+\end{align}
+$$
+
 其中 α=1, β=0.5。
 
 > Ablation 里可以看到：单独用空间分支或语义分支，在一些数据集（尤其 City & Object）上会有轻微负增益，但两个一起用时，在所有数据集上都是正增益，说明“空间+语义”是互补的。
@@ -410,10 +460,13 @@ F_\text{img} = \text{Proj}(\text{Attn} V_C) + \alpha \cdot \text{Proj}(\text{Att
 
 **做法：**
 
-* 利用前面得到的区域掩码（(\hat{m}_i)，i>0），对初始预测 pred 做后处理：
-  [
+* 利用前面得到的区域掩码（\$$ \hat{m}_i $$，i>0），对初始预测 pred 做后处理：
+
+  $$
+  \begin{align}
   \text{pred}[\hat{m}_i] = \text{Mode}(\text{pred}[\hat{m}_i])\quad (i>0)
-  ]
+  \end{align}
+  $$
 
   * 即：每个区域内取“出现最多的类别”，把整个区域统一成这个类别。
 
@@ -644,12 +697,12 @@ F_\text{img} = \text{Proj}(\text{Attn} V_C) + \alpha \cdot \text{Proj}(\text{Att
    * 调 SAM 的 inference，设置 threshold=0.7，得到一系列掩码；
    * 下采样到 patch 分辨率，构造 m_i 与 m_0；
    * 用 DINO 的某层特征做 mask average pooling 得到 f_i；
-   * 用 DBSCAN 聚类 f_i，得到合并掩码 (\hat{m}_i)。
+   * 用 DBSCAN 聚类 f_i，得到合并掩码 \$$ \hat{m}_i $$。
 
 3. **构造交互矩阵 E**
 
-   * 对每个 (\hat{m}_i) 做外积并累加；
-   * 对 m_0 做外积乘 (S>mean(S))；
+   * 对每个 \$$ \hat{m}_i $$ 做外积并累加；
+   * 对 m_0 做外积乘 \$$ S>mean(S) $$；
    * 得到 E，并在注意力 softmax 中用作 mask。
 
 4. **相似度重构（Value Reconstruction）**
@@ -670,7 +723,7 @@ F_\text{img} = \text{Proj}(\text{Attn} V_C) + \alpha \cdot \text{Proj}(\text{Att
 
    * 用 CLIP 文本编码器算 F_text；
    * F_img 与 F_text 做点积分类，得到粗分割 map；
-   * 对每个 (\hat{m}_i) 做多数投票更新 pred。
+   * 对每个 \$$ \hat{m}_i $$ 做多数投票更新 pred。
 
 ---
 
@@ -756,4 +809,3 @@ F_\text{img} = \text{Proj}(\text{Attn} V_C) + \alpha \cdot \text{Proj}(\text{Att
 5. **最后，对每个区域内部进行多数投票，把整块区域统一成最可能的类别，修正空间上的小噪声。**
 
 如果你之后想把 CorrCLIP 融入你的一阶段 ZSSEG / ZEGCLIP 体系，我们也可以专门讨论“哪些模块可以裁剪、哪些可以和 proposal head 结合”。
-

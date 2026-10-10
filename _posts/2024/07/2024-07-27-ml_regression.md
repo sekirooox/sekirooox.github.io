@@ -14,25 +14,31 @@ description: "本文围绕“机器学习·回归”整理基本原理、处理�
 
 
 $$
-J(w,b)=\frac{1}{2m}\sum_{i=1}^{m}\left({f^{(i)}(w_1,w_2,\ldots,w_j,b)-y^{(i)}} \right)^2
+\begin{align}
+J(w,b) &= \frac{1}{2m}\sum_{i=1}^{m}\left(f^{(i)}(w_1,w_2,\ldots,w_j,b)-y^{(i)}\right)^2
+\end{align}
 $$
 
 ## 梯度下降方法
 
 $$
-w_i=w_i-\alpha\frac{1}{m}\sum_{i=1}^{m}({f^{(i)}(w_1,w_2,\ldots,w_j,b)-y^{(i)}})w_i
+\begin{align}
+w_i &= w_i-\alpha\frac{1}{m}\sum_{i=1}^{m}\left(f^{(i)}(w_1,w_2,\ldots,w_j,b)-y^{(i)}\right)w_i
+\end{align}
 $$
 
 $$
-b=b-\alpha\frac{1}{m}\sum_{i=1}^{m}({f^{(i)}(w_1,w_2,\ldots,w_j,b)-y^{(i)}})
+\begin{align}
+b &= b-\alpha\frac{1}{m}\sum_{i=1}^{m}\left(f^{(i)}(w_1,w_2,\ldots,w_j,b)-y^{(i)}\right)
+\end{align}
 $$
 
 $$
-\begin{aligned}
+\begin{align}
 i &= 1,2,\ldots,m &&\text{表示 m 组数据集}\\
 j &= 1,2,\ldots,p &&\text{表示 p 个 }w_i\\
 \alpha & &&\text{表示学习率，随着变量增多不宜过大}
-\end{aligned}
+\end{align}
 $$
 
 # 线性回归代码
@@ -159,13 +165,17 @@ def mutil_gradient_descent(X,Y,w0,b0,alpha,iteration,multi_cost,multi_gradient):
 ## 归一化
 
 $$
+\begin{align}
 \frac{x_i-\mu}{x_{max}-x_{min}}
+\end{align}
 $$
 
 ## z-score标准化
 
 $$
+\begin{align}
 \frac{x_i-\mu}{\sigma}
+\end{align}
 $$
 
 其中：$$\mu$$ 是均值，$$\sigma$$ 是方差
@@ -175,7 +185,9 @@ $$
 >输出为0-1之间的**概率函数**，具有良好性质
 
 $$
-f(x)=\frac{1}{1+e^{-x}}
+\begin{align}
+f(x) &= \frac{1}{1+e^{-x}}
+\end{align}
 $$
 
 ## 逻辑回归的损失函数
@@ -193,7 +205,9 @@ $$
 >正则化是对复杂的拟合函数进行惩罚的一种方式，正则项的公式如下：
 
 $$
+\begin{align}
 \frac{\lambda}{2m}\sum_{i=0}^{m-1}w_i^2
+\end{align}
 $$
 
 >注意**训练集、测试集、交叉验证集计算损失时不需要考虑正则项。**

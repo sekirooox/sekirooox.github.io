@@ -22,7 +22,9 @@ description: "本文整理“深度学习·生成式模型”涉及的模型原�
 + 同时约束潜在变量z的**分布尽量符合标准正态分布**(确保后续采样的时候，大多数点都是有意义的，可以还原出合理图像)
 
 $$
+\begin{align}
 p(z)=\mathcal{N}(0,I)
+\end{align}
 $$
 
 
@@ -71,7 +73,9 @@ $$
 + \$$\bar{\alpha}_t$$等价于从t=1开始，噪声扰动强度的**连乘**，其中**任意一步\$$\alpha_t$$都保证小于介于[0,1)之间**，当t区域无穷时，可以证明上述假设成立。
 
 $$
+\begin{align}
 x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1-\bar{\alpha}_t},\epsilon,\quad \epsilon \sim \mathcal{N}(0,I)
+\end{align}
 $$
 
 ## 降噪过程
@@ -81,11 +85,11 @@ $$
 + 因此**引入\$$x_0$$的信息来简化去噪过程**。
 
 $$
-\begin{aligned}
+\begin{align}
  & q(x_{t-1}\mid x_{t})=\frac{q(x_{t}\mid x_{t-1})q(x_{t-1})}{q(x_{t})} \\
  & q(x_{t-1}\mid x_{t},x_{0})=\frac{q(x_{t}\mid x_{t-1},x_{0})q(x_{t-1}\mid x_{0})}{q(x_{t}\mid x_{0})} \\
  & q(x_{t-1}\mid x_{t},x_{0})=\frac{q(x_{t}\mid x_{t-1})q(x_{t-1}\mid x_{0})}{q(x_{t}\mid x_{0})}
-\end{aligned}
+\end{align}
 $$
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/9ceffaf37b0a4042984f833a82a9a74c.png){: referrerpolicy="no-referrer" }
@@ -102,15 +106,19 @@ $$
 + 公式的含义：从前向加噪过程中学习NN的去噪方法，最小化两种方式的KL散度。
 
 $$
+\begin{align}
 L=\sum_{t=2}^{T}\mathbb{E}_{q(x_{t}\mid x_{0})}[D_{KL}(q(x_{t-1}\mid x_{t},x_{0})\mathbin{\|\!\|}p_{\theta}(x_{t-1}\mid x_{t}))]
+\end{align}
 $$
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b818bec8225f405397536cda1994188c.png){: referrerpolicy="no-referrer" }
 ### 去噪公式
 
 $$
+\begin{align}
 \mu=\frac{1}{\sqrt{\alpha_{t}}}\left(x_{t}-\frac{1-\alpha_{t}}{\sqrt{1-\overline{\alpha}_{t}}}\cdot\epsilon\right)
 \sigma^{2}=\frac{(1-\alpha_{t})(1-\overline{\alpha}_{t-1})}{1-\overline{\alpha}_{t}}
+\end{align}
 $$
 
 + 现在我们就是求解：\$$q(x_{t-1}\mid x_t,x_0)$$
@@ -119,7 +127,7 @@ $$
 
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/87e7033d799241fda19f7504f41ec3fb.png){: referrerpolicy="no-referrer" }
-+ 我们得到了网络需要预测的均值和方差。**发现\$$\alpha_t，x_t，\bar{\alpha_t}$$都是已知道的**，只有施加的正态分布不可知，**网络需要的学习参数就是这个未知的高斯正态分布噪声！**。
++ 我们得到了网络需要预测的均值和方差。**发现\$$\alpha_t, x_t, \bar{\alpha_t}$$都是已知道的**，只有施加的正态分布不可知，**网络需要的学习参数就是这个未知的高斯正态分布噪声！**。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/14f1b991ded543c5930e8c6785c20b81.png){: referrerpolicy="no-referrer" }
 
 

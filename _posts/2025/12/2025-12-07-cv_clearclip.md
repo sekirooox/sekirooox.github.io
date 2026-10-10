@@ -123,8 +123,10 @@ The aforementioned baseline in Eq. (4) often fails to achieve satisfactory resul
 先回顾标准 CLIP ViT block 的形式：输入 token 序列
 
 $$
+\begin{align}
 X = [x_{\text{cls}}, x_1, \dots, x_{hw}]^\top \in \mathbb{R}^{(1+hw)\times d},
 
+\end{align}
 $$
 
 其中 $$x_{\text{cls}}$$ 是全局 token，$$x_i$$ 是每个 patch 的视觉 token。最后一个 transformer block 计算：
@@ -132,32 +134,40 @@ $$
 1. 投影得到 \$$q,k,v$$：
 
    $$
+   \begin{align}
    q=\text{Proj}_q(\text{LN}(X)),\quad
    k=\text{Proj}_k(\text{LN}(X)),\quad
    v=\text{Proj}_v(\text{LN}(X))
 
+   \end{align}
    $$
 
 2. 计算 q-k attention：
 
    $$
+   \begin{align}
    \text{Attn}_{qk} = \text{softmax}\Big(\frac{qk^\top}{\sqrt{d_k}}\Big)
 
+   \end{align}
    $$
 
 3. 注意力输出并加残差：
 
    $$
+   \begin{align}
    X_{\text{attn}} = \text{Proj}(\text{Attn}_{qk}\cdot v),\quad
    X_{\text{sum}} = X_{\text{res}} + X_{\text{attn}} = X + X_{\text{attn}}
 
+   \end{align}
    $$
 
 4. 再过一层 FFN：
 
    $$
+   \begin{align}
    X_{\text{out}} = X_{\text{sum}} + \text{FFN}(\text{LN}(X_{\text{sum}}))
 
+   \end{align}
    $$
 
 **Dense 分割 baseline：**
@@ -165,46 +175,56 @@ $$
 * 丢掉 CLS，只保留 patch token：
 
   $$
+  \begin{align}
   X^{\text{visual}}_{\text{dense}} \in \mathbb{R}^{hw\times d}
 
+  \end{align}
   $$
 
 * 文本侧：对每个类别 \$$c$$，构造 prompt “a photo of a {label}”，用 CLIP 文本编码器得到
 
   $$
+  \begin{align}
   X^{\text{text}} \in \mathbb{R}^{C\times d}
 
+  \end{align}
   $$
 
 * 分割时，对每个位置 patch 向量与所有类别向量做余弦相似度并取 argmax：
 
   $$
+  \begin{align}
   \mathcal{M}(i) = \arg\max_c\ \text{cos}\big(X^{\text{visual}}_{\text{dense}}(i,:),\ X^{\text{text}}(c,:)\big)
 
+  \end{align}
   $$
 
-  最后 reshape 成 $$H\times W$$ 的语义 mask。
+  最后 reshape 成 $$ H\times W $$ 的语义 mask。
 
 **ClearCLIP 改动点（都在最后一个 block）**：
 
 1. **去掉残差连接：**
 
-   不再做 $$X_{\text{sum}} = X + X_{\text{attn}}$$，而是直接用 $$X_{\text{attn}}$$ 做输出。
+   不再做 $$ X_{\text{sum}} = X + X_{\text{attn}} $$，而是直接用 $$ X_{\text{attn}} $$ 做输出。
 
 2. **使用 self-self attention（默认 q-q）：**
 
-   把原来的 $$\text{Attn}_{qk}$$ 换成
+   把原来的 $$ \text{Attn}_{qk} $$ 换成
 
    $$
+   \begin{align}
    \text{Attn}_{qq} = \text{softmax}\Big(\frac{qq^\top}{\sqrt{d_q}}\Big)
 
+   \end{align}
    $$
 
    或其他 self-self 组合（q-q, k-k, v-v, I），实际发现 q-q 效果最好，因此默认采用：
 
    $$
+   \begin{align}
    X^{\text{visual}} = X_{\text{attn}} = \text{Proj}(\text{Attn}_{qq}\cdot v)
 
+   \end{align}
    $$
 
 3. **丢弃 FFN：**
@@ -212,7 +232,9 @@ $$
    最后一层不再用 FFN：
 
    $$
+   \begin{align}
    X_{\text{out}} = X_{\text{attn}} \quad (\text{不做 }+\text{FFN}(\cdot))
+   \end{align}
    $$
 
 4. **后续 dense 推理不变：**
@@ -249,11 +271,13 @@ $$
    作者设置
 
    $$
+   \begin{align}
    X_{\text{sum}} = X_{\text{res}} + \alpha X_{\text{attn}}
 
+   \end{align}
    $$
 
-   发现随着 $$\alpha$$ 增大，mIoU 持续上升；当 $$\alpha$$ 很小（0.5）时性能急剧下降（Fig.6）。
+   发现随着 $$ \alpha $$ 增大，mIoU 持续上升；当 $$ \alpha $$ 很小（0.5）时性能急剧下降（Fig.6）。
 
    ⇒ **放大 attention 输出、相对压制 residual** 能显著提升性能；极端情况就是完全去掉 residual（ClearCLIP 的做法）。
 
@@ -261,34 +285,40 @@ $$
 
 1. **Entropy 公式（分析噪声来源）：**
 
-   对于第 $$L$$ 层的特征图 $$X^L \in \mathbb{R}^{(1+hw)\times d}$$，把里面所有元素 flatten 成一维，然后做 softmax：
+   对于第 $$ L $$ 层的特征图 $$ X^L \in \mathbb{R}^{(1+hw)\times d} $$，把里面所有元素 flatten 成一维，然后做 softmax：
 
    $$
+   \begin{align}
    p(X^L_{i,j}) = \frac{e^{X^L_{i,j}}}{\sum_{m,n} e^{X^L_{m,n}}}
 
+   \end{align}
    $$
 
    再计算归一化熵：
 
    $$
+   \begin{align}
    H(X^L) = -\frac{1}{\log(hw\times d)}\sum_{i,j} p(X^L_{i,j}) \log p(X^L_{i,j})
 
+   \end{align}
    $$
 
    * 如果只在少数元素上非常大，其余都很小 ⇒ 分布很“尖” ⇒ 熵接近 0；
    * 如果比较均匀 ⇒ 熵接近 1。
 
-   结果：CLIP 的 $$X_{\text{res}}, X_{\text{sum}}$$ 熵很低，而 DINO 的三个特征都比较稳定 ⇒ 佐证 CLIP 残差里“少数高能通道支配”的现象。
+   结果：CLIP 的 $$ X_{\text{res}}, X_{\text{sum}} $$ 熵很低，而 DINO 的三个特征都比较稳定 ⇒ 佐证 CLIP 残差里“少数高能通道支配”的现象。
 
 2. **Scaling 因子 \$$\alpha$$：**
 
    $$
+   \begin{align}
    X_{\text{sum}} = X_{\text{res}} + \alpha X_{\text{attn}}
+   \end{align}
    $$
 
    * 当 \$$\alpha \uparrow$$：attention 的范数变大，开始在相加中主导方向 ⇒ 分割质量变好；
    * 当 \$$\alpha \downarrow$$：residual 主导 ⇒ 回到 noisy segmentation。
-     ClearCLIP 做的是“极限情况”：相当于 $$\alpha \to \infty$$ 且不再加 residual。
+     ClearCLIP 做的是“极限情况”：相当于 \$$ \alpha \to \infty $$ 且不再加 residual。
 
 ---
 

@@ -11,7 +11,7 @@ description: "本文围绕“数据挖掘·IDC-Reduction”整理基本原理、
 
 # IDC![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/2147088400fc437392f57c20eed191ca.png){: referrerpolicy="no-referrer" }
 + 核心方法：`remove_edges_sample`，通过"删除边"实现干预。**这里不是真的删除**，而是对于根据父节点的是否被删除，对其后代节点进行干预。
-+ 就是一个干预do(a)操作。
++ 就是一个干预\$$do(a)$$操作。
 
 # Utopia Issue
 即使生成器生成的数据是公平，但这往往是**通过移除中介变量**来实现的，具体来说：
@@ -50,7 +50,7 @@ description: "本文围绕“数据挖掘·IDC-Reduction”整理基本原理、
 当我们干预 A 时，Y 会变化：
 ### 根本原因：Indirect Discrimination 间接歧视
 
-如果存在中介 (X)，使得：$$X_a \neq X_{a'}$$
+如果存在中介 $$X$$，使得：$$X_a \neq X_{a'}$$
 即 A 影响 X，而 X 再影响 Y。
 这在现实中非常普遍（如：性别→教育资源→考试成绩→录取）。
 ### 生成器构造的“公平世界” SCM
@@ -99,8 +99,10 @@ description: "本文围绕“数据挖掘·IDC-Reduction”整理基本原理、
 论文提出额外约束（Eq. 30）：
 
 $$
+\begin{align}
 f^{X}_{cf} \to f^{X}_{real}, \quad \forall X \in pa(Y)
 
+\end{align}
 $$
 
 即：
@@ -118,11 +120,13 @@ DPD 衡量不同敏感属性**群体**（如性别、种族）在**获得正向�
 * 对男性预测收入 >50K 的概率为 30%
 * 对女性预测收入 >50K 的概率为 20%
 
-假设敏感属性 ( A ) 具有两个群体（例如 Male / Female）：
+假设敏感属性 $$A$$ 具有两个群体（例如 Male / Female）：
 
 $$
+\begin{align}
 DPD = \left| P(\hat{Y}=1 \mid A=a_1) - P(\hat{Y}=1 \mid A=a_2) \right|
 
+\end{align}
 $$
 
 论文中：
@@ -143,8 +147,10 @@ FPRD 衡量两个群体的**假阳性率**（False Positive Rate）是否存在�
 假阳性率定义为：
 
 $$
+\begin{align}
 FPR = P(\hat{Y}=1 \mid Y=0)
 
+\end{align}
 $$
 
 也就是：真实标签是 0，但模型预测成 1 的比例。
@@ -152,12 +158,11 @@ $$
 FPRD 反映的是模型对不同**群体**的**误判偏差**。
 
 $$
+\begin{align}
 FPRD = \left| FPR_{A=a_1} - FPR_{A=a_2} \right|
-]
 
+\end{align}
 $$
-
-[
 
 其中，$$FPR_{A=a} = P(\hat{Y}=1 \mid Y=0, A=a)$$
 注意：

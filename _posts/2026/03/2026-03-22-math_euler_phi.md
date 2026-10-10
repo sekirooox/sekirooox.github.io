@@ -15,7 +15,9 @@ description: "本文整理“数论·欧拉函数”涉及的基本原理、计�
 若两个整数 $$a, b$$ 满足它们的**最大公约数为 1**，即
 
 $$
+\begin{align}
 \gcd(a,b)=1
+\end{align}
 $$
 
 则称 $$a$$ 与 $$b$$ **互质**（或称互素）。
@@ -27,20 +29,26 @@ $$
 即
 
 $$
+\begin{align}
 \varphi(n) = \left\lvert \{ k \in \mathbb{Z}^+ \mid 1 \le k \le n,\ \gcd(k,n)=1 \} \right\rvert
+\end{align}
 $$
 
 ## 欧拉函数的计算公式
 设正整数 $$n$$ 的质因数分解为
 
 $$
+\begin{align}
 n = p_1^{k_1} p_2^{k_2} \cdots p_m^{k_m}
+\end{align}
 $$
 
 其中 $$p_i$$ 为互不相同的**质数**，则
 
 $$
+\begin{align}
 \varphi(n) = n \left(1 - \frac{1}{p_1}\right)\left(1 - \frac{1}{p_2}\right)\cdots\left(1 - \frac{1}{p_m}\right)
+\end{align}
 $$
 
 ### 证明思路
@@ -56,7 +64,9 @@ $$
 设
 
 $$
+\begin{align}
 n=p_1^{k_1}p_2^{k_2}\cdots p_m^{k_m}
+\end{align}
 $$
 
 其中 $$p_1,p_2,\dots,p_m$$ 是 $$n$$ 的全部不同质因子。
@@ -69,7 +79,9 @@ $$
 首先看全集
 
 $$
+\begin{align}
 {1,2,\dots,n}
+\end{align}
 $$
 
 一共有 $$n$$ 个数。
@@ -77,7 +89,9 @@ $$
 对于每个质因子 $$p_i$$，设
 
 $$
+\begin{align}
 A_i={1\leq k\leq n:\ p_i\mid k}
+\end{align}
 $$
 
 即 $$A_i$$ 表示“能被 $$p_i$$ 整除的数”的集合。
@@ -85,14 +99,18 @@ $$
 那么，与 $$n$$ 不互质的数，恰好就是落在并集
 
 $$
+\begin{align}
 A_1\cup A_2\cup\cdots\cup A_m
+\end{align}
 $$
 
 中的那些数。
 所以
 
 $$
+\begin{align}
 \varphi(n)=n-\left|A_1\cup A_2\cup\cdots\cup A_m\right|
+\end{align}
 $$
 
 ---
@@ -102,41 +120,52 @@ $$
 因为 $$p_i\mid n$$，所以在 $$1$$ 到 $$n$$ 中，能被 $$p_i$$ 整除的数有
 
 $$
+\begin{align}
 |A_i|=\frac{n}{p_i}
+\end{align}
 $$
 
 同理，同时被 $$p_i,p_j$$ 整除的数，就是被 $$p_ip_j$$ 整除的数，因此有
 
 $$
+\begin{align}
 |A_i\cap A_j|=\frac{n}{p_ip_j}
+\end{align}
 $$
 
 类似地，
 
 $$
+\begin{align}
 |A_{i_1}\cap A_{i_2}\cap\cdots\cap A_{i_r}|
 =\frac{n}{p_{i_1}p_{i_2}\cdots p_{i_r}}
+\end{align}
 $$
 
 于是由容斥原理，
 
 $$
+\begin{align}
 |A_1\cup\cdots\cup A_m|=\sum_{i}\frac{n}{p_i}
 -\sum_{i<j}\frac{n}{p_ip_j}
 +\sum_{i<j<k}\frac{n}{p_ip_jp_k}
 -\cdots
 +(-1)^{m+1}\frac{n}{p_1p_2\cdots p_m}
+\end{align}
 $$
 
 因此
 
 $$
+\begin{align}
 \varphi(n)=n-\left|A_1\cup\cdots\cup A_m\right|
+\end{align}
 $$
 
 就变成
 
 $$
+\begin{align}
 \varphi(n)=
 n\left(
 1-\sum_i\frac{1}{p_i}
@@ -145,18 +174,23 @@ n\left(
 +\cdots
 +(-1)^m\frac{1}{p_1p_2\cdots p_m}
 \right)
+\end{align}
 $$
 
 最后注意到，括号里的式子正好就是下面乘积展开后的结果：
 
 $$
+\begin{align}
 \left(1-\frac{1}{p_1}\right)\left(1-\frac{1}{p_2}\right)\cdots\left(1-\frac{1}{p_m}\right)
+\end{align}
 $$
 
 所以得到
 
 $$
+\begin{align}
 \varphi(n)=n\left(1-\frac{1}{p_1}\right)\left(1-\frac{1}{p_2}\right)\cdots\left(1-\frac{1}{p_m}\right)
+\end{align}
 $$
 
 这就是所要证明的公式。

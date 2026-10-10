@@ -19,18 +19,18 @@ description: "本文整理“数理基础·高等数学摘要”涉及的基本�
 按笔记中的记号，函数“凸”与“上凸”先用中点不等式来定义。
 
 $$
-\begin{aligned}
+\begin{align}
 f\left(\frac{x_1+x_2}{2}\right)<\frac{f(x_1)+f(x_2)}{2}
-\end{aligned}
+\end{align}
 $$
 
 
 其中，$$x_1,x_2$$ 是两个自变量取值；按笔记记号，这对应“函数凸”。
 
 $$
-\begin{aligned}
+\begin{align}
 f\left(\frac{x_1+x_2}{2}\right)>\frac{f(x_1)+f(x_2)}{2}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -39,36 +39,36 @@ $$
 原笔记随后给出二阶导数判别。
 
 $$
-\begin{aligned}
+\begin{align}
 f''(x)>0
-\end{aligned}
+\end{align}
 $$
 
 
 其中，$$f''(x)$$ 是函数的二阶导数；这时函数图像对应一类“向上开”的凹凸形态。
 
 $$
-\begin{aligned}
+\begin{align}
 f''(x)<0
-\end{aligned}
+\end{align}
 $$
 
 
 其中，这时函数图像对应“向下开”的凹凸形态。
 
 $$
-\begin{aligned}
+\begin{align}
 f''(x_0)=0
-\end{aligned}
+\end{align}
 $$
 
 
 其中，$$x_0$$ 是候选点；原笔记将它与拐点联系起来，即函数在该点附近可能发生凹凸性的变化。
 
 $$
-\begin{aligned}
+\begin{align}
 f'(x_0)=0
-\end{aligned}
+\end{align}
 $$
 
 
@@ -83,9 +83,9 @@ $$
 原笔记把泰勒展开写成以 $$x_0$$ 为中心的幂级数。
 
 $$
-\begin{aligned}
+\begin{align}
 f(x)=\sum_{n=0}^{\infty}\frac{f^{(n)}(x_0)}{n!}(x-x_0)^n
-\end{aligned}
+\end{align}
 $$
 
 
@@ -94,9 +94,9 @@ $$
 把前几项展开后可写成：
 
 $$
-\begin{aligned}
+\begin{align}
 f(x)=f(x_0)+\frac{f'(x_0)}{1!}(x-x_0)+\frac{f''(x_0)}{2!}(x-x_0)^2+\cdots+\frac{f^{(n)}(x_0)}{n!}(x-x_0)^n+o(x^n)
-\end{aligned}
+\end{align}
 $$
 
 
@@ -109,18 +109,18 @@ $$
 原笔记先从点法式写起。若平面上一点为 $$P_0(x_0,y_0,z_0)$$，平面的法向量为 $$\mathbf{n}=(A,B,C)$$，则任意点 $$P(x,y,z)$$ 满足
 
 $$
-\begin{aligned}
+\begin{align}
 \overrightarrow{P_0P}\cdot\mathbf{n}=0
-\end{aligned}
+\end{align}
 $$
 
 
 其中，$$\overrightarrow{P_0P}=(x-x_0,y-y_0,z-z_0)$$ 是从点 $$P_0$$ 指向点 $$P$$ 的向量。
 
 $$
-\begin{aligned}
+\begin{align}
 \overrightarrow{P_0P}=(x-x_0,y-y_0,z-z_0),\qquad \mathbf{n}=(A,B,C)
-\end{aligned}
+\end{align}
 $$
 
 
@@ -129,9 +129,9 @@ $$
 因此一般式可写成：
 
 $$
-\begin{aligned}
+\begin{align}
 A(x-x_0)+B(y-y_0)+C(z-z_0)=0
-\end{aligned}
+\end{align}
 $$
 
 
@@ -140,9 +140,9 @@ $$
 进一步整理得到：
 
 $$
-\begin{aligned}
+\begin{align}
 Ax+By+Cz=D
-\end{aligned}
+\end{align}
 $$
 
 
@@ -153,10 +153,10 @@ $$
 设两个平面的法向量分别为 $$\mathbf{n}_1=(A_1,B_1,C_1)$$ 与 $$\mathbf{n}_2=(A_2,B_2,C_2)$$，则夹角满足
 
 $$
-\begin{aligned}
+\begin{align}
 \cos\theta=\frac{\mathbf{n}_1^T\mathbf{n}_2}{\|\mathbf{n}_1\|_2\|\mathbf{n}_2\|_2}
 =\frac{A_1A_2+B_1B_2+C_1C_2}{\sqrt{A_1^2+B_1^2+C_1^2}\sqrt{A_2^2+B_2^2+C_2^2}}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -167,18 +167,18 @@ $$
 若平面为 $$Ax+By+Cz=D$$，平面外一点为 $$P_0(x_0,y_0,z_0)$$，平面上一点为 $$P_1(x_1,y_1,z_1)$$，则距离可由投影得到。
 
 $$
-\begin{aligned}
+\begin{align}
 d=\left|\overrightarrow{P_1P_0}\right||\cos\theta|
-\end{aligned}
+\end{align}
 $$
 
 
 其中，$$d$$ 是点到平面的距离，$$\theta$$ 是 $$\overrightarrow{P_1P_0}$$ 与法向量 $$\mathbf{n}$$ 的夹角。
 
 $$
-\begin{aligned}
+\begin{align}
 \cos\theta=\frac{\mathbf{n}\cdot\overrightarrow{P_1P_0}}{\|\mathbf{n}\|_2\left|\overrightarrow{P_1P_0}\right|}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -187,9 +187,9 @@ $$
 于是距离公式写成
 
 $$
-\begin{aligned}
+\begin{align}
 d=\frac{|\mathbf{n}\cdot\overrightarrow{P_1P_0}|}{\|\mathbf{n}\|_2}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -198,9 +198,9 @@ $$
 进一步化为常见坐标形式：
 
 $$
-\begin{aligned}
+\begin{align}
 d=\frac{|A(x_0-x_1)+B(y_0-y_1)+C(z_0-z_1)|}{\sqrt{A^2+B^2+C^2}}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -215,9 +215,9 @@ $$
 空间直线可以看成两个平面的交线。
 
 $$
-\begin{aligned}
+\begin{align}
 p_1:A_1x+B_1y+C_1z=D_1,\qquad p_2:A_2x+B_2y+C_2z=D_2
-\end{aligned}
+\end{align}
 $$
 
 
@@ -226,9 +226,9 @@ $$
 参数方程写成
 
 $$
-\begin{aligned}
+\begin{align}
 \mathbf{r}=\mathbf{r}_0+t\mathbf{s}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -237,13 +237,13 @@ $$
 对应的坐标形式为：
 
 $$
-\begin{aligned}
+\begin{align}
 \begin{cases}
 x=x_0+ts_1\\
 y=y_0+ts_2\\
 z=z_0+ts_3
 \end{cases}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -252,9 +252,9 @@ $$
 对称式写成
 
 $$
-\begin{aligned}
+\begin{align}
 \frac{x-x_0}{s_1}=\frac{y-y_0}{s_2}=\frac{z-z_0}{s_3}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -265,9 +265,9 @@ $$
 若两条直线的方向向量为 $$\mathbf{s}_1,\mathbf{s}_2$$，则
 
 $$
-\begin{aligned}
+\begin{align}
 \cos\theta=\frac{\mathbf{s}_1^T\mathbf{s}_2}{\|\mathbf{s}_1\|_2\|\mathbf{s}_2\|_2}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -278,9 +278,9 @@ $$
 若平面的法向量为 $$\mathbf{n}$$，直线的方向向量为 $$\mathbf{s}$$，则原笔记给出
 
 $$
-\begin{aligned}
+\begin{align}
 \sin\varphi=\cos\theta=\frac{\mathbf{n}^T\mathbf{s}}{\|\mathbf{n}\|_2\|\mathbf{s}\|_2}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -291,13 +291,13 @@ $$
 原笔记把空间曲线先分成参数式与相交式两类。
 
 $$
-\begin{aligned}
+\begin{align}
 \begin{cases}
 x=f(t)\\
 y=g(t)\\
 z=\phi(t)
 \end{cases}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -306,13 +306,13 @@ $$
 笔记中的例子是螺旋线型参数方程：
 
 $$
-\begin{aligned}
+\begin{align}
 \begin{cases}
 x=\cos t\\
 y=\sin t\\
 z=t
 \end{cases}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -321,12 +321,12 @@ $$
 另一种表示方式是把空间曲线看成两个曲面的交线：
 
 $$
-\begin{aligned}
+\begin{align}
 \begin{cases}
 F_1(x,y,z)=0\\
 F_2(x,y,z)=0
 \end{cases}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -343,9 +343,9 @@ $$
 设空间曲线写成
 
 $$
-\begin{aligned}
+\begin{align}
 \mathbf{r}(t)=(f(t),g(t),\phi(t))
-\end{aligned}
+\end{align}
 $$
 
 
@@ -354,9 +354,9 @@ $$
 在点 $$(x_0,y_0,z_0)$$ 处的切线可写成
 
 $$
-\begin{aligned}
+\begin{align}
 \mathbf{r}=\mathbf{r}_0+k\frac{d\mathbf{r}}{dt}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -365,13 +365,13 @@ $$
 对应坐标式为
 
 $$
-\begin{aligned}
+\begin{align}
 \begin{cases}
 x=x_0+kf'(t)\\
 y=y_0+kg'(t)\\
 z=z_0+k\phi'(t)
 \end{cases}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -380,9 +380,9 @@ $$
 法平面满足“过该点且垂直于切向量”，因此
 
 $$
-\begin{aligned}
+\begin{align}
 \overrightarrow{P_0P}\cdot\frac{d\mathbf{r}}{dt}=0
-\end{aligned}
+\end{align}
 $$
 
 
@@ -391,9 +391,9 @@ $$
 等价写成
 
 $$
-\begin{aligned}
+\begin{align}
 f'(t)(x-x_0)+g'(t)(y-y_0)+\phi'(t)(z-z_0)=0
-\end{aligned}
+\end{align}
 $$
 
 
@@ -404,12 +404,12 @@ $$
 原笔记把两曲面的交线写成
 
 $$
-\begin{aligned}
+\begin{align}
 \begin{cases}
 F_1(x,y,z)=0\\
 F_2(x,y,z)=0
 \end{cases}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -418,13 +418,13 @@ $$
 一种常用写法是把它视为
 
 $$
-\begin{aligned}
+\begin{align}
 \begin{cases}
 x=x\\
 y=f(x)\\
 z=g(x)
 \end{cases}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -433,7 +433,7 @@ $$
 此时切向量可写成
 
 $$
-\begin{aligned}
+\begin{align}
 \begin{bmatrix}
 \frac{dx}{dx}\\
 \frac{dy}{dx}\\
@@ -444,7 +444,7 @@ $$
 \frac{dy}{dx}\\
 \frac{dz}{dx}
 \end{bmatrix}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -453,9 +453,9 @@ $$
 笔记中的例子为
 
 $$
-\begin{aligned}
+\begin{align}
 F_1:x^2+y^2+z^2=6,\qquad F_2:x+y+z=0
-\end{aligned}
+\end{align}
 $$
 
 
@@ -464,12 +464,12 @@ $$
 对 $$x$$ 求导后得到
 
 $$
-\begin{aligned}
+\begin{align}
 \begin{cases}
 2x+2y\frac{dy}{dx}+2z\frac{dz}{dx}=0\\
 1+\frac{dy}{dx}+\frac{dz}{dx}=0
 \end{cases}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -478,13 +478,13 @@ $$
 原笔记解得
 
 $$
-\begin{aligned}
+\begin{align}
 \begin{cases}
 \frac{dx}{dx}=1\\
 \frac{dy}{dx}=\frac{z-x}{y-z}\\
 \frac{dz}{dx}=\frac{x-y}{y-z}
 \end{cases}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -493,13 +493,13 @@ $$
 在点 $$(1,-2,1)$$ 处，切线方向向量为
 
 $$
-\begin{aligned}
+\begin{align}
 \begin{bmatrix}
 1\\
 0\\
 -1
 \end{bmatrix}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -514,9 +514,9 @@ $$
 设曲面写成
 
 $$
-\begin{aligned}
+\begin{align}
 F(x,y,z)=c
-\end{aligned}
+\end{align}
 $$
 
 
@@ -525,9 +525,9 @@ $$
 若点 $$P_0(x_0,y_0,z_0)$$ 在曲面上，则切平面方程为
 
 $$
-\begin{aligned}
+\begin{align}
 \frac{\partial F}{\partial x}(x-x_0)+\frac{\partial F}{\partial y}(y-y_0)+\frac{\partial F}{\partial z}(z-z_0)=0
-\end{aligned}
+\end{align}
 $$
 
 
@@ -536,9 +536,9 @@ $$
 若曲面写成 $$z=f(x,y)$$，则原笔记把它转成
 
 $$
-\begin{aligned}
+\begin{align}
 F(x,y,z)=f(x,y)-z=0
-\end{aligned}
+\end{align}
 $$
 
 
@@ -547,9 +547,9 @@ $$
 对应的法向量为
 
 $$
-\begin{aligned}
+\begin{align}
 \nabla F=\left(\frac{\partial F}{\partial x},\frac{\partial F}{\partial y},\frac{\partial F}{\partial z}\right)
-\end{aligned}
+\end{align}
 $$
 
 
@@ -558,9 +558,9 @@ $$
 对于二维等值线 $$f(x,y)=c$$，其法向量同样由梯度给出：
 
 $$
-\begin{aligned}
+\begin{align}
 \nabla f=\left(\frac{\partial f}{\partial x},\frac{\partial f}{\partial y}\right)
-\end{aligned}
+\end{align}
 $$
 
 
@@ -571,9 +571,9 @@ $$
 原笔记把方向导数记成
 
 $$
-\begin{aligned}
+\begin{align}
 \left.\frac{\partial f}{\partial l}\right|_{(x_0,y_0)}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -582,9 +582,9 @@ $$
 若方向由向量 $$\mathbf{l}$$ 给出，则方向导数公式写成
 
 $$
-\begin{aligned}
+\begin{align}
 \left.\frac{\partial f}{\partial l}\right|_{(x_0,y_0)}=\nabla f\cdot\frac{\mathbf{l}}{\|\mathbf{l}\|_2}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -597,9 +597,9 @@ $$
 笔记中还用等值线的例子说明了法向量与切向量的关系。若
 
 $$
-\begin{aligned}
+\begin{align}
 x^2+y^2=1
-\end{aligned}
+\end{align}
 $$
 
 
@@ -608,9 +608,9 @@ $$
 则法向量为
 
 $$
-\begin{aligned}
+\begin{align}
 \nabla f=\left(\frac{\partial f}{\partial x},\frac{\partial f}{\partial y}\right)=(2x,2y)
-\end{aligned}
+\end{align}
 $$
 
 
@@ -619,9 +619,9 @@ $$
 对等式两边求导可得
 
 $$
-\begin{aligned}
+\begin{align}
 2x+2y\frac{dy}{dx}=0
-\end{aligned}
+\end{align}
 $$
 
 
@@ -630,12 +630,12 @@ $$
 于是
 
 $$
-\begin{aligned}
+\begin{align}
 \begin{cases}
 \frac{dx}{dx}=1\\
 \frac{dy}{dx}=-\frac{x}{y}
 \end{cases}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -646,9 +646,9 @@ $$
 原笔记最后总结了拉格朗日乘子法。若目标函数为 $$f(x,y,z)$$，约束条件为 $$g(x,y,z)=t$$，则先写成
 
 $$
-\begin{aligned}
+\begin{align}
 g(x,y,z)=t
-\end{aligned}
+\end{align}
 $$
 
 
@@ -657,9 +657,9 @@ $$
 在约束极值点处，有
 
 $$
-\begin{aligned}
+\begin{align}
 \nabla f=\lambda\nabla g
-\end{aligned}
+\end{align}
 $$
 
 
@@ -668,9 +668,9 @@ $$
 再联立约束方程
 
 $$
-\begin{aligned}
+\begin{align}
 g(x,y,z)=t
-\end{aligned}
+\end{align}
 $$
 
 

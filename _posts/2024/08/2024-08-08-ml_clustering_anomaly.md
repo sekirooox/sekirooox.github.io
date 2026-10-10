@@ -56,7 +56,9 @@ def closest_centroid(X,centroids):
 * Specifically, for every centroid \$$\mu_k$$ we set
 
 $$
-\mu_k = \frac{1}{\lvert C_k\rvert} \sum_{i \in C_k} x^{(i)}
+\begin{align}
+\mu_k &= \frac{1}{\lvert C_k\rvert} \sum_{i \in C_k} x^{(i)}
+\end{align}
 $$
 
     where 
@@ -127,10 +129,10 @@ def normal_distribution(X):
 ## F1分数计算
 
 $$
-\begin{aligned}
+\begin{align}
 prec &= \frac{tp}{tp+fp}\\
 rec &= \frac{tp}{tp+fn},
-\end{aligned}
+\end{align}
 $$
 
 where
@@ -139,7 +141,9 @@ where
   * The \$$F_1$$ score is computed using precision (\$$prec$$) and recall (\$$rec$$) as follows:
 
 $$
-F_1 = \frac{2\cdot prec \cdot rec}{prec + rec}
+\begin{align}
+F_1 &= \frac{2\cdot prec \cdot rec}{prec + rec}
+\end{align}
 $$
 
 >利用python的判断语法

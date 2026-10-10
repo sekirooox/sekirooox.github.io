@@ -19,7 +19,10 @@ description: "本文围绕“机器学习·L2W4-决策树”整理基本原理�
 >$$p$$是结果为positive的概率
 
 $$
-\text{Information Gain} = H(p_1^\text{node})- \left(w^{\text{left}}H\left(p_1^\text{left}\right) + w^{\text{right}}H\left(p_1^\text{right}\right)\right),
+\begin{align}
+\text{Information Gain} &= H\left(p_1^{\text{node}}\right)
+- \left(w^{\text{left}}H\left(p_1^{\text{left}}\right) + w^{\text{right}}H\left(p_1^{\text{right}}\right)\right)
+\end{align}
 $$
 
 ## 划分依据
@@ -27,7 +30,9 @@ $$
 >与逻辑回归的SparseCategoricalCrossentropy函数定义一致
 
 $$
-H(p_1) = -p_1 \text{log}_2(p_1) - (1- p_1) \text{log}_2(1- p_1)
+\begin{align}
+H(p_1) &= -p_1 \log_2(p_1) - (1-p_1) \log_2(1-p_1)
+\end{align}
 $$
 
 ### 基尼指数
@@ -41,7 +46,9 @@ $$
 树划分的标准为：
 
 $$
+\begin{align}
 \max\left\{\operatorname{var}_{root}-\left(w_{left}\operatorname{var}_{left}+w_{right}\operatorname{var}_{right}\right)\right\}
+\end{align}
 $$
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/8310aface75247c8aa82d0813de79d3c.png){: referrerpolicy="no-referrer" }

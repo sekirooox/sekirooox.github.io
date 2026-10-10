@@ -97,8 +97,10 @@ description: "本文整理“AlignZeg: Mitigating Ob…”涉及的模型原理�
 优化目标为：
 
 $$
+\begin{align}
 \mathcal{L} = \mathcal{L}_{bc} + \lambda_1\mathcal{L}_{ce} + \lambda_2\mathcal{L}_{mask} + \lambda_3\mathcal{L}_{vir} + \lambda_4\mathcal{L}_{reg}
 
+\end{align}
 $$
 
 其中各项分别对应偏置校正、分类、掩码、虚拟样本与背景正则损失。

@@ -70,10 +70,12 @@ label:`subsec_labeling-anchor-boxes`
 [**给定框$$A$$和$$B$$，中心坐标分别为$$(x_a, y_a)$$和$$(x_b, y_b)$$，宽度分别为$$w_a$$和$$w_b$$，高度分别为$$h_a$$和$$h_b$$，可以将$$A$$的偏移量标记为：
 
 $$
+\begin{align}
 \left( \frac{ \frac{x_b - x_a}{w_a} - \mu_x }{\sigma_x},
 \frac{ \frac{y_b - y_a}{h_a} - \mu_y }{\sigma_y},
 \frac{ \log \frac{w_b}{w_a} - \mu_w }{\sigma_w},
 \frac{ \log \frac{h_b}{h_a} - \mu_h }{\sigma_h}\right),
+\end{align}
 $$
 
 **]

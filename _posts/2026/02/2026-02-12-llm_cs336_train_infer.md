@@ -86,7 +86,9 @@ for _ in range(max_new_tokens):
 +  **温度系数兼容所有采样策略**，**\$$T=0$$会使模型随机性降低**！
 
 $$
+\begin{align}
 \mathrm{softmax}_i(\mathbf{z};T)=\frac{\exp\left(\frac{z_i}{T}\right)}{\sum_j\exp\left(\frac{z_j}{T}\right)}
+\end{align}
 $$
 
 

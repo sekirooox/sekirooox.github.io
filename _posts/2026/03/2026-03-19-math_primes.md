@@ -27,7 +27,7 @@ description: "本文整理“数论·质数”涉及的基本原理、计算方�
 + 2满足定理1，13满足定理2
 ### 实现
 + 注意**小于2的都不是质数。**
-+ **判断条件使用 `i<x/i` <span class="text-danger">等价于</span> `i*i<x`，但是前者不容易溢出**。
++ **判断条件使用 `i<x/i` <span style="color:red">等价于</span> `i*i<x`，但是前者不容易溢出**。
 ```cpp
 bool isprime(int x) {
 	if (x < 2)return false;
@@ -46,7 +46,9 @@ bool isprime(int x) {
 任意大于 1 的整数 $$x$$ 都可以唯一地表示为若干个质数的乘积：
 
 $$
+\begin{align}
 x = p_1^{\alpha_1} \cdot p_2^{\alpha_2} \cdots p_k^{\alpha_k}
+\end{align}
 $$
 
 其中 $$p_1 < p_2 < \cdots < p_k$$ 是质数，$$\alpha_i \in \mathbb{N}^+$$。
@@ -107,7 +109,9 @@ void getprimes() {
 根据算术基本定理，任意合数 $$n$$ 可以唯一地表示为：
 
 $$
+\begin{align}
 n = p_1^{\alpha_1} \cdot p_2^{\alpha_2} \cdots p_k^{\alpha_k}
+\end{align}
 $$
 
 其中 $$p_1 < p_2 < \cdots < p_k$$ 是质数，$$\alpha_i \in \mathbb{N}^+$$。
@@ -115,7 +119,9 @@ $$
 特别地，$$n$$ 可以写成：
 
 $$
+\begin{align}
 n = p_{\min} \cdot m
+\end{align}
 $$
 
 其中 $$p_{\min}$$ 是 $$n$$ 的最小质因数，且 $$m > p_{\min}$$（因为如果 $$m \le p_{\min}$$，则 $$m$$ 会有更小的质因数）。
@@ -125,7 +131,9 @@ $$
 对于合数 $$n = p_{\min} \cdot m$$，必然有：
 
 $$
+\begin{align}
 p_{\min} \le m
+\end{align}
 $$
 
 - 若 \$$p_{\min} > m$$，则 \$$m$$ 的最小质因数会小于 \$$p_{\min}$$，矛盾。

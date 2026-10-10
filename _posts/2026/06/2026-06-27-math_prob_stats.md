@@ -20,7 +20,9 @@ description: "本文整理“数理基础·概率论与数理统计”涉及的�
 + 推广到**多个随机变量**的情况。设有随机变量：
 
 $$
+\begin{align}
 X_1,X_2,\cdots,X_n
+\end{align}
 $$
 
 
@@ -29,13 +31,17 @@ $$
 如果 (X_1,X_2,\cdots,X_n) 都是离散型随机变量，那么它们的**概率质量函数pmf**为：
 
 $$
+\begin{align}
 P(X_1=x_1,X_2=x_2,\cdots,X_n=x_n)
+\end{align}
 $$
 
 也可以简写为：
 
 $$
+\begin{align}
 P(x_1,x_2,\cdots,x_n)
+\end{align}
 $$
 
 
@@ -44,13 +50,17 @@ $$
 如果 (X_1,X_2,\cdots,X_n) 是连续型随机变量，通常讨论联合**概率密度函数pdf**：
 
 $$
+\begin{align}
 f(x_1,x_2,\cdots,x_n)
+\end{align}
 $$
 
 此时，某个区域 (D) 内的**联合概率**为：
 
 $$
+\begin{align}
 P((X_1,\cdots,X_n)\in D)=\int_D f(x_1,\cdots,x_n),dx_1\cdots dx_n
+\end{align}
 $$
 
 因此连续型情况下主要**看“区间”或“区域”的概率**。
@@ -64,7 +74,9 @@ $$
 + 一般地，若有 \$$X_1,\cdots,X_n$$，**只保留前 \$$k$$ 个变量**，则：
 
 $$
+\begin{align}
 P(x_1,\cdots,x_k)=\sum_{x_{k+1}}\cdots\sum_{x_n}P(x_1,\cdots,x_k,x_{k+1},\cdots,x_n)
+\end{align}
 $$
 
 这就是离散型变量的**边缘化**。
@@ -73,20 +85,26 @@ $$
 如果 (X,Y,Z) 是连续型随机变量，联合密度为：
 
 $$
+\begin{align}
 f_{X,Y,Z}(x,y,z)
+\end{align}
 $$
 
 
 那么 (X) 的边缘密度为：
 
 $$
+\begin{align}
 f_X(x)=\int_{-\infty}^{+\infty}\int_{-\infty}^{+\infty}f_{X,Y,Z}(x,y,z),dy,dz
+\end{align}
 $$
 
 如果只消去 (Z)，保留 (X,Y)，则：
 
 $$
+\begin{align}
 f_{X,Y}(x,y)=\int_{-\infty}^{+\infty}f_{X,Y,Z}(x,y,z),dz
+\end{align}
 $$
 
 ## 条件概率：在部分变量已知时，另一些变量的概率
@@ -96,20 +114,26 @@ $$
 更一般地，若把变量分成两组：
 
 $$
+\begin{align}
 X=(X_1,\cdots,X_k),\quad Y=(Y_1,\cdots,Y_m)
+\end{align}
 $$
 
 
 则：
 
 $$
+\begin{align}
 P(X=x\mid Y=y)=\frac{P(X=x,Y=y)}{P(Y=y)}
+\end{align}
 $$
 
 其中：
 
 $$
+\begin{align}
 P(Y=y)=\sum_x P(X=x,Y=y)
+\end{align}
 $$
 
 
@@ -120,34 +144,44 @@ $$
 如果有联合密度：
 
 $$
+\begin{align}
 f_{X,Y}(x,y)
+\end{align}
 $$
 
 
 那么条件密度为：
 
 $$
+\begin{align}
 f_{X\mid Y}(x\mid y)=\frac{f_{X,Y}(x,y)}{f_Y(y)}
+\end{align}
 $$
 
 
 其中：
 
 $$
+\begin{align}
 f_Y(y)=\int_{-\infty}^{+\infty}f_{X,Y}(x,y),dx
+\end{align}
 $$
 
 如果有三个连续变量 (X,Y,Z)，则：
 
 $$
+\begin{align}
 f_{X\mid Y,Z}(x\mid y,z)=\frac{f_{X,Y,Z}(x,y,z)}{f_{Y,Z}(y,z)}
+\end{align}
 $$
 
 
 其中：
 
 $$
+\begin{align}
 f_{Y,Z}(y,z)=\int_{-\infty}^{+\infty}f_{X,Y,Z}(x,y,z),dx
+\end{align}
 $$
 
 ## 条件概率公式：条件 = 联合 / 边缘
@@ -157,34 +191,38 @@ $$
 一般地，对于 (n) 个随机变量，有链式法则：
 
 $$
+\begin{align}
 P(X_1,\cdots,X_n)=P(X_1\mid X_2,\cdots,X_n)P(X_2\mid X_3,\cdots,X_n)\cdots P(X_{n-1}\mid X_n)P(X_n)
+\end{align}
 $$
 
 也常写成另一种顺序：
 
 $$
+\begin{align}
 P(X_1,\cdots,X_n)=P(X_1)\prod_{i=2}^{n}P(X_i\mid X_1,\cdots,X_{i-1})
+\end{align}
 $$
 
 ## 贝叶斯公式
 ### 含义1：条件-联合-边缘概率转换公式
 
 $$
-\begin{aligned}P(\mathbf{X}\mid\mathbf{Y})=\frac{P(\mathbf{X},\mathbf{Y})}{P(\mathbf{Y})}\end{aligned}
+\begin{align}P(\mathbf{X}\mid\mathbf{Y})=\frac{P(\mathbf{X},\mathbf{Y})}{P(\mathbf{Y})}\end{align}
 $$
 
 
 ### 含义2：先验和后验公式
 
 $$
-\begin{aligned}
+\begin{align}
 P(\mathbf{X}=\mathbf{x}\mid \mathbf{Y}=\mathbf{y})
 =\frac{
 P(\mathbf{Y}=\mathbf{y}\mid \mathbf{X}=\mathbf{x})P(\mathbf{X}=\mathbf{x})
 }{
 P(\mathbf{Y}=\mathbf{y})
 }
-\end{aligned}
+\end{align}
 $$
 
 
@@ -195,20 +233,20 @@ $$
 #### 先验：对X的原始信念
 
 $$
-\begin{aligned}P(\mathbf{X}=\mathbf{x})\end{aligned}
+\begin{align}P(\mathbf{X}=\mathbf{x})\end{align}
 $$
 
 #### 似然：在先验概率下观察到证据的概率
 
 $$
-\begin{aligned}P(\mathbf{Y}=\mathbf{y}\mid \mathbf{X}=\mathbf{x})\end{aligned}
+\begin{align}P(\mathbf{Y}=\mathbf{y}\mid \mathbf{X}=\mathbf{x})\end{align}
 $$
 
 
 #### 后验：对于X信念的修正
 
 $$
-\begin{aligned}P(\mathbf{X}=\mathbf{x}\mid \mathbf{Y}=\mathbf{y})\end{aligned}
+\begin{align}P(\mathbf{X}=\mathbf{x}\mid \mathbf{Y}=\mathbf{y})\end{align}
 $$
 
 ## 全概率公式
@@ -217,22 +255,22 @@ $$
 + 注意：X和Y都是向量
 
 $$
-\begin{aligned}
+\begin{align}
 P(\mathbf{Y}=\mathbf{y})
 =\sum_{\mathbf{x}}
 P(\mathbf{Y}=\mathbf{y},\mathbf{X}=\mathbf{x})
-\end{aligned}
+\end{align}
 $$
 
 + 对多个变量进行积分：
 
 $$
-\begin{aligned}
+\begin{align}
 f_{\mathbf{Y}}(\mathbf{y})
 =\int
 f_{\mathbf{Y}\mid \mathbf{X}}(\mathbf{y}\mid \mathbf{x})f_{\mathbf{X}}(\mathbf{x})
 \,d\mathbf{x}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -258,19 +296,19 @@ $$
 + Φ**标识标准正态分布的累计概率**，可以查表得到。
 
 $$
-\begin{aligned}
+\begin{align}
 P(a<X<b)=&P(a-\mu/\sigma<Z<b-\mu/\sigma)\\
 =&Φ(b-\mu/\sigma)-Φ(a-\mu/\sigma)
-\end{aligned}
+\end{align}
 $$
 
 #### $$Z_{\alpha}$$：右尾部分的面积为$$\alpha$$的分位点
 + 用途计算标准正太
 
-### 泊松分布的含义：$$X$$表示一段时间内<span class="text-danger">事件发生的次数</span>
+### 泊松分布的含义：$$X$$表示一段时间内<span style="color:red">事件发生的次数</span>
 
 $$
-\begin{aligned}P(X=k)=\frac{\lambda^k}{k!}e^{-\lambda},\quad k=0,1,2,\cdots\end{aligned}
+\begin{align}P(X=k)=\frac{\lambda^k}{k!}e^{-\lambda},\quad k=0,1,2,\cdots\end{align}
 $$
 
 + 随机变量X表示：**1h内**公交车**到站次数**，**1h事件**的**发生次数**
@@ -278,25 +316,25 @@ $$
 + 假设平均到站次数为3个电话，那么1h内到站次数为5的概率为：
 
 $$
-\begin{aligned}P(X=5)=\frac{3^5}{5!}e^{-3}\end{aligned}
+\begin{align}P(X=5)=\frac{3^5}{5!}e^{-3}\end{align}
 $$
 
 
 ### 指数分布的含义：$$X$$表示下一次事件的发生时间
 
 $$
-\begin{aligned}X\sim Exp(\lambda)\end{aligned}
+\begin{align}X\sim Exp(\lambda)\end{align}
 $$
 
 $$
-\begin{aligned}P(X>x)=e^{-\lambda x}\end{aligned}
+\begin{align}P(X>x)=e^{-\lambda x}\end{align}
 $$
 
 其中$$x\geq0$$，随机变量X表示：公交车到站的等待事件，排队的等待时间
 + 假设排队的平均等待时间为\$$1/\lambda$$，那么等待时间不超过15的概率为：
 
 $$
-\begin{aligned}P(X\le x)=1-e^{-\lambda x}\end{aligned}
+\begin{align}P(X\le x)=1-e^{-\lambda x}\end{align}
 $$
 
 
@@ -304,7 +342,7 @@ $$
 
 
 $$
-\begin{aligned}
+\begin{align}
 x=
 \begin{bmatrix}
 x_1\\
@@ -313,14 +351,14 @@ x_2\\
 x_n
 \end{bmatrix}
 \in \mathbb{R}^n
-\end{aligned}
+\end{align}
 $$
 
 
 ### 随机变量 / 向量的期望
 
 $$
-\begin{aligned}
+\begin{align}
 \mathbb{E}[x]=
 \begin{bmatrix}
 \mathbb{E}[x_1]\\
@@ -328,7 +366,7 @@ $$
 \vdots\\
 \mathbb{E}[x_n]
 \end{bmatrix}
-\end{aligned}
+\end{align}
 $$
 
 
@@ -343,26 +381,26 @@ $$
 
 
 $$
-\begin{aligned}
+\begin{align}
 \mathrm{Var}(x)=\mathbb{E}\left[(x-\mathbb{E}[x])^2\right]
-\end{aligned}
+\end{align}
 $$
 
 
-### 随机向量的方差和协方差：<span class="text-danger">随机向量</span>之间<span class="text-danger">不同分量组合</span>的相关程度
+### 随机向量的方差和协方差：<span style="color:red">随机向量</span>之间<span style="color:red">不同分量组合</span>的相关程度
 + 元素表示每一个随机变量之间的**关联程度** / **波动程度**：
 + 注意：协方差矩阵为**nxn**的，所以是**列向量乘以行向量**
 
 $$
-\begin{aligned}
+\begin{align}
 \mathrm{Cov}(x,x)=
 \mathbb{E}\left[(x-\mathbb{E}[x])(x-\mathbb{E}[x])^T\right]
-\end{aligned}
+\end{align}
 $$
 
 
 $$
-\begin{aligned}
+\begin{align}
 \mathrm{Cov}(x,x)
 =\begin{bmatrix}
 \mathrm{Cov}(x_1,x_1) & \mathrm{Cov}(x_1,x_2) & \cdots & \mathrm{Cov}(x_1,x_n)\\
@@ -370,71 +408,71 @@ $$
 \vdots & \vdots & \ddots & \vdots\\
 \mathrm{Cov}(x_n,x_1) & \mathrm{Cov}(x_n,x_2) & \cdots & \mathrm{Cov}(x_n,x_n)
 \end{bmatrix}
-\end{aligned}
+\end{align}
 $$
 
 
 不同随机向量的协方差矩阵：
 
 $$
-\begin{aligned}
+\begin{align}
 \mathrm{Cov}(x,y)
 =\mathbb{E}\left[(x-\mathbb{E}[x])(y-\mathbb{E}[y])^T\right]
-\end{aligned}
+\end{align}
 $$
 
 
-### 协方差矩阵 $$\Sigma_x$$：随机变量<span class="text-danger">不同分量</span>的波动程度和相关性
+### 协方差矩阵 $$\Sigma_x$$：随机变量<span style="color:red">不同分量</span>的波动程度和相关性
 + 不同分量：例如身高，体重的相关程度和波动。
 
 $$
-\begin{aligned}
+\begin{align}
 \Sigma_x
 =\mathrm{Cov}(x)=
 \mathrm{Cov}(x,x)
-\end{aligned}
+\end{align}
 $$
 
 
-### 期望和方差/协方差的性质：多个随机变量$$X_1,X_2,\cdots,X_n$$<span class="text-danger">线性组合</span>
+### 期望和方差/协方差的性质：多个随机变量$$X_1,X_2,\cdots,X_n$$<span style="color:red">线性组合</span>
 
-#### 期望的线性组合性质：<span class="text-danger">无条件</span>
+#### 期望的线性组合性质：<span style="color:red">无条件</span>
 
 $$
-\begin{aligned}
+\begin{align}
 \mathbb{E}[Ax+By+c]
 =A\mathbb{E}[x]+B\mathbb{E}[y]+c
-\end{aligned}
+\end{align}
 $$
 
 
-#### 协方差的线性组合性质：<span class="text-danger">通用</span>和<span class="text-danger">独立</span>版本
+#### 协方差的线性组合性质：<span style="color:red">通用</span>和<span style="color:red">独立</span>版本
 
 
 设随机向量 (x_1,\dots,x_m) 与 (y_1,\dots,y_n) 二阶矩存在，(A_i,B_j) 是确定矩阵，(a,b) 是确定向量：
 
 $$
-\begin{aligned}
+\begin{align}
 u=\sum_{i=1}^{m}A_i x_i+a,
 \quad
 v=\sum_{j=1}^{n}B_j y_j+b
-\end{aligned}
+\end{align}
 $$
 
 则：
 
 $$
-\begin{aligned}
+\begin{align}
 \mathrm{Cov}(u,v)
 =\sum_{i=1}^{m}\sum_{j=1}^{n}
 A_i\mathrm{Cov}(x_i,y_j)B_j^T
-\end{aligned}
+\end{align}
 $$
 
 这就是协方差矩阵在线性组合下的**通用公式**。
 
 
-#### 高斯分布的线性组合仍然是<span class="text-danger">高斯分布</span>
+#### 高斯分布的线性组合仍然是<span style="color:red">高斯分布</span>
 + 给定n个**不同参数的高斯分布**：\$$X_1,X_2,\cdots,X_n$$，其中\$$X_i$$服从均值为\$$\mu_i$$，方差为\$$\sigma_i^2$$的高斯分布。
 + 高斯分布的线性组合\$$a_1X_1+a_2X_2+\cdots a_nX_n$$**仍然服从均值为\$$\sum{a_i\mu_i}$$，方差为\$$\sum{a_i^2\sigma_i^2}$$的高斯分布**。
 
@@ -442,36 +480,36 @@ $$
 + X和Y相互独立的定义
 
 $$
-\begin{aligned}
+\begin{align}
 \mathbf{X} \perp\!\!\!\perp \mathbf{Y}
-\end{aligned}
+\end{align}
 $$
 
 ### 标准定义
 + 与变量Y无关
 
 $$
-\begin{aligned}
+\begin{align}
 P(X|Y)=P(X)
-\end{aligned}
+\end{align}
 $$
 
 ### 推论
 
 $$
-\begin{aligned}
+\begin{align}
 P(X)P(Y)=P(X,Y)
-\end{aligned}
+\end{align}
 $$
 
-### 独立vs相关：独立必不相关，<span class="text-danger">线性相关</span>不一定独立
+### 独立vs相关：独立必不相关，<span style="color:red">线性相关</span>不一定独立
 
 
 # 数理统计
 
 ## 方向1：样本分布推断总体分布
 
-### 样本与总体：<span class="text-danger">共享</span>参数，参数未知
+### 样本与总体：<span style="color:red">共享</span>参数，参数未知
 总体和样本来自同一个分布，并**共享同一组总体参数**；只是这些**总体参数未知**，需要通过样本来估计
 ### 大数定律：$$\bar{X}$$的均值 / 估计未知均值$$\mu=\bar{X}$$
 
@@ -482,19 +520,25 @@ $$
 设 (X_1,X_2,\dots,X_n) 是独立同分布随机变量，并且：
 
 $$
+\begin{align}
 E(X_i)=\mu
+\end{align}
 $$
 
 样本均值为：
 
 $$
+\begin{align}
 \bar X=\frac{1}{n}\sum_{i=1}^n X_i
+\end{align}
 $$
 
 大数定律说明：
 
 $$
+\begin{align}
 \bar X \to \mu
+\end{align}
 $$
 
 
@@ -512,31 +556,41 @@ $$
 仍然设：
 
 $$
+\begin{align}
 X_1,X_2,\dots,X_n
+\end{align}
 $$
 
 独立同分布，且：
 
 $$
+\begin{align}
 E(X_i)=\mu,\quad Var(X_i)=\sigma^2
+\end{align}
 $$
 
 样本均值为：
 
 $$
+\begin{align}
 \bar X=\frac{1}{n}\sum_{i=1}^n X_i
+\end{align}
 $$
 
 中心极限定理说明，当 (n) 足够大时：
 
 $$
+\begin{align}
 \frac{\bar X-\mu}{\sigma/\sqrt n}\approx N(0,1)
+\end{align}
 $$
 
 也就是说：
 
 $$
+\begin{align}
 \bar X\approx N\left(\mu,\frac{\sigma^2}{n}\right)
+\end{align}
 $$
 
 通俗理解是：
@@ -548,13 +602,17 @@ $$
 它说明：
 
 $$
+\begin{align}
 \bar X\approx N\left(\mu,\frac{\sigma^2}{n}\right)
+\end{align}
 $$
 
 因此我们可以构造置信区间：
 
 $$
+\begin{align}
 \bar X \pm z_{\alpha/2}\frac{\sigma}{\sqrt n}
+\end{align}
 $$
 
 也可以进行假设检验。
@@ -569,27 +627,27 @@ $$
 + 原理：样本的k阶矩等于总体的k阶矩：
 
 $$
-\begin{aligned}
+\begin{align}
 E[X^k]&=\sum_{i=1}^{k}X_i^k 
-\end{aligned}
+\end{align}
 $$
 
 通过一阶矩和二阶矩可以很好估计**总体分布的均值和方差**。
 例如一阶情况：
 
 $$
-\begin{aligned}
+\begin{align}
 E[X]&=\sum_{i=1}^{k}X_i=\mu 
-\end{aligned}
+\end{align}
 $$
 
 例如二阶情况：
 
 $$
-\begin{aligned}
+\begin{align}
 E[X^2]&=\sum_{i=1}^{k}X_i^2 \\
 &=Var[X]+E[X]^2
-\end{aligned}
+\end{align}
 $$
 
 
@@ -597,45 +655,49 @@ $$
 #### 似然函数：所有样本概率的累乘
 
 $$
+\begin{align}
 L(x_1,x_2,\cdots,x_n;\theta)==\prod_{i=1}^{n} p(x_i;\theta)
+\end{align}
 $$
 
 + 似然：<font color='red'>**未定参数**</font>下证据发生的概率。
 + 给定样本\$$x_1,x_2 \cdots x_n$$，独立同分布。似然函数为：
 
 $$
-\begin{aligned}
+\begin{align}
 L(\theta)
 &=L(x_1,x_2,\cdots,x_n;\theta) \\
 &=\prod_{i=1}^{n} p(x_i;\theta),
 \qquad \theta\in\Theta
-\end{aligned}
+\end{align}
 $$
 
 + 最大化似然函数。
 
 $$
-\begin{aligned}
+\begin{align}
 L(x_1,x_2,\cdots,x_n;\hat{\theta})
 =\max_{\theta\in\Theta}
 L(x_1,x_2,\cdots,x_n;\theta)
-\end{aligned}
+\end{align}
 $$
 
 #### 最大化对数似然函数
 
 $$
+\begin{align}
 \max_{\theta\in\Theta}\log L(x_1,x_2,\cdots,x_n;\theta)
+\end{align}
 $$
 
 + 最大对数似然函数：找到使得事件发生概率最大的参数 \$$\theta$$，使得**出现证据的可能性最大，以符合证据的观察**。
 
 $$
-\begin{aligned}
+\begin{align}
 \log L(x_1,x_2,\cdots,x_n;\hat{\theta})
 =\max_{\theta\in\Theta}
 \log L(x_1,x_2,\cdots,x_n;\theta)
-\end{aligned}
+\end{align}
 $$
 
 #### 例题：均匀分布函数的参数估计
@@ -647,14 +709,18 @@ $$
 + 如果重复抽样很多次，所有估计值的平均等于真实参数
 
 $$
+\begin{align}
 E[\hat{\theta}]=\theta
+\end{align}
 $$
 
 #### 有效性
 + 参数值的估计**方差越小越好**。
 
 $$
+\begin{align}
 V[\hat{\theta_1}]<V[\hat{\theta_2}]
+\end{align}
 $$
 
 #### 一致性
@@ -674,11 +740,11 @@ $$
 * 假设我们想检验总体均值是否为10，则：
 
   $$
-  \begin{aligned} H_0:\mu =10 \end{aligned}
+  \begin{align} H_0:\mu =10 \end{align}
   $$
 
   $$
-  \begin{aligned} H_1:\mu\neq10 \end{aligned}
+  \begin{align} H_1:\mu\neq10 \end{align}
   $$
 
 

@@ -34,7 +34,9 @@ $$J_{train}=J_{cv}$$，且 $$J_{train}$$ 较大
 ## 高方差variance
 
 $$
-J_{train}\ll J_{cv}
+\begin{align}
+J_{train} &\ll J_{cv}
+\end{align}
 $$
 
 >验证集与训练集的损失有较大出入，且验证集明显大于训练集

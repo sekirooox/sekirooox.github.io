@@ -241,7 +241,9 @@ signed main() {
 ## 提示
 
 $$
+\begin{align}
 1 \leq n\le 120
+\end{align}
 $$
 
 # 最大正方形

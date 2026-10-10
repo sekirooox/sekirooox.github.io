@@ -28,7 +28,9 @@ description: "本文整理“深度学习·经典模型·Transformer”涉及的
 ## 缩放因子的作用
 
 $$
+\begin{align}
 \sqrt{d_k}
+\end{align}
 $$
 
 >To illustrate why the dot products get large, assume that the components of q and k are independent random variables with mean 0 and variance 1. Then their dot product, q · k has mean 0 and variance d_k.

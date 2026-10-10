@@ -5,6 +5,7 @@ date: 2025-12-01
 categories: ["深度学习与计算机视觉", "计算机视觉"]
 tags: ["计算机视觉", "clip", "深度学习", "学习笔记"]
 render_with_liquid: false
+math: true
 description: "本文整理“MaskCLIP+”涉及的模型原理、关键方法与实践要点，便于理解和复习相关技术。"
 ---
 
@@ -18,7 +19,7 @@ CLIP **内部确实已经隐含了丰富的局部语义，可直接输出密集�
 ##  千万不要 fine-tune CLIP，否则会破坏视觉—语言对齐
 作者实验了两种天真的方案：
 + 用 CLIP 的 backbone 初始化 DeepLab 再 fine-tune
-+ 使用映射器 M(text_embedding) → classifier weights
++ 使用映射器 \$$M(\text{text\_embedding})$$ → classifier weights
 结果都失败，原因是：
 + fine-tune 会破坏 CLIP 原有的语义空间
 + mapper 在 seen classes 上训练，无法泛化到 unseen classes

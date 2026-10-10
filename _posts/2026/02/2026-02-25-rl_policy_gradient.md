@@ -69,18 +69,18 @@ The idea is to parameterize the policy. For instance, using a neural network $$\
 我们需要的是：
 
 $$
-\begin{aligned}
+\begin{align}
 \sum_t{\nabla_\theta\log\pi_\theta(a_t^{(i)}\mid s_t^{(i)}){R(\tau^{(i)})}}
-\end{aligned}
+\end{align}
 $$
 
 然后用其进行梯度上升。
 这转换为利用**torch对以下函数进行优化**(会自动求梯度并且执行梯度下降)
 
 $$
-\begin{aligned}
+\begin{align}
 -\sum_{t}{\log\pi_\theta(a_t^{(i)}\mid s_t^{(i)}){R(\tau^{(i)})}}
-\end{aligned}
+\end{align}
 $$
 
 ### Reinforce算法的改进：使用$$G_t$$替代准确的$$R(\tau)$$
@@ -90,9 +90,9 @@ $$
 **我们最终需要优化的方程为：**
 
 $$
-\begin{aligned}
+\begin{align}
 \sum_{t}{\log\pi_\theta(a_t^{(i)}\mid s_t^{(i)}){G_t}}
-\end{aligned}
+\end{align}
 $$
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ee70599bed5c4b66b16bf162e2954ee1.png){: referrerpolicy="no-referrer" }

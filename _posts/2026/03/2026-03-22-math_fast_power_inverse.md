@@ -24,13 +24,17 @@ description: "本文整理“数论·快速幂和逆元”涉及的基本原理�
 任意整数 $$b$$ 都可以写成二进制形式：
 
 $$
+\begin{align}
 b = \sum_{i=0}^{k} c_i 2^i \quad (c_i \in {0,1})
+\end{align}
 $$
 
 因此，
 
 $$
+\begin{align}
 a^b = a^{\sum c_i 2^i} = \prod_{i=0}^{k} a^{c_i 2^i}
+\end{align}
 $$
 
 因为 $$c_i$$ 只可能是 $$0$$ 或 $$1$$，所以实际上只需要把那些二进制位上为 $$1$$ 的幂乘起来即可。
@@ -38,13 +42,17 @@ $$
 例如若
 
 $$
+\begin{align}
 b = 13 = (1101)_2 = 8 + 4 + 1
+\end{align}
 $$
 
 那么
 
 $$
+\begin{align}
 a^{13} = a^8 \cdot a^4 \cdot a^1
+\end{align}
 $$
 
 这就是快速幂的本质：
@@ -78,19 +86,25 @@ ll qmi(int a, int b, int p) {
 对于整数 $$a$$ 和模数 $$p$$，如果存在整数 $$x$$，使得
 
 $$
+\begin{align}
 a \cdot x \equiv 1 \pmod{p}
+\end{align}
 $$
 
 则称 $$x$$ 是 $$a$$ 在模 $$p$$ 意义下的**乘法逆元**（简称**逆元**），记作：
 
 $$
+\begin{align}
 a^{-1} \equiv x \pmod{p}
+\end{align}
 $$
 
 **存在条件：**
 
 $$
+\begin{align}
 \gcd(a, p) = 1
+\end{align}
 $$
 
 否则逆元不存在。
@@ -104,7 +118,9 @@ $$
 若 $$p$$ 是质数，且 $$\gcd(a,p)=1$$，则：
 
 $$
+\begin{align}
 a^{p-1} \equiv 1 \pmod{p}
+\end{align}
 $$
 
 
@@ -126,7 +142,9 @@ $$
 基于公式：
 
 $$
+\begin{align}
 a^{-1} \equiv a^{p-2} \pmod{p}
+\end{align}
 $$
 
 
@@ -140,7 +158,9 @@ $$
    * 将问题转化为计算：
 
      $$
+     \begin{align}
      a^{p-2} \bmod p
+     \end{align}
      $$
 
 

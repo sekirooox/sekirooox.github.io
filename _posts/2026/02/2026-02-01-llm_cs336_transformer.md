@@ -27,7 +27,7 @@ description: "本文围绕“计算机基础·cs336-现代Transforme…”梳理
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/f732b56168f849cb89a50fd62f1eb73d.png){: referrerpolicy="no-referrer" }
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a0fb30ad8f4243748b20be295a36518d.png){: referrerpolicy="no-referrer" }
 ## FFN vs SwiGLU
-+ Swish函数：`torch.SELU()`<span class="text-danger">等价于</span>`sigmoid(x)*x`
++ Swish函数：`torch.SELU()`<span style="color:red">等价于</span>`sigmoid(x)*x`
 + GLU：表示门控，使用学习单独的门控映射矩阵V，与激活值进行逐元素乘法。
 + ### 8/3 原则：引入门控矩阵带来额外的参数，为了确保参数量仍然保持一致，FFN中的线性层维度从4倍d_model缩小为8/3倍d_model(同时保持64的倍数)。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/96fed546f15042f3b5e0396d8a803c91.png){: referrerpolicy="no-referrer" }
@@ -115,6 +115,7 @@ class Embedding_Layer(nn.Module):
 + 旋转角度\$$\theta$$和token位置与组数有关，因此提前处理即可`theta_matrix=torch.outer(seqs,thetas)# [l,d_k/2]`。
 
 $$
+\begin{align}
 \boldsymbol{R}_{\Theta,m}^d\boldsymbol{x}=
 \begin{pmatrix}
 x_0 \\
@@ -143,6 +144,7 @@ x_2 \\
 \sin m\theta_2 \\
 \vdots \\
 \end{pmatrix}
+\end{align}
 $$
 
 
@@ -194,7 +196,7 @@ def scaled_dot_product(q,k,v,mask=None):
 ```
 ### 注意力机制
 + 兼容交叉注意力
-+ **建议使用 `einops` <span class="text-danger">中的</span> `rearrange` 操作避免转置等改变矩阵维度的操作。**
++ **建议使用 `einops` <span style="color:red">中的</span> `rearrange` 操作避免转置等改变矩阵维度的操作。**
 
 ```cpp
 from einops import rearrange# 建议使用
@@ -253,7 +255,9 @@ L
 SwiGLU的计算公式如下：
 
 $$
+\begin{align}
 SwiGLU=(\sigma(xW_1^T)\cdot xW_2^T)\cdot W_3^T
+\end{align}
 $$
 
 ```cpp
@@ -279,7 +283,9 @@ class ModernFFN(nn.Module):
 + LayerNorm=**高斯标准化进行缩放+偏差**
 
 $$
+\begin{align}
 LayerNorm(x)=\frac{x-E(x)}{\sqrt{VAR(x)}}\cdot \gamma+ \beta
+\end{align}
 $$
 
 + \$$\gamma$$和\$$\beta$$都是**可学习的参数**,维度为(d_model,)
@@ -306,7 +312,9 @@ class LayerNorm(nn.Module):
 RMSNorm的公式：
 
 $$
+\begin{align}
 \frac{x}{RMS(x)+\epsilon}·\gamma
+\end{align}
 $$
 
 + 其中 RMS代表x的**均方根**，\$$RMS(x)=\sqrt{\frac{\sum_i^d{x_i^2}}{d}}$$

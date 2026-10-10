@@ -147,18 +147,21 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
    * 步骤（解释任务）：
 
      1. 将 \$$F_i$$ 在文本维度复制为 \$$\hat F_i \in \mathbb{R}^{N_i \times N_t \times C}$$，
-        将 $$F_t$$ 在空间维度复制为 $$\hat F_t \in \mathbb{R}^{N_i \times N_t \times C}$$。
+        将 \$$ F_t $$ 在空间维度复制为 \$$ \hat F_t \in \mathbb{R}^{N_i \times N_t \times C} $$。
      2. 归一化后做逐元素乘法：
 
         $$
+        \begin{align}
         F^m = \frac{\hat F_i}{|\hat F_i|_2} \odot \frac{\hat F_t}{|\hat F_t|_2}
         \in \mathbb{R}^{N_i \times N_t \times C}
 
+        \end{align}
         $$
 
      3. 用 class token 与文本的相似度算出每个类的权重 \$$w \in \mathbb{R}^{1 \times N_t}$$，强调“显著类”：
 
         $$
+        \begin{align}
         s = \text{softmax}\Big(
         \frac{F_c}{|F_c|_2}
         \cdot
@@ -167,22 +170,27 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
         \Big),\quad
         w = \frac{s}{\text{mean}(s)}
 
+        \end{align}
         $$
 
      4. 按类别加权平均，得到“冗余特征”：
 
         $$
+        \begin{align}
         F_r = \text{mean}\big(F^m \odot \text{expand}(w)\big)
         \in \mathbb{R}^{N_i \times 1 \times C}
 
+        \end{align}
         $$
 
      5. 最终相似度：
 
         $$
+        \begin{align}
         S = \text{sum}\big(F^m - \text{expand}(F_r)\big)
         \in \mathbb{R}^{N_i \times N_t}
 
+        \end{align}
         $$
 
    * 将 \$$S$$ reshape → resize → normalize 得到最终 similarity map \$$\hat M$$。
@@ -202,8 +210,10 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
    公式：
 
    $$
+   \begin{align}
    \text{Attn}_{qk} = \text{softmax}(QK^\top \cdot \text{scale})V
 
+   \end{align}
    $$
 
    其中：
@@ -211,15 +221,17 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
    * \$$Q = X\phi_q,\ K = X\phi_k,\ V = X\phi_v$$
    * \$$X$$ 为层输入，维度 \$$\mathbb{R}^{N\times C}$$。
 
-   问题：作者可视化发现 $$Q,K$$ 产生的注意图，会把 token 与“语义相反”的区域强绑定，导致“反向可视化”（Fig.4）。
+   问题：作者可视化发现 $$ Q,K $$ 产生的注意图，会把 token 与“语义相反”的区域强绑定，导致“反向可视化”（Fig.4）。
 
 2. **v-v 自注意力模块**
 
    公式：
 
    $$
+   \begin{align}
    \text{Attn}_{vv} = \text{softmax}(VV^\top \cdot \text{scale})V
 
+   \end{align}
    $$
 
    * 不再使用 \$$\phi_q, \phi_k$$，只用 \$$\phi_v$$。
@@ -232,24 +244,28 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
    新路径输出：
 
    $$
+   \begin{align}
    \hat x_{i+1} =
    \begin{cases}
-   \text{None}, & i < d[3pt]
-   \text{Attn}_{vv}(x_i;\phi_v) + x_i, & i=d[3pt]
+   \text{None}, & i < d \\[3pt]
+   \text{Attn}_{vv}(x_i;\phi_v) + x_i, & i=d \\[3pt]
    \text{Attn}_{vv}(x_i;\phi_v) + \hat x_i, & i>d
    \end{cases}
 
+   \end{align}
    $$
 
    原路径输出：
 
    $$
+   \begin{align}
    x_{i+1} =
    \begin{cases}
-   \text{FFN}(x_i')+x_i',\quad x_i' = \text{Attn}_{qk}(x_i;\phi_q,\phi_k,\phi_v)+x_i, & \text{ViT} [3pt]
+   \text{FFN}(x_i')+x_i',\quad x_i' = \text{Attn}_{qk}(x_i;\phi_q,\phi_k,\phi_v)+x_i, & \text{ViT} \\[3pt]
    \text{ResBlock}(x_i) + x_i, & \text{ResNet}
    \end{cases}
 
+   \end{align}
    $$
 
    直观理解：
@@ -267,9 +283,11 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
    作者计算了 **每一层 self-attention / FFN 输出与最终 class 特征之间的余弦相似度**（Fig.5）：
 
    $$
+   \begin{align}
    a\langle F_t, \hat F_c\rangle =
    \frac{F_t \cdot \hat F_c}{|F_t|_2|\hat F_c|_2}
 
+   \end{align}
    $$
 
    发现：
@@ -286,11 +304,13 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
 1. **原始 similarity map：**
 
    $$
+   \begin{align}
    M = \text{norm}(\text{resize}(\text{reshape}(
    \frac{F_i}{|F_i|_2}
    \cdot
    (\frac{F_t}{|F_t|_2})^\top)))
 
+   \end{align}
    $$
 
    * \$$F_i \in \mathbb{R}^{N_i\times C}$$：图像各 patch 特征
@@ -305,7 +325,7 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
    * \$$F_r$$：对所有类别的 \$$F^m$$ 加权平均，得到在“所有类别里都常见”的部分，也就是冗余特征。
    * \$$S = \text{sum}(F^m - \text{expand}(F_r))$$：从每个位置、每个类别的“原贡献”里减去冗余部分，再对通道求和，即 **去冗余后的类别得分**。
 
-   对多标签分类，只是把 $$F_i$$ 换成 $$F_c$$，得到 per-class logit，用于 mAP。
+   对多标签分类，只是把 $$ F_i $$ 换成 $$ F_c $$，得到 per-class logit，用于 mAP。
 
 ---
 
@@ -391,8 +411,10 @@ CLIP Surgery 对卷积网络和 ViT 都显著提升了解释质量，远超现�
      * \$$\text{mSC}$$（mean Score Contrast）：前景分数与背景分数的平均差异，范围 [-100%, 100%]。
 
        $$
+       \begin{align}
        \text{mSC} = \text{mean}_c\text{mean}_s\big(\bar S_f - \bar S_b\big)
 
+       \end{align}
        $$
 
        值 < 0 表示“反向可视化”。
