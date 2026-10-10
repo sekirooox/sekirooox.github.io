@@ -36,7 +36,7 @@ description: "本文整理“计算机基础·数据库系统”的核心知识�
 ## 属性：实体拥有的一个特征
 
 ## 码(Key)：唯一标识一个实体的<span class="text-danger">属性</span>，具有<span class="text-danger">唯一性</span>，<span class="text-danger">非空性</span>；
-### 候选码：可以标识实体的码；`"码"一般都指代候选码`
+### 候选码：可以标识实体的码；<span style="color:red">"码"一般都指代候选码</span>
 
 ### 主码：选定的唯一标识实体的一个候选码
 ### 外码：参照其他关系的属性
@@ -395,7 +395,7 @@ $$
 
 
 # SQL
-## Schema：不同于关系型数据库的Schema，表示<span class="text-danger">视图</span>，表等多个`对象(例如关系)的集合`，主要用于<span class="text-danger">区分不同用户</span>
+## Schema：不同于关系型数据库的Schema，表示<span class="text-danger">视图</span>，表等多个<span style="color:red">对象(例如关系)的集合</span>，主要用于<span class="text-danger">区分不同用户</span>
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/01dfa89fa9284d5893e6cd412294968b.png){: referrerpolicy="no-referrer" }
 ### 搜索路径：决定表默认<span class="text-danger">归属于哪一个模式</span>，手动指定，自动搜索指定
@@ -408,7 +408,7 @@ $$
 
 
 ## 聚合函数：SUM，COUNT，AVG等
-## GROUP BY：分组函数，结果`只能是分组依据+聚合函数`
+## GROUP BY：分组函数，结果<span style="color:red">只能是分组依据+聚合函数</span>
 ### HAVING：·GROUP BY的条件语句·，相当于WHERE，可以与聚合函数搭配
 ### WHERE：一般性的条件语句，<span class="text-danger">不能与聚合函数搭配</span>
 
@@ -565,7 +565,7 @@ FOR EACH {ROW | STATEMENT}
 #### 关系分解：关系进行拆分，拆分为多个关系以满足范式要求
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/89fec15d511940f1b36e4397bb347ec2.png){: referrerpolicy="no-referrer" }
 
-### 3NF：不能出现非主属性的传递函数依赖；X-Y-Z，其中X为候选码，`Y为非主属性`，Z为非主属性
+### 3NF：不能出现非主属性的传递函数依赖；X-Y-Z，其中X为候选码，<span style="color:red">Y为非主属性</span>，Z为非主属性
 + Sno(候选码)-Sdept-Sloc：本质上Sloc依赖于Sdept，但是Sdept不是候选码，所以不符合3NF范式。
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/73bde08b4e274c1491e5f3ec5f6edb8d.png){: referrerpolicy="no-referrer" }
 
@@ -768,7 +768,7 @@ COMMIT / ROLLBACK
 ## 恢复技术
 ### 数据转存：存储数据的后备副本，又分为静态转存和动态转存(转存中可以处理其他事务)
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ecee2c3897454b1fa8d725649c6c570a.png){: referrerpolicy="no-referrer" }
-### 日志：记录对于数据库更新和操作的文件，`边执行事务操作，边记录！`
+### 日志：记录对于数据库更新和操作的文件，<span style="color:red">边执行事务操作，边记录！</span>
 #### 日志记录的内容：事务名，操作类型和对象，旧值和新值
 + 例如`<T,UPDATE,A,1000,700>`，表示事务T，**修改对象A的取值从1000至700**
 
@@ -797,19 +797,19 @@ COMMIT / ROLLBACK
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/36f7e03947404ba9a0e045677fd9710f.png){: referrerpolicy="no-referrer" }
 
 
-### 恢复逻辑：检查点前提交不管；`检查点后，故障点前`提交了都重做，故障发生后仍未提交，直接撤销。
+### 恢复逻辑：检查点前提交不管；<span style="color:red">检查点后，故障点前</span>提交了都重做，故障发生后仍未提交，直接撤销。
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/07812e87567148d8bcc2e102da981863.png){: referrerpolicy="no-referrer" }
 ## 数据库镜像技术
 
 # 数据库的并发控制
 ## 数据不一致：丢失修改，不可重复读，读取脏数据
-### 丢失修改：事务T1的修改`被事务T2覆盖`
+### 丢失修改：事务T1的修改<span style="color:red">被事务T2覆盖</span>
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/b355f85d3dce41cbadc39a8bb5254eae.png){: referrerpolicy="no-referrer" }
-### 不可重复读：事务T1读取A记录，其中`A被事务T2修改/删除/插入新记录`，导致A记录<span class="text-danger">前后不一致</span>
+### 不可重复读：事务T1读取A记录，其中<span style="color:red">A被事务T2修改/删除/插入新记录</span>，导致A记录<span class="text-danger">前后不一致</span>
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/9838efd53abd431fa6c317960c5a8429.png){: referrerpolicy="no-referrer" }
 
-### 读取脏数据：事务T1修改A记录，T2此时读取A记录，但是T1被撤销，导致`T2读取的A记录(中间值)`无意义
+### 读取脏数据：事务T1修改A记录，T2此时读取A记录，但是T1被撤销，导致<span style="color:red">T2读取的A记录(中间值)</span>无意义
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/8e4106f2121e4a05ae4055fafdc801b1.png){: referrerpolicy="no-referrer" }
 
 
@@ -872,7 +872,7 @@ COMMIT / ROLLBACK
 
 ### 多粒度封锁：<span class="text-danger">封锁树</span>的每一个节点都可以加锁
 #### 显示加锁和隐式加锁：显示-自身加锁，隐式-子节点加锁
-#### 冲突检查：需要`同时检查父节点的锁(隐式封锁)和孩子节点的锁`(其显示锁与本事务所加隐式锁是否冲突)；效率较低
+#### 冲突检查：需要<span style="color:red">同时检查父节点的锁(隐式封锁)和孩子节点的锁</span>(其显示锁与本事务所加隐式锁是否冲突)；效率较低
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/788c5ac6619741b78b487979a603d68b.png){: referrerpolicy="no-referrer" }
 ### 意向锁：解决向<span class="text-danger">下层节点</span>检查(元组数很多)时效率低下的问题
@@ -885,5 +885,4 @@ COMMIT / ROLLBACK
 + 对于R1加S锁，则对于数据库也要加IS锁。此时**该表元组是否有X类型的锁尚不知道**，此时检查**同一级的节点R1**是否存在IX锁，**来判断元组间是否有X锁**。
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d3c89c433afa492987541565c9ce4092.png){: referrerpolicy="no-referrer" }
-
 

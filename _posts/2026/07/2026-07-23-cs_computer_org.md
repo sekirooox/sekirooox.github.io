@@ -35,9 +35,9 @@ description: "本文整理“计算机基础·计算机组成原理”的核心�
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/932a5d438bae4f4a8d0cca70625ce238.png){: referrerpolicy="no-referrer" }
 
 # 内存地址和字节
-## 字节-寻址的内存组织结构：视同为<span class="text-danger">字节数组</span>，寻址单位`为1个字节`
+## 字节-寻址的内存组织结构：视同为<span class="text-danger">字节数组</span>，寻址单位<span style="color:red">为1个字节</span>
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/2567161bb9c941df8874dfb876121437.png){: referrerpolicy="no-referrer" }
-### 寻址单位：每一个内存地址代表几个字节，例如`2字节寻址`
+### 寻址单位：每一个内存地址代表几个字节，例如<span style="color:red">2字节寻址</span>
 
 
 ### 32位系统和64位系统：代表<span class="text-danger">逻辑地址的位数</span>，<span class="text-danger">虚拟内存空间</span>的大小
@@ -77,7 +77,7 @@ char s[6] = "12345";
 ## 位数的扩展：有符号和无符号数
 ### 无符号整数-零扩展：直接前面补0，不影响符号位
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/9881d3cd865146fd89725cc21163fb01.png){: referrerpolicy="no-referrer" }
-### 有符号整数-符号扩展：扩充k位，前面`填充k个原先的最高位`，不影响结果
+### 有符号整数-符号扩展：扩充k位，前面<span style="color:red">填充k个原先的最高位</span>，不影响结果
 
 + 符号为0，显然成立
 + 符号为1，**扩充的位数得到的负数恰好就是扩充之前得到的负数**。
@@ -119,7 +119,7 @@ $$
 
 # 浮点数的表示
 
-## `IEEE标准表示法`-二进制科学计数法：符号位$$s$$，指数部分$$E$$和有效数部分$$M$$
+## <span style="color:red">IEEE标准表示法</span>-二进制科学计数法：符号位$$s$$，指数部分$$E$$和有效数部分$$M$$
 + 计算公式为：
 
 $$
@@ -136,9 +136,9 @@ $$
 
 ### 非规格值：指数位全为0，有效数定义为$$M=f$$，f为尾数转小数
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/dbdbc78b37804f9da6798c3c404dd5af.png){: referrerpolicy="no-referrer" }
-### 无穷值：指数位全为1，但是`尾数全为0`，<span class="text-danger">特殊定义值</span>。
+### 无穷值：指数位全为1，但是<span style="color:red">尾数全为0</span>，<span class="text-danger">特殊定义值</span>。
 
-### 非有效数字NaN：指数位全1，但是尾数`非0`，<span class="text-danger">特殊定义值</span>。
+### 非有效数字NaN：指数位全1，但是尾数<span style="color:red">非0</span>，<span class="text-danger">特殊定义值</span>。
 
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/12fee9eea16e4a758da53ad613ba769e.png){: referrerpolicy="no-referrer" }
@@ -224,8 +224,7 @@ $$
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/7226dce5900d4af0948e39d448212578.png){: referrerpolicy="no-referrer" }
 
 
-### 全相联映射缓存：$$S=1$$，只有一组，包含$$E>1$$个缓存行；使用有效位和标记位$$t$$并行地进行匹配，不需要组数位$$s$$。例如`TLB快表`。
+### 全相联映射缓存：$$S=1$$，只有一组，包含$$E>1$$个缓存行；使用有效位和标记位$$t$$并行地进行匹配，不需要组数位$$s$$。例如<span style="color:red">TLB快表</span>。
 
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/e70e9fefd14b4a83b5d33dee61d481cd.png){: referrerpolicy="no-referrer" }
-
 

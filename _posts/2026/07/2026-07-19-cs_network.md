@@ -13,7 +13,7 @@ description: "本文整理“计算机基础·计算机网络”的核心知识�
 # 网络的模型
 ## OSI模型：七层模型
 + ### 应用层：向用户提供应用程序服务
-+ ### 表示层：对<span class="text-danger">格式进行转换</span>，例如`加密/解密`，<span class="text-danger">压缩和解压缩</span>
++ ### 表示层：对<span class="text-danger">格式进行转换</span>，例如<span style="color:red">加密/解密</span>，<span class="text-danger">压缩和解压缩</span>
 + ### 会话层：建立和管理<span class="text-danger">通信双方的会话</span>，例如<span class="text-danger">腾讯会议双方的通信</span>。
 + ### 传输层：提供<span class="text-danger">进程为单位</span>的端到端的传输服务。
 + ### 网际层：<span class="text-danger">不同网络</span>之间的通信服务，IP协议，路由和转发。
@@ -96,7 +96,7 @@ description: "本文整理“计算机基础·计算机网络”的核心知识�
 ### 停止-等待 Stop-and-wait：接受和发送窗口都为1
 ### 退回N步 Go-back-N：接受窗口为1，发送窗口为N
 + 接受方返回的是一个**累计的确认**
-### `选择性重传 Selective Repeat`：接受和发送窗口数大于等于1
+### <span style="color:red">选择性重传 Selective Repeat</span>：接受和发送窗口数大于等于1
 + 只是**选择性的重传**特定的报文(packet)
 
 
@@ -212,7 +212,7 @@ IP协议（Internet Protocol，网际协议）是TCP/IP体系中的网络层协�
 ## 互联网控制协议
 ### ICMP：互联网控制消息协议，用于<span class="text-danger">错误报告</span>和<span class="text-danger">回复请求</span>(`ping`命令)
 
-### ARP：MAC地址寻求协议，用于查询某个IP地址对应的MAC地址，如果不属于一个局域网，则改为`发送默认网关的ARP请求`。
+### ARP：MAC地址寻求协议，用于查询某个IP地址对应的MAC地址，如果不属于一个局域网，则改为<span style="color:red">发送默认网关的ARP请求</span>。
 + 局域网内广播ARP请求
 + 如果局域网内有对应IP地址，则该主机会回复ARP请求
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/d1d7572523fe4491896802216afcec72.png){: referrerpolicy="no-referrer" }
@@ -306,12 +306,12 @@ IP协议（Internet Protocol，网际协议）是TCP/IP体系中的网络层协�
 
 #### MTU和MSS：帧的负载的长度=IP包裹的总长度=IP头+TCP段=IP头+TCP头+TCP段
 
-#### 快启动：小于拥塞阈值时，每返回一个MSS的`ACK`，窗口大小+1，乘法增加
+#### 快启动：小于拥塞阈值时，每返回一个MSS的<span style="color:red">ACK</span>，窗口大小+1，乘法增加
 + 在拥塞窗口小于拥塞阈值时，每收到一个ACK就增加窗口大小
-#### 拥塞避免：大于等于拥塞阈值时，每一个`RTT`，窗口大小+1，线性增加
+#### 拥塞避免：大于等于拥塞阈值时，每一个<span style="color:red">RTT</span>，窗口大小+1，线性增加
 
 #### 快回复：遇到连续三个重复的ACK时，窗口和阈值缩小为<span class="text-danger">一半</span>
-#### 快重传：遇到连续三个重复的ACK时，直接重传`丢失的TCP段`
+#### 快重传：遇到连续三个重复的ACK时，直接重传<span style="color:red">丢失的TCP段</span>
 
 #### 超时处理：阈值变为一半，窗口变为1
 
@@ -340,7 +340,7 @@ IP协议（Internet Protocol，网际协议）是TCP/IP体系中的网络层协�
 ![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/605a0d7a2c854276af9dbc2d676d04f6.png){: referrerpolicy="no-referrer" }
 
 ### 顶级域名服务器：包含edu/com等顶级域名的服务器
-### 权威服务器：包含所需域名的名称服务器，查询时`直接返回IP地址`
+### 权威服务器：包含所需域名的名称服务器，查询时<span style="color:red">直接返回IP地址</span>
 ### DNS缓存和本地DNS服务器：包含一些常用域名缓存的本地服务器
 
 ### 迭代查询和递归查询
@@ -381,5 +381,4 @@ IP协议（Internet Protocol，网际协议）是TCP/IP体系中的网络层协�
 ## 路由器：分割<span class="text-danger">不同网络</span>/<span class="text-danger">广播域</span>
 ### 路由功能：交换控制信息，更新路由表
 ### 转发功能：根据路由表+路由算法决定下一跳
-
 

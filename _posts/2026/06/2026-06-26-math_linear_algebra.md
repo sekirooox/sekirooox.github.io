@@ -560,7 +560,7 @@ $$
 
 ## 正定矩阵
 
-### 定义：使得任意<span class="text-danger">非零向量</span>在`A下叉乘`结果大于0的对称矩阵
+### 定义：使得任意<span class="text-danger">非零向量</span>在<span style="color:red">A下叉乘</span>结果大于0的对称矩阵
 
 $$
 \begin{aligned} \mathbf{x}^TA\mathbf{x}>0,\quad \mathbf{x}\neq \mathbf{0} \end{aligned}
@@ -680,7 +680,7 @@ $$
 $$
 
 
-#### 结论2：对于非方阵，`不可以特征值分解 `(不符合特征向量的定义)
+#### 结论2：对于非方阵，<span style="color:red">不可以特征值分解</span> (不符合特征向量的定义)
 
 ### 定理：<span class="text-danger">不同特征值</span>对应的特征向量一定线性无关
 可对角化常用的充分条件是存在 $$n$$ 个线性无关的特征向量；而有 $$n$$ 个不同的特征值时，这个条件自动满足。
@@ -1212,7 +1212,7 @@ $$
 
 
 # 范数
-## 注意：范数中对于`每一个元素的计算都大于0`
+## 注意：范数中对于<span style="color:red">每一个元素的计算都大于0</span>
 ## 向量的范数
 ### 范数p
 + 元素的p次方求和，最后取根号
