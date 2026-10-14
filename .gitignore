@@ -48,4 +48,5 @@ vendor/
 !assets/vendor/flag-icons/**
 .tools/
 _data/visitor_stats_generated.json
+crafts
 
