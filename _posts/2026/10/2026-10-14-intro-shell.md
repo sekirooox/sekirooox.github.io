@@ -352,6 +352,24 @@ fi
 
 引用变量时通常应写成 `"$file"`，避免空格、通配符和空值引发单词拆分或路径名展开。
 
+### 参数默认值
+
+Bash 的参数展开 `${parameter:-word}` 会在参数未设置或值为空时使用 `word`。如果只希望在参数未设置时使用默认值，可以写成 `${parameter-word}`。
+
+下面的脚本将第一个位置参数的默认值设为 `/path/to/file`：
+
+```bash
+#!/usr/bin/env bash
+
+file=${1:-/path/to/file}
+
+if [ -e "$file" ]; then
+    echo "文件已存在: $file"
+else
+    echo "文件不存在: $file"
+fi
+```
+
 ### Shell 变量
 
 Bash 的普通标量通常<span style="color:red">按字符串保存</span>；此外还支持整数属性、索引数组和关联数组。**赋值符两侧不能有空格**：
@@ -673,3 +691,25 @@ unalias ll
 ```
 
 别名主要适合交互式使用；可复用的复杂逻辑更适合写成 Shell 函数或独立脚本。
+
+## 使用 Git 管理 Dotfiles
+
+### 方法 1：直接将主目录设为 Git 仓库
+
+<span style="color:red">不建议</span>直接在 `$HOME` 中初始化 Git 仓库。主目录通常包含缓存、下载文件和应用数据等大量无关内容，不仅会让 `git status` 变得混乱，还需要维护冗长的 `.gitignore`。
+
+### 方法 2：使用专用仓库和符号链接
+
+更清晰的做法是把配置文件集中保存在 `~/dotfiles`，再从主目录创建符号链接：
+
+```bash
+mkdir -p ~/dotfiles
+mv ~/.bashrc ~/dotfiles/bashrc
+ln -s ~/dotfiles/bashrc ~/.bashrc
+
+git -C ~/dotfiles init
+git -C ~/dotfiles add bashrc
+git -C ~/dotfiles commit -m 'Track Bash configuration'
+```
+
+此时，`~/.bashrc` 仍是有效路径，但它实际指向 `~/dotfiles/bashrc`；通过任一位置读写，都会访问同一份配置。创建链接前应先确认目标不存在，避免覆盖已有文件。

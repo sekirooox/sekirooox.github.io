@@ -235,7 +235,7 @@ $$
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-chang-wei-pian-hao-qu-fen.png" alt="长尾偏好区分" width="447"><figcaption><p>长尾偏好区分</p></figcaption></figure>
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-re-men-wu-pin-jiang-quan.png" alt="热门物品降权" width="335"><figcaption><p>热门物品降权</p></figcaption></figure>
 
-#### 反思：ItemCF为什么不需要调整权重
+#### 反思：ItemCF 为什么不需要调整权重
 从相似度公式看，物品之间的相似度已经<span style="color:red">按交互用户数量归一化</span>，因而能够在一定程度上削弱热门物品的影响。
 
 而在用户相似度中，用户向量的模对应<span style="color:red">交互物品数量</span>，这一归一化并不能直接调整热门物品的权重。
@@ -458,7 +458,7 @@ $$
 
 >需要实时生成用户向量，是因为用户的**个性偏好**会频繁变化。
 
-一种实现方式是**冻结其他 MLP 层**，仅更新 `ID embedding` 层的参数。
+一种实现方式是**冻结其他 MLP 层**，仅更新 <span style="color:red">ID embedding</span> 层的参数。
 
 >属性 embedding 表示用户之间较通用的属性，应具有良好的<span style="color:red">统计稳定性</span>，因此通常不进行高频动态更新。
 
@@ -470,7 +470,7 @@ $$
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-quan-liang-geng-xin.png" alt="全量更新" width="406"><figcaption><p>模型全量更新</p></figcaption></figure>
 
 ### 增量更新
-用户兴趣会持续变化，因此可实时增量更新 `ID embedding` 层参数，确保查询时获得**最新**的用户向量。
+用户兴趣会持续变化，因此可实时增量更新 <span style="color:red">ID embedding</span> 层参数，确保查询时获得**最新**的用户向量。
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-zeng-liang-geng-xin.png" alt="增量更新" width="403"><figcaption><p>模型增量更新</p></figcaption></figure>
 
@@ -996,7 +996,7 @@ $$
 
 DCN 侧重同一组特征的多阶交叉；LHUC 则让主信号与另一组条件信号<span style="color:red">反复交互</span>。
 
-### 语音识别的LHUC
+### 语音识别中的 LHUC
 语音信号与用户的**个性信号**进行反复的交互，旨在**不断强化**用户的个性数据，让其**叠加在**语音信号特征中。
 
 >门控向量可写为 $$\mathbf{g}=2\operatorname{sigmoid}(\mathbf{h})\in(0,2)^d$$。该范围允许每一维被抑制或放大，而不是简单地让用户信号大于语音信号。
@@ -1005,7 +1005,7 @@ DCN 侧重同一组特征的多阶交叉；LHUC 则让主信号与另一组条�
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-lhuc-duo-ceng-jiao-hu.png" alt="LHUC多层交互" width="497"><figcaption><p>LHUC多层交互</p></figcaption></figure>
 
-### 推荐系统的LHUC
+### 推荐系统中的 LHUC
 将用户特征叠加在物品特征上，实现物品的个性化调整。
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-tui-jian-chang-jing-lhuc.png" alt="推荐场景LHUC" width="483"><figcaption><p>推荐场景LHUC</p></figcaption></figure>
@@ -1149,11 +1149,11 @@ $$
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-mmr-ping-fen.png" alt="MMR评分" width="445"><figcaption><p>MMR评分</p></figcaption></figure>
 
-### 实现1：贪心算法
+### 实现 1：贪心算法
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-mmr-tan-xin-liu-cheng.png" alt="MMR贪心流程" width="428"><figcaption><p>MMR贪心流程</p></figcaption></figure>
 
-### 实现2：贪心+滑动窗口算法
+### 实现 2：贪心与滑动窗口
 
 为减少较早结果对当前选择的影响，可将已选集合替换为最近的滑动窗口 $$\mathcal{W}\subseteq\mathcal{S}$$：
 
@@ -1467,7 +1467,7 @@ $$
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-u2u-zhao-hui.png" alt="U2U召回" width="760"><figcaption><p>U2U召回</p></figcaption></figure>
 
-### 采用其他模型：例如Deep Retrieval
+### 采用其他模型：以 Deep Retrieval 为例
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-fu-za-zhao-hui-mo-xing.png" alt="复杂召回模型" width="760"><figcaption><p>复杂召回模型</p></figcaption></figure>
 
