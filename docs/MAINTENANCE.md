@@ -220,6 +220,12 @@ permalink: /projects/
 
 布局、组件也可以从主题 gem 复制到本仓库同路径，例如 `_includes/`、`_layouts/`。覆盖越多，升级时需对照合并的地方越多。深度修改主题 JavaScript 时，应改用官方主题源码开发流程并构建前端资源；不要在 starter 随意添加未经编译的源码。
 
+### 文章目录与阅读侧栏
+
+本站通过本地 `assets/js/dist/post.min.js` 覆盖 Chirpy 7.6.0 的同名产物，并在 `assets/css/site-background.scss` 中补充样式。文章目录收集 H1–H4，以字号、字重和缩进区分层级；显示文字最多保留 18 个 Unicode 字符，完整标题保留在 `title` 和 `aria-label` 中。桌面端文章页还提供左侧栏收起按钮，并使用 `localStorage` 记住选择；移动端仍使用主题原有导航。
+
+升级 Chirpy 时，应在对应版本的官方源码中重新合并目录与侧栏逻辑，运行 `npm run lint:js` 和 `npm run build:js`，然后只替换编译后的 `post.min.js`。部署后需同时检查桌面端和移动端的目录、侧栏、键盘焦点与长标题显示。
+
 ### 静态资源网络问题
 
 当前采用官方默认 CDN 配置。图标、字体、公式和 Mermaid 等功能可能受网络影响。需要自托管时按 [官方静态资源仓库](https://github.com/cotes2020/chirpy-static-assets) 配置完整 `assets/lib`，再打开 `assets.self_host.enabled`；不要只打开开关而不下载资源。
