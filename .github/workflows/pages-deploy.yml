@@ -54,7 +54,21 @@ jobs:
           if [[ "$EVENT_NAME" == "pull_request" ]]; then
             cp test/fixtures/visitor-stats.json _data/visitor_stats_generated.json
           else
-            ruby tools/fetch-visitor-stats.rb _data/visitor_stats_generated.json
+            stats_ready=false
+            for attempt in 1 2 3; do
+              if ruby tools/fetch-visitor-stats.rb _data/visitor_stats_generated.json; then
+                stats_ready=true
+                break
+              fi
+              echo "GoatCounter fetch attempt ${attempt} failed."
+              if (( attempt < 3 )); then
+                sleep $((attempt * 5))
+              fi
+            done
+
+            if [[ "$stats_ready" != "true" ]]; then
+              echo "::warning::GoatCounter is unavailable; using the built-in unavailable-state data."
+            fi
           fi
 
       - name: Build site
