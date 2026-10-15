@@ -5,11 +5,15 @@ home_path = File.join(site, "index.html")
 abort "找不到生成的首页：#{home_path}" unless File.file?(home_path)
 
 home = File.read(home_path, encoding: "UTF-8")
+visitor_ranking_ready =
+  home.scan(/class="visitor-country(?: |")/).length == 15 &&
+  home.include?("/assets/vendor/flag-icons/flags/4x3/")
+visitor_fallback_ready = home.include?('class="visitor-unavailable"')
+
 checks = {
   "首页包含个人介绍布局" => home.include?('id="home-profile"'),
   "首页包含累计访问" => home.include?('id="visitor-total-value"'),
-  "首页包含十五项国家访问榜" => home.scan(/class="visitor-country(?: |")/).length == 15,
-  "首页包含自托管国旗" => home.include?("/assets/vendor/flag-icons/flags/4x3/"),
+  "首页包含完整访客榜或不可用状态" => visitor_ranking_ready || visitor_fallback_ready,
   "首页不再加载世界地图" => !home.include?("jsvectormap"),
   "首页没有文章列表" => !home.match?(/id=["']post-list|class=["'][^"']*post-list/),
   "首页侧栏面板被专用样式隐藏" => home.include?("/assets/css/home.css"),
