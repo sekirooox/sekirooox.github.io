@@ -204,6 +204,8 @@ footer {
 }
 
 mjx-container[display='true'] {
+  width: 100%;
+  min-width: 0 !important;
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
