@@ -314,6 +314,18 @@ mjx-container[display='true'] {
 /* A quiet page-edge control for reclaiming reading space on post pages. */
 #sidebar-collapse-toggle {
   display: none;
+
+  .visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+  }
 }
 
 @media (min-width: 992px) {
