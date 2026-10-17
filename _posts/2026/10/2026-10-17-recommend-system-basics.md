@@ -135,7 +135,7 @@ Holdout 机制会预留一组长期使用旧策略的流量，用于对比实验
 
 ## 基于物品的协同过滤（ItemCF）
 ### 动机：物品之间的关联
-ItemCF 假设物品之间存在可由用户行为刻画的<span style="color:red">关联</span>。
+ItemCF 假设物品之间存在可由用户行为刻画的<span style="color:red">关联</span>，是较早在工业界大规模应用的协同过滤方法。
 
 ### 物品相似度：余弦相似度
 
@@ -188,7 +188,7 @@ $$
 ## Swing（ItemCF 的改进）
 
 ### 动机：用户-物品共现证据是否存在重复
-同一社群中的用户可能具有**相似偏好**，他们提供的物品关联证据容易**重复**，因此需要适当降低这类证据的权重。
+ItemCF 容易受到热门物品和噪声行为影响。同一社群中的用户可能具有**相似偏好**，他们提供的物品关联证据容易**重复**，因此 Swing 通过用户—物品二部图结构降低这类证据的权重。
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-qun-ti-gong-xian-chong-fu.png" alt="推荐系统" width="447"><figcaption><p>群体共现重复</p></figcaption></figure>
 
@@ -209,7 +209,7 @@ $$
 ## 基于用户的协同过滤（UserCF）
 
 ### 动机：用户之间的偏好关联
-UserCF 假设用户之间存在基于物品偏好的<span style="color:red">关联</span>。
+UserCF 假设用户之间存在基于物品偏好的<span style="color:red">关联</span>，并利用相似用户的行为发现目标用户的潜在兴趣。
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-usercf-yuan-li.png" alt="推荐系统" width="448"><figcaption><p>用户协同过滤原理</p></figcaption></figure>
 
 ### 相似度：余弦相似度
@@ -303,7 +303,7 @@ $$
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-fu-cai-yang-mu-biao.png" alt="推荐系统" width="760"><figcaption><p>负采样目标</p></figcaption></figure>
 
 ### Item2Vec
-Item2Vec 将用户交互序列视为“句子”、物品视为“词”，直接使用 Skip-Gram 学习物品向量。它能够利用局部共现关系，但交互序列稀疏时，长尾物品和新物品的表征仍不充分。
+Item2Vec 将用户交互序列视为“句子”、物品视为“词”，直接使用 Skip-Gram 学习物品向量。它能够利用局部共现关系，但不显式建模交互的时间间隔；当序列稀疏时，长尾物品和新物品的表征仍不充分。
 
 ### EGES
 EGES 先根据会话构建商品关系图，再通过随机游走生成训练序列，并融合类目、品牌等辅助属性，以缓解原始交互序列稀疏和新物品冷启动问题。
@@ -315,7 +315,7 @@ EGES 先根据会话构建商品关系图，再通过随机游走生成训练序
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-yu-ding-quan-ju-shang-xia-wen.png" alt="推荐系统" width="760"><figcaption><p>预订房源全局上下文</p></figcaption></figure>
 
-同时，部分负样本从与正样本相同的市场中选取，迫使模型学习同一区域内房源的细微差异：
+普通负样本可以从其他市场随机选取；同时，部分负样本从与正样本相同的市场中选取，迫使模型学习同一区域内房源的细微差异：
 
 $$
 \begin{align}
@@ -331,7 +331,7 @@ $$
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-ju-zhen-bu-quan-jie-gou.png" alt="推荐系统" width="451"><figcaption><p>用户物品双嵌入</p></figcaption></figure>
 
 ### 动机：直接匹配用户向量与物品向量
-与协同过滤不同，用户和物品是<span style="color:red">解耦的</span>，分别编码为特征向量，再通过向量匹配计算兴趣分数。
+与协同过滤不同，用户和物品是<span style="color:red">解耦的</span>，分别编码为特征向量，再通过向量匹配计算兴趣分数。这种表示学习方式将协同过滤从显式相似度计算扩展到机器学习方法。
 
 >在协同过滤中，用户与物品通过<span style="color:red">用户—物品共现程度</span>建立关联，再由物品或用户相似度矩阵推断用户对候选物品的兴趣。
 
@@ -708,7 +708,7 @@ Trinity 将物品映射到聚类空间，用统计直方图保存用户在各聚
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-trinity-zhao-hui-kuang-jia.png" alt="推荐系统" width="620"><figcaption><p>Trinity召回框架</p></figcaption></figure>
 
 ### Streaming VQ
-Streaming VQ 让物品到聚类中心的映射随数据流持续更新，以跟踪物品兴趣语义的变化；同时通过流行度调节和扰动机制维持索引均衡，避免热门物品集中在少数头部聚类。
+Streaming VQ 让物品到聚类中心的映射随数据流持续更新，以跟踪物品兴趣语义的变化，例如同一物品的兴趣导向从科技转向经济；同时通过流行度调节和扰动机制维持索引均衡，避免热门物品集中在少数头部聚类。
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-streaming-vq-jia-gou.png" alt="推荐系统" width="760"><figcaption><p>Streaming VQ架构</p></figcaption></figure>
 
@@ -2113,6 +2113,8 @@ $$
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-jing-que-lv-ding-yi.png" alt="推荐系统" width="760"><figcaption><p>准确率定义</p></figcaption></figure>
 
+随着 $$K$$ 增大，候选列表通常会引入更多不相关物品，因此 Precision@K 往往下降。
+
 ### NDCG@K
 
 NDCG@K 同时考虑候选是否相关及其所在位置，排名越靠前的相关结果贡献越大。
@@ -2126,6 +2128,8 @@ $$
 $$
 
 其中，$$r$$ 为排序位置，$$\mathrm{rel}_r$$ 为该位置结果的相关性等级，$$K$$ 为截断位置。
+
+DCG@K 没有固定上界，通常只适合在相同数据集和截断位置下比较相对大小。
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-dcg-ding-yi.png" alt="推荐系统" width="760"><figcaption><p>DCG定义</p></figcaption></figure>
 
@@ -2180,7 +2184,7 @@ $$
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-auc-ji-suan-shi-li.png" alt="推荐系统" width="760"><figcaption><p>AUC计算示例</p></figcaption></figure>
 
-AUC 约为 $$0.5$$ 时，模型整体接近随机排序。全局 AUC 会混合不同用户的样本，可能掩盖用户之间的数据分布差异。
+AUC 约为 $$0.5$$ 时，模型整体接近随机排序。全局 AUC 会混合不同用户的样本，可能掩盖用户之间的数据分布差异；即使各用户组内排序较好，全局 AUC 仍可能偏低。
 
 ### GAUC
 
@@ -2193,5 +2197,7 @@ $$
 $$
 
 其中，$$\mathcal U$$ 为同时包含正、负样本的用户集合，$$\mathrm{AUC}_u$$ 为用户 $$u$$ 的组内 AUC，$$w_u$$ 为该用户的非负权重，可按样本数或曝光量设置。
+
+当权重按样本数或曝光量设置时，活跃用户会对 GAUC 产生更大影响。
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-gauc-jia-quan-gong-shi.png" alt="推荐系统" width="760"><figcaption><p>GAUC加权公式</p></figcaption></figure>
