@@ -1,6 +1,6 @@
 ---
 title: "推荐系统基础"
-date: 2026-10-10 00:00:00 +0800
+date: 2026-10-17 00:00:00 +0800
 description: 推荐系统
 categories: ["推荐系统"]
 tags: ["推荐系统","深度学习","协同过滤"]
@@ -960,19 +960,95 @@ f_{ij}^{\mathrm{bilinear}} &= \mathbf{x}_i^{\mathsf T}\mathbf{W}_{ij}\mathbf{x}_
 \end{align}
 $$
 
-其中，$$\mathbf{x}_i,\mathbf{x}_j\in\mathbb{R}^{m}$$，$$\mathbf{W}_{ij}\in\mathbb{R}^{m\times m}$$。内积与双线性交叉生成**标量分数**；逐元素乘法生成向量，通常需要拼接多个交叉向量作为后续网络的输入。
+其中，$$\mathbf{x}_i,\mathbf{x}_j\in\mathbb{R}^{m}$$，$$\mathbf{W}_{ij}\in\mathbb{R}^{m\times m}$$。内积只关联<span style="color:red">对应维度</span>，双线性交叉还能关联<span style="color:red">不同维度</span>；二者生成标量分数，而逐元素乘法生成向量，通常需要<span style="color:red">拼接多个交叉向量</span>后再输入后续网络。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-nei-ji-jiao-cha-shi-li.png" alt="内积交叉示例" width="760"><figcaption><p>内积交叉示例</p></figcaption></figure>
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-shuang-xian-xing-jiao-cha-shi-li.png" alt="双线性交叉示例" width="760"><figcaption><p>双线性交叉示例</p></figcaption></figure>
+
+例如，令 $$\mathbf{x}_u=[1,2]^{\mathsf T}\in\mathbb{R}^{2}$$、$$\mathbf{x}_m=[3,4]^{\mathsf T}\in\mathbb{R}^{2}$$，并取 $$\mathbf{W}\in\mathbb{R}^{2\times2}$$，则：
+
+$$
+\begin{align}
+\mathbf{x}_u^{\mathsf T}\mathbf{x}_m &= 11\\
+\mathbf{x}_u^{\mathsf T}\mathbf{W}\mathbf{x}_m &= \sum_{a=1}^{2}\sum_{b=1}^{2}x_{u,a}W_{ab}x_{m,b}
+\end{align}
+$$
+
+其中，$$x_{u,a}$$ 与 $$x_{m,b}$$ 为向量分量，$$W_{ab}$$ 控制第 $$a$$ 维与第 $$b$$ 维之间的交互强度。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-kua-wei-du-jiao-cha.png" alt="跨维度交叉" width="760"><figcaption><p>跨维度交叉</p></figcaption></figure>
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-te-zheng-jiao-cha-fang-shi.png" alt="特征交叉方式" width="497"><figcaption><p>特征交叉方式</p></figcaption></figure>
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-shuang-xian-xing-jiao-cha.png" alt="双线性交叉" width="369"><figcaption><p>双线性交叉</p></figcaption></figure>
 
+FiBiNET 常先得到向量形式的双线性交互，再对各维求和，将其化为标量分数：
 
-## 深度交叉网络（DCN）
+$$
+\begin{align}
+\mathbf{p}_{ij} &= \left(\mathbf{v}_i^{\mathsf T}\mathbf{W}_{ij}\right)\odot\mathbf{v}_j\\
+s_{ij} &= \mathbf{1}^{\mathsf T}\mathbf{p}_{ij}
+\end{align}
+$$
+
+其中，$$\mathbf{v}_i,\mathbf{v}_j,\mathbf{p}_{ij},\mathbf{1}\in\mathbb{R}^{k}$$，$$\mathbf{W}_{ij}\in\mathbb{R}^{k\times k}$$，$$s_{ij}\in\mathbb{R}$$ 为最终交叉分数。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-shuang-xian-xing-qiu-he.png" alt="双线性交互求和" width="580"><figcaption><p>双线性交互求和</p></figcaption></figure>
+
+## FM：内积交叉
+
+FM 在线性模型上加入所有特征对的二阶内积，使模型能够以较低参数量学习特征交互：
+
+$$
+\begin{align}
+\widehat{y} &= w_0+\sum_{i=1}^{n}w_ix_i+\sum_{i=1}^{n-1}\sum_{j=i+1}^{n}\mathbf{v}_i^{\mathsf T}\mathbf{v}_j x_i x_j
+\end{align}
+$$
+
+其中，$$x_i,x_j,w_0,w_i\in\mathbb{R}$$，$$\mathbf{v}_i,\mathbf{v}_j\in\mathbb{R}^{k}$$，$$n$$ 为特征数，$$\widehat{y}$$ 为预测值。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-fm-mo-xing-jie-gou.png" alt="FM模型结构" width="760"><figcaption><p>FM模型结构</p></figcaption></figure>
+
+## AFM：阿达玛积交叉
+
+AFM 保留特征对的逐元素乘积，并通过注意力机制学习各交叉向量的重要性，再聚合为预测表示：
+
+$$
+\begin{align}
+\mathbf{z} &= \sum_{1\le i<j\le n}a_{ij}\left(\mathbf{v}_i\odot\mathbf{v}_j\right)x_i x_j
+\end{align}
+$$
+
+其中，$$\mathbf{v}_i,\mathbf{v}_j,\mathbf{z}\in\mathbb{R}^{k}$$，$$a_{ij}\in[0,1]$$ 为注意力权重，且所有特征对的权重之和为 $$1$$。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-afm-mo-xing-jie-gou.png" alt="AFM模型结构" width="760"><figcaption><p>AFM模型结构</p></figcaption></figure>
+
+## FiBiNet：双线性交叉
+FiBiNET 先用 SENet 重标定字段权重，再分别对原始嵌入与加权嵌入执行双线性交叉，从而同时建模字段重要性和跨维度关系。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-fibinet-shuang-xian-xing-jiao-hu.png" alt="FiBiNET双线性交互" width="760"><figcaption><p>FiBiNET双线性交互</p></figcaption></figure>
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-fibinet-jie-gou.png" alt="FiBiNet结构" width="485"><figcaption><p>FiBiNet结构</p></figcaption></figure>
+
+
+### SENet：多个离散特征的权重修正，维度不变
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-senet-li-san-te-zheng.png" alt="SENet离散特征" width="300"><figcaption><p>SENet离散特征</p></figcaption></figure>
+
+#### 原理
+SENet 先为各字段学习权重，再对离散特征进行重标定，从而<span style="color:red">动态调整不同字段的重要性</span>。若输入为 $$\mathbf{X}\in\mathbb{R}^{m\times k}$$、字段权重为 $$\mathbf{s}\in\mathbb{R}^{m}$$，则输出仍为 $$\widetilde{\mathbf{X}}\in\mathbb{R}^{m\times k}$$。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-senet-jia-quan-jie-gou.png" alt="SENet加权结构" width="498"><figcaption><p>SENet加权结构</p></figcaption></figure>
+
+>实现时可通过广播对不同字段加权，因此各字段的原始嵌入长度可以不同；进入统一的批量矩阵运算前，仍需完成对齐、填充或分组处理。
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-senet-bian-chang-shu-ru.png" alt="SENet变长输入" width="491"><figcaption><p>SENet变长输入</p></figcaption></figure>
+
+
+## 深度交叉网络（DCN）：底层和高层特征的交叉
 
 ### 交叉层
 交叉层可与 MLP 并行或串联使用，其核心结构类似<span style="color:red">残差连接</span>。
-
-#### 动机：通过残差连接让低层特征与高层特征进行交互
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-jiao-cha-ceng-can-cha-jie-gou.png" alt="交叉层残差结构" width="510"><figcaption><p>交叉层残差结构</p></figcaption></figure>
 
@@ -991,44 +1067,11 @@ $$
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-shen-du-jiao-cha-wang-luo.png" alt="深度交叉网络" width="493"><figcaption><p>深度交叉网络</p></figcaption></figure>
 
-## LHUC
-### LHUC 与 DCN 的区别
+## xDeepFM：高阶特征交叉
+DCN 在元素级别进行高阶交叉，可能打散同一字段的嵌入表示。xDeepFM 的压缩交互网络（CIN）让原始字段嵌入与上一层特征图进行显式交互，再通过一维卷积和汇聚生成高阶表示，从而在<span style="color:red">向量级别</span>保留字段结构。
 
-DCN 侧重同一组特征的多阶交叉；LHUC 则让主信号与另一组条件信号<span style="color:red">反复交互</span>。
-
-### 语音识别中的 LHUC
-语音信号与用户的**个性信号**进行反复的交互，旨在**不断强化**用户的个性数据，让其**叠加在**语音信号特征中。
-
->门控向量可写为 $$\mathbf{g}=2\operatorname{sigmoid}(\mathbf{h})\in(0,2)^d$$。该范围允许每一维被抑制或放大，而不是简单地让用户信号大于语音信号。
-
-<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-lhuc-shuang-lu-shu-ru.png" alt="LHUC双路输入" width="488"><figcaption><p>LHUC双路输入</p></figcaption></figure>
-
-<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-lhuc-duo-ceng-jiao-hu.png" alt="LHUC多层交互" width="497"><figcaption><p>LHUC多层交互</p></figcaption></figure>
-
-### 推荐系统中的 LHUC
-将用户特征叠加在物品特征上，实现物品的个性化调整。
-
-<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-tui-jian-chang-jing-lhuc.png" alt="推荐场景LHUC" width="483"><figcaption><p>推荐场景LHUC</p></figcaption></figure>
-
-## SENet
-### 动机：多个离散特征的加权
-
-<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-senet-li-san-te-zheng.png" alt="SENet离散特征" width="300"><figcaption><p>SENet离散特征</p></figcaption></figure>
-
-### 原理
-SENet 先为各字段学习权重，再对离散特征进行重标定，从而<span style="color:red">动态调整不同字段的重要性</span>。若输入为 $$\mathbf{X}\in\mathbb{R}^{m\times k}$$、字段权重为 $$\mathbf{s}\in\mathbb{R}^{m}$$，则输出仍为 $$\widetilde{\mathbf{X}}\in\mathbb{R}^{m\times k}$$。
-
-<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-senet-jia-quan-jie-gou.png" alt="SENet加权结构" width="498"><figcaption><p>SENet加权结构</p></figcaption></figure>
-
->实现时可通过广播对不同字段加权，因此各字段的原始嵌入长度可以不同；进入统一的批量矩阵运算前，仍需完成对齐、填充或分组处理。
-<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-senet-bian-chang-shu-ru.png" alt="SENet变长输入" width="491"><figcaption><p>SENet变长输入</p></figcaption></figure>
-
-
-## FiBiNet
-
-<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-fibinet-jie-gou.png" alt="FiBiNet结构" width="485"><figcaption><p>FiBiNet结构</p></figcaption></figure>
-
-# 用户行为序列建模（Last-N）
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-xdeepfm-te-zheng-jiao-cha.png" alt="xDeepFM特征交叉" width="760"><figcaption><p>xDeepFM特征交叉</p></figcaption></figure>
+# 用户行为序列
 
 ## Last-N
 Last-N 表示用户最近点击、点赞或收藏的 $$n$$ 个物品。基础方法收集这些物品的 ID 与嵌入向量，并通过均值池化得到用户行为特征：
@@ -1101,6 +1144,147 @@ SIM 支持更长的序列，但检索出的物品在时间上并不连续，因�
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-shi-jian-jian-ge-bian-ma.png" alt="时间间隔编码" width="405"><figcaption><p>时间间隔编码</p></figcaption></figure>
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-shi-jian-gan-zhi-zhu-yi-li.png" alt="时间感知注意力" width="434"><figcaption><p>时间感知注意力</p></figcaption></figure>
+
+## DIEN：引入时序依赖关系
+点击和购买是外显行为，其背后对应随时间变化的兴趣状态。DIEN 先用 GRU 从行为序列中提取兴趣，再通过注意力与 AUGRU 建模兴趣演化，使最终表示同时保留**时序依赖**和候选物品相关性。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-dien-mo-xing-jie-gou.png" alt="DIEN模型结构" width="760"><figcaption><p>DIEN模型结构</p></figcaption></figure>
+
+## DSIN：分层建模时序依赖
+连续序列模型容易忽略行为的间断性。DSIN 将行为划分为多个会话：先用自注意力提取每个会话的兴趣，再用 Bi-LSTM 建模会话间依赖，最后结合候选物品完成注意力聚合。这样既保留会话内的集中意图，也能描述跨会话的兴趣迁移。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-dsin-mo-xing-jie-gou.png" alt="DSIN模型结构" width="760"><figcaption><p>DSIN模型结构</p></figcaption></figure>
+# 排序的多目标建模
+
+## 建模相关目标
+PLE 等 MoE 架构同时使用**共享专家**与**任务专属专家**，并通过分层抽取网络逐步分离共性和差异，从而联合预测点击率、转化率等相关目标。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-ple-wang-luo-jie-gou.png" alt="PLE网络结构" width="760"><figcaption><p>PLE网络结构</p></figcaption></figure>
+
+## 建模时序依赖目标
+CTR 与 CVR 存在“先曝光、再点击、后转化”的时序依赖。若直接分别预测，容易引入样本选择偏差；更稳妥的做法是将目标写成条件概率链，并在整个曝光空间中联合训练。例如：
+
+$$
+\begin{align}
+p_{\mathrm{ctcvr}} &= p_{\mathrm{ctr}}\cdot p_{\mathrm{cvr}\mid\mathrm{click}}
+\end{align}
+$$
+
+其中，$$p_{\mathrm{ctr}}$$ 为点击概率，$$p_{\mathrm{cvr}\mid\mathrm{click}}$$ 为点击后的条件转化概率，$$p_{\mathrm{ctcvr}}$$ 为曝光后最终转化的联合概率。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-esm2-mo-xing-jie-gou.png" alt="ESM2模型结构" width="760"><figcaption><p>ESM2模型结构</p></figcaption></figure>
+
+## 改进优化算法
+
+### 不确定性优化：自行确定优化权重
+不确定性加权为每个任务学习噪声参数，使不确定性较高的任务获得较小权重。以两个任务为例：
+
+$$
+\begin{align}
+\mathcal{L}(\mathbf{W},\sigma_1,\sigma_2) &= \frac{1}{2\sigma_1^2}\mathcal{L}_1(\mathbf{W})+\frac{1}{\sigma_2^2}\mathcal{L}_2(\mathbf{W})+\log\sigma_1+\log\sigma_2
+\end{align}
+$$
+
+其中，$$\mathbf{W}$$ 表示模型参数，$$\mathcal{L}_1$$ 与 $$\mathcal{L}_2$$ 为任务损失，$$\sigma_1,\sigma_2>0$$ 为可学习的不确定性参数。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-bu-que-ding-xing-jia-quan.png" alt="不确定性加权" width="760"><figcaption><p>不确定性加权</p></figcaption></figure>
+
+### 梯度优化方法
+不同任务的损失量级和收敛速度并不一致，较大的梯度可能主导共享参数更新。GradNorm 除任务损失外，还引入梯度平衡损失，单独优化各任务权重，使其训练速度保持相对均衡。
+
+### 帕累托优化
+当不同任务的梯度方向冲突时，简单加权难以同时改善所有目标。帕累托优化寻找<span style="color:red">无法在不损害其他目标的情况下继续改进任一目标</span>的解，其多任务目标可写为：
+
+$$
+\begin{align}
+\min_{\boldsymbol{\theta}}\ \boldsymbol{\mathcal{L}}(\boldsymbol{\theta}) &= \min_{\boldsymbol{\theta}}\left(\mathcal{L}_1(\boldsymbol{\theta}),\ldots,\mathcal{L}_T(\boldsymbol{\theta})\right)\\
+\mathcal{L}(\boldsymbol{\theta}) &= \sum_{t=1}^{T}w_t\mathcal{L}_t(\boldsymbol{\theta})
+\end{align}
+$$
+
+其中，$$\boldsymbol{\theta}$$ 为模型参数，$$T$$ 为任务数，$$w_t\ge c_t$$ 为第 $$t$$ 个任务的权重，并满足 $$\sum_{t=1}^{T}w_t=1$$。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-pa-lei-tuo-you-hua.png" alt="帕累托优化" width="760"><figcaption><p>帕累托优化</p></figcaption></figure>
+
+# 排序的多场景建模
+
+用户兴趣通常依赖业务入口、用户状态、设备和时间等场景。多场景建模的核心是在复用<span style="color:red">跨场景共性</span>的同时，保留<span style="color:red">场景特异性</span>。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-duo-chang-jing-jian-mo.png" alt="多场景建模" width="760"><figcaption><p>多场景建模</p></figcaption></figure>
+
+## 共享底层参数并保留场景分支
+
+### hMoE
+多个场景的专家在推理时混合，但训练时只向当前场景对应的分支传播梯度，从而兼顾共享能力与场景差异。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-hmoe-mo-xing-jie-gou.png" alt="hMoE模型结构" width="672"><figcaption><p>hMoE模型结构</p></figcaption></figure>
+
+### Star
+Star 共享一套基础网络，并根据首页、搜索页或购物车等场景标识加载专属参数。共享参数与场景参数逐元素相乘后形成当前场景的网络权重。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-star-fcn-jie-gou.png" alt="Star FCN结构" width="760"><figcaption><p>Star FCN结构</p></figcaption></figure>
+
+## 使用场景变量调制参数
+### LHUC
+
+#### LHUC 与 DCN 的区别
+
+DCN 侧重同一组特征的多阶交叉；LHUC 则让主信号与另一组条件信号<span style="color:red">反复交互</span>。
+
+#### 语音识别中的 LHUC
+语音信号与用户的**个性信号**进行反复的交互，旨在**不断强化**用户的个性数据，让其**叠加在**语音信号特征中。
+
+>门控向量可写为 $$\mathbf{g}=2\operatorname{sigmoid}(\mathbf{h})\in(0,2)^d$$。该范围允许每一维被抑制或放大，而不是简单地让用户信号大于语音信号。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-lhuc-shuang-lu-shu-ru.png" alt="LHUC双路输入" width="488"><figcaption><p>LHUC双路输入</p></figcaption></figure>
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-lhuc-duo-ceng-jiao-hu.png" alt="LHUC多层交互" width="497"><figcaption><p>LHUC多层交互</p></figcaption></figure>
+
+#### 推荐系统中的 LHUC
+将用户特征叠加在物品特征上，实现物品的个性化调整。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-tui-jian-chang-jing-lhuc.png" alt="推荐场景LHUC" width="483"><figcaption><p>推荐场景LHUC</p></figcaption></figure>
+
+
+
+### PEPNET：通过场景向量调制用户/物品特征
+PEPNet 使用 Gate NU 将场景向量与用户、物品及作者特征融合，以较少参数生成动态缩放权重：
+
+$$
+\begin{align}
+\mathbf{x}' &= \operatorname{ReLU}\left(\mathbf{W}_1\mathbf{x}+\mathbf{b}_1\right)\\
+\boldsymbol{\delta} &= \gamma\operatorname{sigmoid}\left(\mathbf{W}_2\mathbf{x}'+\mathbf{b}_2\right)
+\end{align}
+$$
+
+其中，$$\mathbf{x}\in\mathbb{R}^{d}$$ 为场景或个性化特征，$$\mathbf{x}'\in\mathbb{R}^{h}$$ 为隐藏表示，$$\boldsymbol{\delta}\in[0,\gamma]^{p}$$ 与待调制参数同维；$$\mathbf{W}_1\in\mathbb{R}^{h\times d}$$、$$\mathbf{W}_2\in\mathbb{R}^{p\times h}$$，$$\mathbf{b}_1\in\mathbb{R}^{h}$$、$$\mathbf{b}_2\in\mathbb{R}^{p}$$，$$\gamma>0$$ 为缩放上界。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-gate-nu-dong-tai-quan-zhong.png" alt="Gate NU动态权重" width="760"><figcaption><p>Gate NU动态权重</p></figcaption></figure>
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-pepnet-mo-xing-jie-gou.png" alt="PEPNet模型结构" width="760"><figcaption><p>PEPNet模型结构</p></figcaption></figure>
+
+### APG：根据样本生成动态权重
+APG 根据当前样本生成动态矩阵，并通过低秩分解控制参数量。设输入维度为 $$d$$、隐藏维度为 $$h$$、输出维度为 $$o$$，则：
+
+$$
+\begin{align}
+\mathbf{S}_i &= \operatorname{reshape}\left(\operatorname{MLP}(\mathbf{z}_i)\right)\in\mathbb{R}^{h\times h}\\
+\mathbf{V} &= \mathbf{V}^{l}\mathbf{V}^{r}\in\mathbb{R}^{h\times d}\\
+\mathbf{U} &= \mathbf{U}^{l}\mathbf{U}^{r}\in\mathbb{R}^{o\times h}\\
+\mathbf{y}_i &= \sigma\left(\mathbf{U}\mathbf{S}_i\mathbf{V}\mathbf{x}_i\right)\in\mathbb{R}^{o}
+\end{align}
+$$
+
+其中，$$\mathbf{x}_i\in\mathbb{R}^{d}$$ 为输入，$$\mathbf{z}_i$$ 为样本感知特征，$$\mathbf{S}_i$$ 为动态矩阵；$$\mathbf{V}^{l}\in\mathbb{R}^{h\times r_v}$$、$$\mathbf{V}^{r}\in\mathbb{R}^{r_v\times d}$$、$$\mathbf{U}^{l}\in\mathbb{R}^{o\times r_u}$$、$$\mathbf{U}^{r}\in\mathbb{R}^{r_u\times h}$$，且 $$r_v,r_u$$ 为低秩维度。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-apg-di-zhi-ji-suan.png" alt="APG低秩计算" width="760"><figcaption><p>APG低秩计算</p></figcaption></figure>
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-apg-can-shu-hua.png" alt="APG参数化" width="760"><figcaption><p>APG参数化</p></figcaption></figure>
+
+### M2M：动态调制专家和任务塔的预测方式
+利用场景生成的动态参数，既控制专家如何融合，也控制不同任务塔如何处理特征。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-m2m-mo-xing-jie-gou.png" alt="M2M模型结构" width="760"><figcaption><p>M2M模型结构</p></figcaption></figure>
 
 # 重排的多样性
 
@@ -1237,7 +1421,7 @@ $$
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-dpp-hua-dong-chuang-kou.png" alt="DPP滑动窗口" width="508"><figcaption><p>DPP滑动窗口</p></figcaption></figure>
 
 
-## 重排规则：业务定义的多样性
+# 重排的业务约束
 业务规则可以限制连续同类内容的数量，或约束图文、视频与推广内容的占比。
 
 >重排规则通常是<span style="color:red">优先级最高的多样性约束</span>。
@@ -1251,8 +1435,50 @@ $$
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-gui-ze-yue-shu-mmr.png" alt="规则约束MMR" width="458"><figcaption><p>规则约束MMR</p></figcaption></figure>
 
+# 重排的个性化
 
+## 动机：数据驱动的个性化重排指标挖掘
+传统重排依赖人工定义的多样性指标。学习式方法则利用注意力建模列表内物品的相互影响，从数据中学习个性化的重排规则。
 
+## PRM：使用注意力机制
+PRM 使用 Transformer 编码初始列表，在建模物品间关系的同时融入用户个性化向量。对第 $$j$$ 个物品，其输入表示可写为：
+
+$$
+\begin{align}
+\mathbf{e}_j &= \mathbf{W}_e\left[\mathbf{x}_j;\mathbf{p}_{u,j}\right]+\mathbf{b}_e+\mathbf{q}_j
+\end{align}
+$$
+
+其中，$$\mathbf{x}_j\in\mathbb{R}^{d_x}$$ 为物品特征，$$\mathbf{p}_{u,j}\in\mathbb{R}^{d_p}$$ 为用户对该物品的个性化表示，$$\mathbf{q}_j\in\mathbb{R}^{d_e}$$ 为位置嵌入；$$\mathbf{W}_e\in\mathbb{R}^{d_e\times(d_x+d_p)}$$、$$\mathbf{b}_e\in\mathbb{R}^{d_e}$$，因此 $$\mathbf{e}_j\in\mathbb{R}^{d_e}$$。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-prm-shu-ru-biao-zheng.png" alt="PRM输入表征" width="760"><figcaption><p>PRM输入表征</p></figcaption></figure>
+
+编码后，模型将每个物品的高层表示映射为标量，并在列表内执行 Softmax：
+
+$$
+\begin{align}
+z_j &= \mathbf{w}_o^{\mathsf T}\mathbf{h}_j+b_o\\
+p_j &= \frac{\exp(z_j)}{\sum_{r=1}^{n}\exp(z_r)}
+\end{align}
+$$
+
+其中，$$\mathbf{h}_j,\mathbf{w}_o\in\mathbb{R}^{d_h}$$，$$b_o,z_j\in\mathbb{R}$$，$$p_j\in(0,1)$$ 为第 $$j$$ 个物品在当前列表中的相对重排概率，且 $$\sum_{j=1}^{n}p_j=1$$。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-prm-shu-chu-ceng.png" alt="PRM输出层" width="760"><figcaption><p>PRM输出层</p></figcaption></figure>
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-prm-mo-xing-jie-gou.png" alt="PRM模型结构" width="760"><figcaption><p>PRM模型结构</p></figcaption></figure>
+
+## PRS：优化重排顺序
+PRM 能端到端学习列表内关系，但未直接搜索不同排列对用户体验的影响。例如，列表 $$[A,B,C]$$ 与 $$[B,A,C]$$ 可能产生不同的购买决策，这类现象称为<span style="color:red">排列变异影响</span>。
+
+PRS 将问题拆成两个阶段：PMatch 通过搜索算法从 $$n!$$ 种理论排列中筛出少量候选，PRank 再用神经网络评估候选排列并选择最优结果。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-prs-liang-jie-duan.png" alt="PRS两阶段" width="760"><figcaption><p>PRS两阶段</p></figcaption></figure>
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-prs-kuang-jia.png" alt="PRS框架" width="760"><figcaption><p>PRS框架</p></figcaption></figure>
+
+# 学习式重排和优化式重排
+学习式重排依赖模型结构，从数据中学习个性化和多样性信息，并在输出分数时隐式权衡多个目标。优化式重排与基础模型解耦，在已有分数上显式施加多样性或业务约束，再求解新的排列。
 
 # 冷启动
 
@@ -1389,7 +1615,7 @@ $$
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-zheng-yang-ben-gou-zao.png" alt="正样本构造" width="407"><figcaption><p>正样本构造</p></figcaption></figure>
 
-大部分都是负样本，因此可以从全体笔记中随机挑选。
+候选集合中大部分物品可视为负样本，因此可从全体物品中随机采样。
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-fu-yang-ben-gou-zao.png" alt="负样本构造" width="317"><figcaption><p>负样本构造</p></figcaption></figure>
 
 
@@ -1475,7 +1701,7 @@ $$
 ## 提高排序表现
 
 ### 优化基座
-基座指的是编码特征的神经网络。优化基座一般要么增大参数量，要么采用DCN等特征工程的做法。
+基座是负责特征编码的主干网络。常见优化方式包括扩大模型容量，以及引入 DCN 等显式特征交叉结构。
 
 >Bilinear 指双线性交互，不等同于逐元素乘法。多个特征对分别完成双线性交互后，可将结果拼接并融合。
 
@@ -1531,9 +1757,9 @@ $$
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-mo-xing-gong-ping-bi-jiao.png" alt="模型公平比较" width="760"><figcaption><p>模型公平比较</p></figcaption></figure>
 
 ##### 如果新模型更优，如何快速追上老模型
-老模型作为教师，新模型直接蒸馏老模型的结果，走捷径追赶。
+可将老模型作为教师，通过知识蒸馏帮助新模型快速追平其效果。
 
-追上之后新模型就无需蒸馏老模型，**行为逐渐特异化**。
+当新模型完成追赶后，可逐步降低蒸馏约束，使其根据新结构形成**独立的预测能力**。
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-xin-mo-xing-zhui-gan.png" alt="新模型追赶" width="760"><figcaption><p>新模型追赶</p></figcaption></figure>
 
@@ -1541,7 +1767,7 @@ $$
 ### 召回多样性
 
 #### 为用户向量加入随机噪声
-这个很好理解，用户向量有噪声，每次召回的结果会**变得随机化**。
+在用户向量中加入小幅随机噪声，可使近邻检索结果产生适度变化，从而增加召回候选的多样性。
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-yong-hu-xiang-liang-jia-zao.png" alt="用户向量加噪" width="760"><figcaption><p>用户向量加噪</p></figcaption></figure>
 
@@ -1555,17 +1781,17 @@ U2I2I 可从行为序列中抽取<span style="color:red">类目较均衡</span>�
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-u2i2i-xu-lie-chou-yang.png" alt="U2I2I序列抽样" width="760"><figcaption><p>U2I2I序列抽样</p></figcaption></figure>
 
 ### 粗排多样性
-层次化筛选，先固定**小数量不考虑多样性**，然后再**大数量考虑多样性结果**。
+可采用层次化筛选：先保留少量高相关候选，再对更大的候选集合施加多样性约束，兼顾相关性下限与覆盖范围。
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-cu-pai-duo-yang-xing.png" alt="粗排多样性" width="760"><figcaption><p>粗排多样性</p></figcaption></figure>
 
 ### 精排多样性
-MMR，DDP算法和基于**人为规则**来进行排序。
+精排后的重排可使用 MMR、DPP 或人工规则，在相关性得分之上进一步控制重复度和内容比例。
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-jing-pai-duo-yang-xing.png" alt="精排多样性" width="760"><figcaption><p>精排多样性</p></figcaption></figure>
 
 ### 探索流量
-引入极少量探索性内容，**在排序后暴力插入**。
+系统可在排序后插入极少量探索性内容，为缺少历史反馈的物品获取初始曝光。
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-tan-suo-liu-liang.png" alt="探索流量" width="760"><figcaption><p>探索流量</p></figcaption></figure>
 
@@ -1589,14 +1815,14 @@ MMR，DDP算法和基于**人为规则**来进行排序。
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-te-shu-nei-rong-chi-zhao-hui.png" alt="特殊内容池召回" width="760"><figcaption><p>特殊内容池召回</p></figcaption></figure>
 
 #### 部署代价
-使用最近邻查找，由于内容池比较小，因此**代价很低**。
+部署阶段可使用近邻检索；由于专属内容池规模较小，额外计算与存储开销通常有限。
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-zhao-hui-bu-shu-dai-jia.png" alt="召回部署代价" width="760"><figcaption><p>召回部署代价</p></figcaption></figure>
 
 ### 排序
 
 #### 差异化的排序预估分数
-主要是根据业务，理解特殊人群的特点。
+融合策略应结合业务目标与特殊人群的行为特征进行调整。
 
 >例如，低活用户的主要目标是提升留存，可适当降低多样性权重，并提高 CTR 等兴趣指标的权重。
 
