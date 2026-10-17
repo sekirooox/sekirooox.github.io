@@ -131,6 +131,8 @@ Holdout 机制会预留一组长期使用旧策略的流量，用于对比实验
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-fan-zhuan-shi-yan-fen-liu.png" alt="推荐系统" width="379"><figcaption><p>反转实验分流</p></figcaption></figure>
 
 # 召回
+协同过滤通过用户—用户、物品—物品或用户—物品关系生成候选集。ItemCF 与 Swing 建模物品关系，UserCF 建模用户关系，矩阵补全则将用户和物品映射到同一隐向量空间。
+
 ## 基于物品的协同过滤（ItemCF）
 ### 动机：物品之间的关联
 ItemCF 假设物品之间存在可由用户行为刻画的<span style="color:red">关联</span>。
@@ -282,6 +284,49 @@ $$
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-usercf-hou-xuan-zhao-hui.png" alt="推荐系统" width="442"><figcaption><p>用户协同过滤候选扩展</p></figcaption></figure>
 
+## I2I 序列召回
+
+### 动机：从行为序列学习物品关系
+I2I 序列召回把用户交互历史视为物品序列，通过上下文关系学习物品之间的相似度。线上召回时，系统先找到用户交互过的物品，再检索与其相似的候选物品。
+
+### Word2Vec 与 Skip-Gram
+Skip-Gram 通过中心词预测上下文词，并以自监督方式学习向量。直接计算全量 Softmax 的代价较高，Word2Vec 通常采用负采样，将多分类问题转化为多个二分类问题：
+
+$$
+\begin{align}
+L_{\mathrm{NS}}&=-\log\sigma\!\left(\mathbf v_{w_{t+j}}^{\mathsf T}\mathbf v_{w_t}\right)-\sum_{r=1}^{k}\mathbb E_{w_r\sim P_n(w)}\!\left[\log\sigma\!\left(-\mathbf v_{w_r}^{\mathsf T}\mathbf v_{w_t}\right)\right]
+\end{align}
+$$
+
+其中，$$\mathbf v_w\in\mathbb R^d$$ 为物品或词的嵌入向量，$$w_t$$ 为中心对象，$$w_{t+j}$$ 为正样本上下文，$$k$$ 为负样本数，$$P_n(w)$$ 为负采样分布，$$\sigma$$ 为 Sigmoid 函数。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-fu-cai-yang-mu-biao.png" alt="推荐系统" width="760"><figcaption><p>负采样目标</p></figcaption></figure>
+
+### Item2Vec
+Item2Vec 将用户交互序列视为“句子”、物品视为“词”，直接使用 Skip-Gram 学习物品向量。它能够利用局部共现关系，但交互序列稀疏时，长尾物品和新物品的表征仍不充分。
+
+### EGES
+EGES 先根据会话构建商品关系图，再通过随机游走生成训练序列，并融合类目、品牌等辅助属性，以缓解原始交互序列稀疏和新物品冷启动问题。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-shang-pin-tu-sui-ji-you-zou.png" alt="推荐系统" width="760"><figcaption><p>商品图随机游走</p></figcaption></figure>
+
+### Airbnb：融入预订目标
+房源并非标准化商品，预订行为又远比点击稀疏。Airbnb 因此把最终预订房源作为全局正上下文，使序列中的浏览房源都能与最终转化目标形成正样本对。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-yu-ding-quan-ju-shang-xia-wen.png" alt="推荐系统" width="760"><figcaption><p>预订房源全局上下文</p></figcaption></figure>
+
+同时，部分负样本从与正样本相同的市场中选取，迫使模型学习同一区域内房源的细微差异：
+
+$$
+\begin{align}
+L_{\mathrm{market}}&=\sum_{(l,l_m^{-})\in D_m}\log\sigma\!\left(-\mathbf v_{l_m^{-}}^{\mathsf T}\mathbf v_l\right)
+\end{align}
+$$
+
+其中，$$D_m$$ 为同市场负样本对集合，$$\mathbf v_l,\mathbf v_{l_m^{-}}\in\mathbb R^d$$ 分别为正样本房源与同市场负样本房源的嵌入向量。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-tong-shi-chang-fu-cai-yang.png" alt="推荐系统" width="760"><figcaption><p>同市场负采样</p></figcaption></figure>
+
 ## 矩阵补全（Matrix Completion）
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-ju-zhen-bu-quan-jie-gou.png" alt="推荐系统" width="451"><figcaption><p>用户物品双嵌入</p></figcaption></figure>
 
@@ -359,6 +404,42 @@ $$
 其中，$$\mathbf a_u,\mathbf b_i\in\mathbb R^d$$ 分别为用户向量与物品向量，$$s(u,i)$$ 为匹配分数。
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-shuang-ta-xun-lian-fan-shi.png" alt="推荐系统" width="442"><figcaption><p>双塔训练范式</p></figcaption></figure>
+
+### FM 视角：聚合后再匹配
+从 FM 的二阶交叉看，用户侧多个字段与物品侧多个字段的两两内积，可以等价地写成两侧聚合向量的内积。因此，双塔模型可以先分别聚合用户与物品特征，再计算匹配分数：
+
+$$
+\begin{align}
+\mathbf e_u&=\sum_{a=1}^{p}\mathbf v_a^{(u)},\quad \mathbf e_i=\sum_{b=1}^{q}\mathbf v_b^{(i)}\\
+s(u,i)&=\mathbf e_u^{\mathsf T}\mathbf e_i=\sum_{a=1}^{p}\sum_{b=1}^{q}\left(\mathbf v_a^{(u)}\right)^{\mathsf T}\mathbf v_b^{(i)}
+\end{align}
+$$
+
+其中，$$p$$ 和 $$q$$ 分别为用户侧与物品侧字段数，$$\mathbf v_a^{(u)},\mathbf v_b^{(i)}\in\mathbb R^d$$ 为字段嵌入，$$\mathbf e_u,\mathbf e_i\in\mathbb R^d$$ 为聚合向量，$$s(u,i)\in\mathbb R$$ 为匹配分数。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-fm-jiao-cha-de-fen.png" alt="推荐系统" width="760"><figcaption><p>FM交叉得分</p></figcaption></figure>
+
+### DSSM
+DSSM 是标准双塔结构：用户塔与物品塔分别使用 DNN 学习特征表示，再通过余弦相似度或内积完成匹配。两侧向量可以离线计算或缓存，因此适合大规模候选检索。
+
+### YouTubeDNN
+YouTubeDNN 延续双塔设计，并把召回任务改写为<span style="color:red">根据历史行为预测下一个观看视频</span>。训练集按时间非对称切分：预测目标之前的行为作为输入，之后的行为不得泄露到特征中。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-youtube-dnn-shi-xu-qie-fen.png" alt="推荐系统" width="760"><figcaption><p>YouTubeDNN时序切分</p></figcaption></figure>
+
+下一个视频预测可以写为对全量候选的 Softmax：
+
+$$
+\begin{align}
+p(w_t=i\mid U,C)&=\frac{\exp\!\left(\mathbf v_i^{\mathsf T}\mathbf u\right)}{\sum_{j\in\mathcal V}\exp\!\left(\mathbf v_j^{\mathsf T}\mathbf u\right)}
+\end{align}
+$$
+
+其中，$$\mathbf u,\mathbf v_i,\mathbf v_j\in\mathbb R^d$$ 分别为用户向量、目标物品向量和候选物品向量，$$\mathcal V$$ 为候选物品集合，$$U$$ 与 $$C$$ 表示用户及上下文特征。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-xia-ge-shi-pin-yu-ce.png" alt="推荐系统" width="760"><figcaption><p>下个视频预测</p></figcaption></figure>
+
+YouTubeDNN 虽然引入行为序列，线上仍通过用户向量与物品向量执行匹配，因此本质上仍属于双塔召回。
 
 #### Pointwise
 **独立处理**每个正、负样本，通常使用 BCE 损失。
@@ -550,6 +631,86 @@ $$
 其中，$$n$$ 和 $$m$$ 分别为主任务与自监督任务的样本数，$$\alpha$$ 为自监督损失权重。
 
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-lian-he-xun-lian-mu-biao.png" alt="推荐系统" width="422"><figcaption><p>联合训练目标</p></figcaption></figure>
+
+## 序列召回
+序列召回不再把全部历史压缩为单一兴趣，而是显式建模用户的多类别兴趣以及长短期偏好。
+
+### MIND：多兴趣向量
+MIND 使用胶囊网络将行为序列聚合为多个兴趣向量。每个历史行为对不同兴趣的路由权重为：
+
+$$
+\begin{align}
+w_{ij}&=\frac{\exp(b_{ij})}{\sum_{r=1}^{K_u'}\exp(b_{ir})}\\
+\mathbf z_j&=\sum_{i\in I_u}w_{ij}\mathbf S_{d\times d}\mathbf e_i
+\end{align}
+$$
+
+其中，$$I_u$$ 为用户 $$u$$ 的行为集合，$$K_u'$$ 为动态兴趣数，$$b_{ij}$$ 为行为 $$i$$ 到兴趣 $$j$$ 的路由系数，$$\mathbf e_i,\mathbf z_j\in\mathbb R^d$$ 分别为行为向量和兴趣向量，$$\mathbf S\in\mathbb R^{d\times d}$$ 为共享变换矩阵。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-mind-xing-qu-jiao-nang.png" alt="推荐系统" width="760"><figcaption><p>MIND兴趣胶囊</p></figcaption></figure>
+
+训练时还要确定哪个兴趣向量与目标物品最相关。标签感知注意力以目标物品向量作为查询，对多个兴趣向量加权：
+
+$$
+\begin{align}
+\boldsymbol\alpha&=\operatorname{softmax}\!\left(\operatorname{pow}\!\left(\mathbf V_u^{\mathsf T}\mathbf e_i,p\right)\right)\\
+\mathbf v_u&=\mathbf V_u\boldsymbol\alpha
+\end{align}
+$$
+
+其中，$$\mathbf V_u\in\mathbb R^{d\times K}$$ 为用户的 $$K$$ 个兴趣向量组成的矩阵，$$\mathbf e_i,\mathbf v_u\in\mathbb R^d$$ 分别为目标物品向量与目标感知用户向量，$$\boldsymbol\alpha\in\mathbb R^K$$ 为注意力权重，$$p$$ 控制权重集中程度。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-mind-biao-qian-gan-zhi.png" alt="推荐系统" width="760"><figcaption><p>MIND标签感知注意力</p></figcaption></figure>
+
+线上召回时，每个兴趣向量分别查询物品索引，再合并各路候选，从而覆盖多种兴趣主题。
+
+### SDM：长短期兴趣
+SDM 使用 LSTM 和注意力建模短期会话行为。令输入维度为 $$d_e$$、隐藏维度为 $$d_h$$，其更新过程为：
+
+$$
+\begin{align}
+\mathbf i_t^u&=\sigma\!\left(\mathbf W_i^{(x)}\mathbf e_t^u+\mathbf W_i^{(h)}\mathbf h_{t-1}^u+\mathbf b_i\right)\\
+\mathbf f_t^u&=\sigma\!\left(\mathbf W_f^{(x)}\mathbf e_t^u+\mathbf W_f^{(h)}\mathbf h_{t-1}^u+\mathbf b_f\right)\\
+\mathbf o_t^u&=\sigma\!\left(\mathbf W_o^{(x)}\mathbf e_t^u+\mathbf W_o^{(h)}\mathbf h_{t-1}^u+\mathbf b_o\right)\\
+\mathbf c_t^u&=\mathbf f_t^u\odot\mathbf c_{t-1}^u+\mathbf i_t^u\odot\tanh\!\left(\mathbf W_c^{(x)}\mathbf e_t^u+\mathbf W_c^{(h)}\mathbf h_{t-1}^u+\mathbf b_c\right)\\
+\mathbf h_t^u&=\mathbf o_t^u\odot\tanh\!\left(\mathbf c_t^u\right)
+\end{align}
+$$
+
+其中，$$\mathbf e_t^u\in\mathbb R^{d_e}$$ 为行为向量，$$\mathbf i_t^u,\mathbf f_t^u,\mathbf o_t^u,\mathbf c_t^u,\mathbf h_t^u\in\mathbb R^{d_h}$$；$$\mathbf W_*^{(x)}\in\mathbb R^{d_h\times d_e}$$、$$\mathbf W_*^{(h)}\in\mathbb R^{d_h\times d_h}$$，$$\mathbf b_*\in\mathbb R^{d_h}$$，$$\odot$$ 表示逐元素乘法。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-sdm-duan-qi-xing-qu.png" alt="推荐系统" width="760"><figcaption><p>SDM短期兴趣</p></figcaption></figure>
+
+长期兴趣则按物品 ID、叶子类目、一级类目、店铺和品牌等特征拆分历史集合，并在每个特征子集内执行注意力聚合：
+
+$$
+\begin{align}
+\mathcal L^u&=\{\mathcal L_f^u\mid f\in\mathcal F\}\\
+\alpha_{f,k}&=\frac{\exp\!\left(\mathbf e_u^{\mathsf T}\mathbf g_{f,k}^u\right)}{\sum_{r\in\mathcal L_f^u}\exp\!\left(\mathbf e_u^{\mathsf T}\mathbf g_{f,r}^u\right)}\\
+\mathbf p_f^u&=\sum_{k\in\mathcal L_f^u}\alpha_{f,k}\mathbf g_{f,k}^u
+\end{align}
+$$
+
+其中，$$\mathcal F$$ 为长期特征类型集合，$$\mathcal L_f^u$$ 为用户 $$u$$ 在特征 $$f$$ 下的历史实体集合，$$\mathbf e_u,\mathbf g_{f,k}^u,\mathbf p_f^u\in\mathbb R^d$$ 分别为用户画像、历史实体与长期偏好向量，$$\alpha_{f,k}$$ 为注意力权重。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-sdm-chang-qi-xing-qu.png" alt="推荐系统" width="760"><figcaption><p>SDM长期兴趣</p></figcaption></figure>
+
+SDM 最后通过融合门将短期表示、长期表示与用户画像结合，形成用于召回的用户向量。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-sdm-mo-xing-jie-gou.png" alt="推荐系统" width="760"><figcaption><p>SDM模型结构</p></figcaption></figure>
+
+## 流式索引召回
+流式索引召回用于缓解固定数量兴趣向量的信息损失，并提高物品索引对兴趣变化的响应速度。
+
+### Trinity
+Trinity 将物品映射到聚类空间，用统计直方图保存用户在各聚类上的行为计数，而不是把完整历史压缩为固定数量的兴趣向量。直方图容量不受兴趣数限制，并可进一步形成多元兴趣、长尾兴趣和长期兴趣三类互补召回器。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-trinity-zhao-hui-kuang-jia.png" alt="推荐系统" width="620"><figcaption><p>Trinity召回框架</p></figcaption></figure>
+
+### Streaming VQ
+Streaming VQ 让物品到聚类中心的映射随数据流持续更新，以跟踪物品兴趣语义的变化；同时通过流行度调节和扰动机制维持索引均衡，避免热门物品集中在少数头部聚类。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-streaming-vq-jia-gou.png" alt="推荐系统" width="760"><figcaption><p>Streaming VQ架构</p></figcaption></figure>
 
 ## 深度检索（Deep Retrieval）
 
@@ -1915,3 +2076,122 @@ $$
 
 其中，$$k_u\in\{0,1\}$$ 表示用户 $$u$$ 是否为站外 KOL，$$p_{u,i}^{\mathrm{share}}$$ 为转发物品 $$i$$ 的预测概率，$$\lambda\ge0$$ 为融合系数。
 <figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-kol-zhuan-fa-jia-quan.png" alt="推荐系统" width="760"><figcaption><p>KOL转发加权</p></figcaption></figure>
+
+# 推荐系统评估指标
+
+离线评估通常分别考察召回阶段的候选覆盖能力和排序阶段的正负样本区分能力。指标应结合业务目标使用，避免只依赖单一数值判断模型效果。
+
+## 召回指标
+
+### HitRate@K
+
+HitRate@K 表示测试集中被前 $$K$$ 个候选命中的用户比例：
+
+$$
+\begin{align}
+\mathrm{HitRate}@K&=\frac{1}{|\mathcal U|}\sum_{u\in\mathcal U}\mathbb I\!\left(\mathcal R_u^K\cap\mathcal T_u\ne\varnothing\right)
+\end{align}
+$$
+
+其中，$$\mathcal U$$ 为用户集合，$$\mathcal R_u^K$$ 为用户 $$u$$ 的前 $$K$$ 个召回结果，$$\mathcal T_u$$ 为测试集中的正样本集合，$$\mathbb I(\cdot)$$ 为指示函数。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-ming-zhong-lv-ding-yi.png" alt="推荐系统" width="760"><figcaption><p>命中率定义</p></figcaption></figure>
+
+增大 $$K$$ 通常会提高命中率，但也会增加后续排序成本，因此需要结合系统容量选择候选规模。
+
+### Precision@K
+
+Precision@K 衡量前 $$K$$ 个候选中正样本所占的平均比例：
+
+$$
+\begin{align}
+\mathrm{Precision}@K&=\frac{1}{|\mathcal U|}\sum_{u\in\mathcal U}\frac{|\mathcal R_u^K\cap\mathcal T_u|}{K}
+\end{align}
+$$
+
+其中，$$\mathcal U$$ 为用户集合，$$\mathcal R_u^K$$ 为用户 $$u$$ 的前 $$K$$ 个召回结果，$$\mathcal T_u$$ 为测试集中的正样本集合。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-jing-que-lv-ding-yi.png" alt="推荐系统" width="760"><figcaption><p>准确率定义</p></figcaption></figure>
+
+### NDCG@K
+
+NDCG@K 同时考虑候选是否相关及其所在位置，排名越靠前的相关结果贡献越大。
+
+#### DCG@K
+
+$$
+\begin{align}
+\mathrm{DCG}@K&=\sum_{r=1}^{K}\frac{2^{\mathrm{rel}_r}-1}{\log_2(r+1)}
+\end{align}
+$$
+
+其中，$$r$$ 为排序位置，$$\mathrm{rel}_r$$ 为该位置结果的相关性等级，$$K$$ 为截断位置。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-dcg-ding-yi.png" alt="推荐系统" width="760"><figcaption><p>DCG定义</p></figcaption></figure>
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-dcg-ji-suan-shi-li.png" alt="推荐系统" width="760"><figcaption><p>DCG计算示例</p></figcaption></figure>
+
+#### IDCG@K
+
+IDCG@K 是将同一批结果按相关性从高到低排列后得到的理想 DCG：
+
+$$
+\begin{align}
+\mathrm{IDCG}@K&=\sum_{r=1}^{K}\frac{2^{\mathrm{rel}_r^{\downarrow}}-1}{\log_2(r+1)}
+\end{align}
+$$
+
+其中，$$\mathrm{rel}_r^{\downarrow}$$ 为按相关性降序排列后第 $$r$$ 个结果的相关性等级，$$K$$ 为截断位置。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-idcg-ji-suan-shi-li.png" alt="推荐系统" width="760"><figcaption><p>IDCG计算示例</p></figcaption></figure>
+
+#### NDCG@K
+
+$$
+\begin{align}
+\mathrm{NDCG}@K&=\frac{\mathrm{DCG}@K}{\mathrm{IDCG}@K}
+\end{align}
+$$
+
+其中，$$\mathrm{DCG}@K$$ 为实际排序的折损累计增益，$$\mathrm{IDCG}@K$$ 为理想排序的折损累计增益；当分母非零时，NDCG@K 的取值范围为 $$[0,1]$$。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-ndcg-ji-suan-shi-li.png" alt="推荐系统" width="760"><figcaption><p>NDCG计算示例</p></figcaption></figure>
+
+## 排序指标
+
+### AUC
+
+AUC 可以理解为随机抽取一个正样本和一个负样本时，模型将正样本排在负样本之前的概率。设正负样本的预测分数分别为 $$s_i^+$$ 和 $$s_j^-$$，则：
+
+$$
+\begin{align}
+\mathrm{AUC}&=\frac{1}{N_+N_-}\sum_{i=1}^{N_+}\sum_{j=1}^{N_-}h\!\left(s_i^+,s_j^-\right)\\
+h(a,b)&=\begin{cases}1,&a>b\\\frac{1}{2},&a=b\\0,&a<b\end{cases}
+\end{align}
+$$
+
+其中，$$N_+$$ 和 $$N_-$$ 分别为正、负样本数，$$h(a,b)$$ 为分数比较函数，$$a$$ 和 $$b$$ 为两个待比较的标量分数。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-auc-shu-xue-ding-yi.png" alt="推荐系统" width="760"><figcaption><p>AUC数学定义</p></figcaption></figure>
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-auc-bi-jiao-han-shu.png" alt="推荐系统" width="760"><figcaption><p>AUC比较函数</p></figcaption></figure>
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-auc-yang-ben-shi-li.png" alt="推荐系统" width="760"><figcaption><p>AUC样本示例</p></figcaption></figure>
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-auc-ji-suan-shi-li.png" alt="推荐系统" width="760"><figcaption><p>AUC计算示例</p></figcaption></figure>
+
+AUC 约为 $$0.5$$ 时，模型整体接近随机排序。全局 AUC 会混合不同用户的样本，可能掩盖用户之间的数据分布差异。
+
+### GAUC
+
+GAUC 先在每个用户内部计算 AUC，再按用户权重加权平均：
+
+$$
+\begin{align}
+\mathrm{GAUC}&=\frac{\sum_{u\in\mathcal U}w_u\,\mathrm{AUC}_u}{\sum_{u\in\mathcal U}w_u}
+\end{align}
+$$
+
+其中，$$\mathcal U$$ 为同时包含正、负样本的用户集合，$$\mathrm{AUC}_u$$ 为用户 $$u$$ 的组内 AUC，$$w_u$$ 为该用户的非负权重，可按样本数或曝光量设置。
+
+<figure><img src="/assets/img/posts/recommend-system-basics/tui-jian-xi-tong-gauc-jia-quan-gong-shi.png" alt="推荐系统" width="760"><figcaption><p>GAUC加权公式</p></figcaption></figure>
