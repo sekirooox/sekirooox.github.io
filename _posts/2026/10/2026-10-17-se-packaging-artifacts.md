@@ -17,7 +17,7 @@ mermaid: false
 
 以 Python 项目为例，开发者可以使用 `uv build` 将源代码构建为分发文件，再把这些产物发布到包索引。其他用户安装产物后，即可在自己的环境中复用软件，而不必复制原始工作目录。
 
-<figure><img src="/assets/img/posts/se-packaging-artifacts/tui-jian-xi-tong-gou-jian-chan-wu-liu-cheng.png" alt="构建产物流程" width="760"><figcaption><p>构建产物分发流程</p></figcaption></figure>
+<figure><img src="/assets/img/posts/se-packaging-artifacts/ruan-jian-jiao-fu-gou-jian-chan-wu-liu-cheng.png" alt="软件交付" width="760"><figcaption><p>构建产物分发流程</p></figcaption></figure>
 
 ### 从模块复用到分发包
 
@@ -78,7 +78,7 @@ build-backend = "setuptools.build_meta"
 | `uv build` | 构建 Wheel 和源码分发包 | `python -m build` |
 | `uv publish` | 发布分发文件 | `twine` |
 
-<figure><img src="/assets/img/posts/se-packaging-artifacts/tui-jian-xi-tong-uv-gong-ju-lian-zhi-ze.png" alt="uv工具职责" width="760"><figcaption><p>uv 工具链职责</p></figcaption></figure>
+<figure><img src="/assets/img/posts/se-packaging-artifacts/ruan-jian-jiao-fu-uv-gong-ju-lian-zhi-ze.png" alt="软件交付" width="760"><figcaption><p>uv 工具链职责</p></figcaption></figure>
 
 环境管理解决“开发者如何运行项目”，软件构建与分发解决“其他用户如何安装项目”。两套流程都可以使用 `uv`，但目标并不相同。
 
@@ -116,7 +116,7 @@ pip install greeting
 
 PyPI（Python Package Index）是最常用的公共 Python 包索引。用户发起安装后，`pip` 会查询包名和版本，选择兼容的分发文件，下载依赖并安装到目标 Python 环境。
 
-<figure><img src="/assets/img/posts/se-packaging-artifacts/tui-jian-xi-tong-pypi-an-zhuang-liu-cheng.png" alt="PyPI安装流程" width="760"><figcaption><p>PyPI 安装流程</p></figcaption></figure>
+<figure><img src="/assets/img/posts/se-packaging-artifacts/ruan-jian-jiao-fu-pypi-an-zhuang-liu-cheng.png" alt="软件交付" width="760"><figcaption><p>PyPI 安装流程</p></figcaption></figure>
 
 构建完成后，可以使用 `uv publish` 上传 `dist/` 中的分发文件：
 
@@ -126,7 +126,7 @@ uv publish
 
 发布操作需要配置 PyPI 认证。API Token 应通过安全的凭据配置或环境变量提供，不能写入 `pyproject.toml`，也不能提交到 Git 仓库。
 
-<figure><img src="/assets/img/posts/se-packaging-artifacts/tui-jian-xi-tong-uv-fa-bu-ming-ling.png" alt="uv发布命令" width="760"><figcaption><p>uv 发布命令与凭据安全</p></figcaption></figure>
+<figure><img src="/assets/img/posts/se-packaging-artifacts/ruan-jian-jiao-fu-uv-fa-bu-ming-ling.png" alt="软件交付" width="760"><figcaption><p>uv 发布命令与凭据安全</p></figcaption></figure>
 
 发布后应在全新的虚拟环境中安装并导入包，确认分发文件没有依赖本地未声明的文件。下面假设发布时把分发名改为 `mayl-greeting-demo`，但它提供的导入包仍名为 `greeting`：
 
@@ -135,7 +135,7 @@ python -m pip install mayl-greeting-demo
 python -c "import greeting"
 ```
 
-<figure><img src="/assets/img/posts/se-packaging-artifacts/tui-jian-xi-tong-xu-ni-huan-jing-an-zhuang-yan-zheng.png" alt="安装验证" width="760"><figcaption><p>在新虚拟环境中验证安装</p></figcaption></figure>
+<figure><img src="/assets/img/posts/se-packaging-artifacts/ruan-jian-jiao-fu-xu-ni-huan-jing-an-zhuang-yan-zheng.png" alt="软件交付" width="760"><figcaption><p>在新虚拟环境中验证安装</p></figcaption></figure>
 
 ### 模块、导入包与分发包
 
@@ -155,7 +155,7 @@ python -c "import greeting"
 
 语义化版本（Semantic Versioning，SemVer）通常采用 `MAJOR.MINOR.PATCH` 结构，例如 `2.3.5`。
 
-<figure><img src="/assets/img/posts/se-packaging-artifacts/tui-jian-xi-tong-yu-yi-hua-ban-ben-jie-gou.png" alt="语义化版本" width="760"><figcaption><p>语义化版本结构</p></figcaption></figure>
+<figure><img src="/assets/img/posts/se-packaging-artifacts/ruan-jian-jiao-fu-yu-yi-hua-ban-ben-jie-gou.png" alt="软件交付" width="760"><figcaption><p>语义化版本结构</p></figcaption></figure>
 
 `MAJOR` 表示不兼容的公开 API 变更；`MINOR` 表示保持向后兼容的新功能；`PATCH` 表示保持向后兼容的问题修复。版本级别由公开接口的兼容性决定，而不是由代码修改量决定。
 
@@ -195,7 +195,7 @@ def multiply(a, b):
 
 依赖声明可以精确固定版本，也可以给出允许解析的版本范围。约束越严格，环境越容易复现，但也越难自动获得兼容更新。
 
-<figure><img src="/assets/img/posts/se-packaging-artifacts/tui-jian-xi-tong-chang-yong-ban-ben-yue-shu.png" alt="版本约束" width="760"><figcaption><p>常用版本约束</p></figcaption></figure>
+<figure><img src="/assets/img/posts/se-packaging-artifacts/ruan-jian-jiao-fu-chang-yong-ban-ben-yue-shu.png" alt="软件交付" width="760"><figcaption><p>常用版本约束</p></figcaption></figure>
 
 | 写法 | 含义 | 示例结果 |
 | --- | --- | --- |
@@ -206,13 +206,13 @@ def multiply(a, b):
 
 `~=` 并不等同于对所有项目都“只允许 PATCH 更新”。它会根据给出的发布段确定兼容范围：`~=2.1.0` 等价于 `>=2.1.0,<2.2.0`，而 `~=2.1` 的上界则不同。编写约束时应明确需要锁定到哪一级。
 
-<figure><img src="/assets/img/posts/se-packaging-artifacts/tui-jian-xi-tong-jian-rong-ban-ben-yue-shu-shi-li.png" alt="兼容版本范围" width="760"><figcaption><p>兼容版本约束示例</p></figcaption></figure>
+<figure><img src="/assets/img/posts/se-packaging-artifacts/ruan-jian-jiao-fu-jian-rong-ban-ben-yue-shu-shi-li.png" alt="软件交付" width="760"><figcaption><p>兼容版本约束示例</p></figcaption></figure>
 
 ### 日历化版本
 
 日历化版本（Calendar Versioning，CalVer）以发布时间构造版本号，例如 Ubuntu 的 `24.04` 表示 2024 年 4 月发布。它便于识别版本年代，但版本号本身通常不直接表达 API 兼容性。
 
-<figure><img src="/assets/img/posts/se-packaging-artifacts/tui-jian-xi-tong-ri-li-ban-ben-shi-li.png" alt="日历版本" width="760"><figcaption><p>日历化版本示例</p></figcaption></figure>
+<figure><img src="/assets/img/posts/se-packaging-artifacts/ruan-jian-jiao-fu-ri-li-ban-ben-shi-li.png" alt="软件交付" width="760"><figcaption><p>日历化版本示例</p></figcaption></figure>
 
 ### 语义化版本与日历化版本
 
@@ -223,7 +223,7 @@ def multiply(a, b):
 | 主要优点 | 传递兼容性预期 | 容易识别版本年代 |
 | 主要局限 | 依赖维护者正确判断兼容性 | 版本号不直接表示兼容性 |
 
-<figure><img src="/assets/img/posts/se-packaging-artifacts/tui-jian-xi-tong-ban-ben-ti-xi-dui-bi.png" alt="版本体系对比" width="760"><figcaption><p>语义化版本与日历化版本对比</p></figcaption></figure>
+<figure><img src="/assets/img/posts/se-packaging-artifacts/ruan-jian-jiao-fu-ban-ben-ti-xi-dui-bi.png" alt="软件交付" width="760"><figcaption><p>语义化版本与日历化版本对比</p></figcaption></figure>
 
 ## 虚拟机与容器
 
@@ -231,7 +231,7 @@ Python 分发包主要管理 Python 代码和 Python 依赖，但程序还可能
 
 ### 容器与系统级依赖
 
-<figure><img src="/assets/img/posts/se-packaging-artifacts/tui-jian-xi-tong-python-bao-yi-lai-bian-jie.png" alt="依赖边界" width="760"><figcaption><p>Python 包依赖边界</p></figcaption></figure>
+<figure><img src="/assets/img/posts/se-packaging-artifacts/ruan-jian-jiao-fu-python-bao-yi-lai-bian-jie.png" alt="软件交付" width="760"><figcaption><p>Python 包依赖边界</p></figcaption></figure>
 
 例如，一个 Python 程序可能依赖 PostgreSQL 客户端开发库。在 Ubuntu 中可以安装：
 
@@ -247,7 +247,7 @@ sudo apt-get install libpq-dev
 
 Docker Image 是构建完成的只读模板，也是可保存和分发的 Artifact；Container 则是根据 Image 创建的运行实例，通常还拥有独立的可写层。同一个镜像可以创建多个容器，每个容器维护自己的运行状态。
 
-<figure><img src="/assets/img/posts/se-packaging-artifacts/tui-jian-xi-tong-jing-xiang-yu-rong-qi-guan-xi.png" alt="镜像与容器" width="760"><figcaption><p>镜像与容器的关系</p></figcaption></figure>
+<figure><img src="/assets/img/posts/se-packaging-artifacts/ruan-jian-jiao-fu-jing-xiang-yu-rong-qi-guan-xi.png" alt="软件交付" width="760"><figcaption><p>镜像与容器的关系</p></figcaption></figure>
 
 常见操作如下：
 
@@ -360,7 +360,7 @@ COPY . /app
 
 容器化项目通常先使用 `uv` 管理 Python 依赖，再通过 `Dockerfile` 构建镜像，将镜像推送到 Container Registry。服务器拉取指定镜像后，便可创建并启动容器。
 
-<figure><img src="/assets/img/posts/se-packaging-artifacts/tui-jian-xi-tong-docker-gou-jian-fa-bu-liu-cheng.png" alt="容器构建流程" width="420"><figcaption><p>Docker 构建发布流程</p></figcaption></figure>
+<figure><img src="/assets/img/posts/se-packaging-artifacts/ruan-jian-jiao-fu-docker-gou-jian-fa-bu-liu-cheng.png" alt="软件交付" width="420"><figcaption><p>Docker 构建发布流程</p></figcaption></figure>
 
 ## 服务与编排
 
@@ -370,7 +370,7 @@ COPY . /app
 
 不同组件的运行方式、依赖和生命周期可能不同。把 Web Service、Redis 和 PostgreSQL 放入独立容器，可以分别升级、扩缩容和恢复故障，也能减少依赖冲突。
 
-<figure><img src="/assets/img/posts/se-packaging-artifacts/tui-jian-xi-tong-duo-rong-qi-fu-wu-jia-gou.png" alt="多容器架构" width="760"><figcaption><p>多容器服务架构</p></figcaption></figure>
+<figure><img src="/assets/img/posts/se-packaging-artifacts/ruan-jian-jiao-fu-duo-rong-qi-fu-wu-jia-gou.png" alt="软件交付" width="760"><figcaption><p>多容器服务架构</p></figcaption></figure>
 
 服务拆分并非越细越好。边界设计还需要考虑部署复杂度、网络延迟、数据一致性和团队维护能力。
 
@@ -504,11 +504,11 @@ API 允许不同程序按照约定的接口交互，而不需要了解彼此的�
 
 源代码经过构建形成 Wheel、二进制文件或 Docker Image 等 Artifact。此后可以进入两条路径：一是发布到 PyPI、GitHub Releases 或 Registry，由用户下载或安装；二是部署到服务器或容器平台，由用户通过网络访问。
 
-<figure><img src="/assets/img/posts/se-packaging-artifacts/tui-jian-xi-tong-ruan-jian-fa-bu-yu-bu-shu-liu-cheng.png" alt="发布部署流程" width="560"><figcaption><p>软件发布与部署流程</p></figcaption></figure>
+<figure><img src="/assets/img/posts/se-packaging-artifacts/ruan-jian-jiao-fu-ruan-jian-fa-bu-yu-bu-shu-liu-cheng.png" alt="软件交付" width="560"><figcaption><p>软件发布与部署流程</p></figcaption></figure>
 
 ### 六种常见发布方式
 
-<figure><img src="/assets/img/posts/se-packaging-artifacts/tui-jian-xi-tong-liu-zhong-ruan-jian-fa-bu-fang-shi.png" alt="软件发布方式" width="760"><figcaption><p>六种常见软件发布方式</p></figcaption></figure>
+<figure><img src="/assets/img/posts/se-packaging-artifacts/ruan-jian-jiao-fu-liu-zhong-ruan-jian-fa-bu-fang-shi.png" alt="软件交付" width="760"><figcaption><p>六种常见软件发布方式</p></figcaption></figure>
 
 | 发布方式 | 发布位置 | 用户如何使用 | 常见场景 |
 | --- | --- | --- | --- |
