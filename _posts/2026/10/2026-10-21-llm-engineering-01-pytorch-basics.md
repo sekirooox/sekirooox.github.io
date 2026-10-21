@@ -1,0 +1,324 @@
+---
+title: "LLM 工程实践：PyTorch 基础"
+date: 2026-10-21
+categories: ["大语言模型与强化学习", "大语言模型"]
+tags: ["llm", "pytorch", "transformers", "huggingface", "cs336"]
+description: "面向语言模型实现的 PyTorch 张量、模块、梯度、优化器、状态字典与数据类型基础。"
+published: false
+math: true
+---
+
+# LLM 工程实践：PyTorch 基础
+
+本文面向语言模型实现整理 PyTorch 基础，覆盖张量布局、矩阵运算、模块参数、梯度与优化器、检查点以及低精度数据类型。示例保留 CS336 作业中的核心代码，并对容易混淆的 API 语义作了统一说明。
+
+## PyTorch 基础（CS336 作业总结）
+
+> 来源：`_posts/2026/02/2026-02-01-llm_cs336_torch.md`
+
+### 张量布局与连续性
+#### `contiguous`
+`contiguous` 用于维护张量逻辑维度与底层内存布局的一致性。
+
+##### **view，transpose等操作不会新建内存，也就是共享存储空间(变量)**。
+
+```python
+# view
+x = torch.tensor([[1., 2, 3], [4, 5, 6]]) 
+y_view=x.view(3,2)
+y_trans=x.transpose(0,1)
+# same storage
+x[0,0]=9
+y_trans
+tensor([[1., 2.],
+        [3., 4.],
+        [5., 6.]])
+tensor([[9., 4.],
+        [2., 5.],
+        [3., 6.]])
+```
+---
+##### `view` 与非连续张量
+`view` 需要连续内存；处理非连续张量时应先调用 `.contiguous()`。
++ **transpose/permute/步长切片产生视图，共享存储但多为非连续**。
++ contiguous() 会复制数据，把当前逻辑顺序重排为物理连续。
+
+```python
+# contiguous
+print(y_trans.is_contiguous(),y_view.is_contiguous())
+# not contiguous to contiguous 
+y_origin_=y_trans.contiguous().view(2,3)
+y_origin_
+```
+---
+##### `rearrange` 维度变换
++ 类似爱因斯坦乘法那样定义矩阵维度，然后进行矩阵形状的变化(不需要考虑矩阵存储的连续性)。
+```python
+from einops import rearrange# 建议使用
+q= rearrange(q,' ... l (h d)-> ... h l d',h=self.num_heads,d=self.d_k)
+```
+---
+<br><br><br><br>
+
+### torch运算
+#### 矩阵乘法
+##### 批量乘法
++ 简单来说就是忽略第一维度的乘法
+```python
+x=torch.ones(2, 3, 4)# B L D 
+y=torch.ones(2, 3, 4)
+z=torch.bmm(x,y.transpose(1,2))# bmm ignore batch size
+z.shape
+torch.Size([2, 3, 3])
+```
+##### *爱因斯坦乘法
++ 为每一个维度进行命名，然后给出**乘法样式(输入和输出维度,`a b c,d e f->e f g` )**
++ 维度命名只支持**单字符**
+```python
+x=torch.ones(2, 3, 4)# B L D 
+y=torch.ones(2, 3, 4)
+z = torch.einsum("b l d, b m d -> b l m", x, y)# 仅支持单字符标签
+print(z.shape) 
+```
+
+---
+<br><br><br><br>
+### 模型参数细节
+##### nn.Parameter vs nn.Register_buffer:
++ nn.Parameter：可训练参数，参与反向传播，优化器会更新；属于模块参数列表，会出现在 state_dict（作为参数）。
++ register_buffer：非训练状态（缓冲区），**不参与梯度计算与优化器更新**；不在 parameters() 中，但默认也出现在 state_dict（作为缓冲区），**随 to()/cuda() 迁移设备**。
+
+---
+<br><br>
+##### 阶段初始化：`nn.init.trunc_normal_(self.w,std=1,mean=0,a=-3,b=3)`
++ 使用均值为0，方差为1进行归一化，然后**截断不在[a,b]范围内的初始值**。
+---
+<br><br>
+##### model.parameters()
++ **迭代器:列表**
++ 用于给优化器进行训练
++ 无参数名称
+
+```python
+for p in model.parameters():
+    print(p.numel())
+1 1 1 1 1 1 
+```
+---
+<br><br>
+##### model.named_parameters()
+```python
+for k,v in model.named_parameters():
+    print(f'layer:{k} #param:{v.numel()}')
+layer:layers.0.weight #param:16
+layer:layers.0.bias #param:4
+layer:layers.1.weight #param:16
+layer:layers.1.bias #param:4
+layer:final.weight #param:4
+layer:final.bias #param:1
+```
+---
+<br><br><br><br>
+
+#### *非常有用的一些函数
+##### `torch.tril(A,diagonal=0)`：保留下三角矩阵。
+##### `scores.masked_fill(mask==False,float('-inf'))`：将矩阵值为1/True的地方填充为指定值
++ 我们得到的掩膜False值是要省略的，因此需要手动转换`mask==False`。
+---
+<br><br>
+##### *指定下标填充指定元素`torch.scatter()`
++ 指定下标：`sorted_indices`
++ 指定元素：`indices_to_remove`
++ 维度必须一一匹配
+```python
+indices_to_remove_origin.scatter_(dim=-1,index=sorted_indices,src=indices_to_remove)
+```
+---
+<br><br>
+##### 获得指定下标的元素`torch.gather`
++ `index=targets.unsqueeze(-1)`：维度必须与目标变量`logits`匹配
+```python
+target_logits = torch.gather(logits,dim=-1,index=targets.unsqueeze(-1))
+```
+---
+<br><br>
+
+#### 统计操作
+##### max，sort和topk操作：返回一个元组`(values，indices)`
++ 对于数组特定维度进行求和或排序
++ **返回一个元组`(values，indices)`**
+```python
+sorted_probs, sorted_indices = torch.sort(probs,descending=True,dim=-1)
+```
++ TOPK函数
+```python
+logits_topk,indices_topk = torch.topk(logits,top_k,dim=-1) 
+```
+---
+##### mean和median：只返回数值
+---
+##### 前缀和函数`torch.cumsum`
+
+```python
+cum_probs = torch.cumsum(sorted_probs, dim=-1)
+```
+
+
+---
+<br><br><br><br>
+
+#### 训练和测试函数
+##### `model.train() vs model.eval()`
++ 控制模型中特定层的行为
++ 主要影响 BatchNorm、Dropout 等层；LayerNorm/RMSNorm 通常不随训练或评估模式改变。
++ 进入训练阶段时调用一次 `model.train()` 即可；评估和推理前调用 `model.eval()`。
+
+
+---
+<br><br><br><br>
+
+#### 梯度
++ `requires_grad=True` 开启梯度记录；新建 `Tensor` 默认是 `False`。
++ `w.grad`：获取累计梯度。
++ `loss.backward()`：**反向传播的函数**，回传梯度。
+```python
+x = torch.tensor([1., 2, 3])# requires_grad=False by default
+w = torch.tensor([1., 1, 1], requires_grad=True)  # Want gradient
+y_pred=x @ w
+loss = 0.5 * (y_pred - 5).pow(2)
+loss.backward()
+w.grad
+```
+
+---
+<br><br><br><br>
+#### 优化器原理
+##### 优化器的构造和作用
++ 构造：优化器会将传入的参数`optimizer = AdaGrad(model.parameters(), lr=0.01)`，分为组`param_groups`。
++ `param_groups`**是一个列表，每个元素都代表一个字典，字典常见内容包括参数(model.parameters()，也是一个列表)和学习率**。
++ `self.state`：表示优化器自身的一些超参数，例如动量，累积梯度等信息。
++ `p.data -= lr * grad / torch.sqrt(g2 + 1e-5)`：**手动实现梯度下降方法**
+```python
+class AdaGrad(torch.optim.Optimizer):
+    def __init__(self, params, lr: float = 0.01):
+        super(AdaGrad, self).__init__(params, dict(lr=lr))
+    def step(self):
+        for group in self.param_groups:
+            lr = group["lr"]
+            for p in group["params"]:
+                # Optimizer state
+                state = self.state[p]
+                grad = p.grad.data
+                # Get squared gradients g2 = sum_{i<t} g_i^2
+                g2 = state.get("g2", torch.zeros_like(grad))
+                # Update optimizer state
+                g2 += torch.square(grad)
+                state["g2"] = g2 # 每个参数对应一个新的状态
+                # Update parameters
+                p.data -= lr * grad / torch.sqrt(g2 + 1e-5)
+```
++ 自定义优化器：手动实现`step`操作：关键点在于保存状态和实现梯度下降。
++ 整理注：新代码应在 `torch.no_grad()` 上下文中更新参数，避免使用 `.data` 绕过 autograd；同时要跳过 `p.grad is None` 的参数。
+##### `optimizer.zero_grad(set_to_none=True)`：**使用优化器清空梯度，在反向传播前使用**。
+
+
+---
+<br><br><br><br>
+### 模型和优化器的状态：state_dict()
+#### optimizer.state_dict()
++ 包含`state`和`param_groups`两个参数
++ `param_groups` 是参数组列表，其数量由传给优化器的参数组字典数量决定，并不等同于模型数量。
++ **列表元素是一个字典**，包含该模型对应的参数`params`(**只给出了注册时的下标**)，包括optimizer初始化时将它们捆绑在一起的学习率等参数`lr`,`betas`,`eps`等
+```python
+from torch.optim import AdamW
+optimizer = AdamW([
+    {'params': model1.parameters(), 'lr': 1e-3, 'weight_decay': 1e-2},
+    {'params': model2.parameters(), 'lr': 5e-4, 'weight_decay': 0.0},
+])
+optimizer.state_dict()
+{'state': {},
+ 'param_groups': [{'lr': 0.001,
+   'weight_decay': 0.01,
+   'betas': (0.9, 0.999),
+   'eps': 1e-08,
+   'amsgrad': False,
+   'foreach': None,
+   'maximize': False,
+   'capturable': False,
+   'differentiable': False,
+   'fused': None,
+   'params': [0, 1, 2, 3]},
+  {'lr': 0.0005,
+   'weight_decay': 0.0,
+   'betas': (0.9, 0.999),
+   'eps': 1e-08,
+   'amsgrad': False,
+   'foreach': None,
+   'maximize': False,
+   'capturable': False,
+   'differentiable': False,
+   'fused': None,
+   'params': [4, 5, 6, 7]}]}
+```
+
+#### model.state_dict
++ 字典：**{名称：参数张量}**
++ 模型的参数：名称+参数张量，保存中间缓存信息
++ 用于保存
+
+```python
+for k,v in model.state_dict().items():
+    print(f'layer:{k} #param:{v.numel()}')
+    layer:layers.0.weight #param:16
+layer:layers.0.bias #param:4
+layer:layers.1.weight #param:16
+layer:layers.1.bias #param:4
+layer:final.weight #param:4
+layer:final.bias #param:1
+```
+##### `state_dict`命名原则：{模块对应的属性名}.{模块索引}.{参数对应的属性名}
++ {参数对应的属性名}
+```python
+class model(nn.Module):
+	def __init__():
+		self.w = ...
+model.state_dict()
+"w":xxx
+```
++ {模块对应的属性名}.{模块索引}.{参数对应的属性名}
+```python
+class model(nn.Module):
+	def __init__():
+		self.layers = nn.ModuleList([model1,model2...])
+model.state_dict()
+"layers.0.w":xxx
+"layers.1.w":xxx
+```
+##### 检查点
+```python
+checkpoint = {
+    "model": model.state_dict(),
+    "optimizer": optimizer.state_dict(),
+}
+```
+---
+<br><br><br><br>
+
+
+### 数据类型
+##### `torch.float32`：单精度/全精度，需要４个字节来存储
+<figure><img src="/assets/img/llm-code-and-training-principles/0372baa157f84052bb68076d8950b32a.png" alt="PyTorch 数据类型" width="362"><figcaption><p>FP32 位级结构</p></figcaption></figure>
+##### `torch.float16`：常用于混合精度训练和推理，占２个字节
+##### `torch.bfloat16`：２个字节
++ 特点：和`torch.float32`一样，指数部分精度一致，但是小数部分精度较差。
+<figure><img src="/assets/img/llm-code-and-training-principles/8819616e50724b38aeb129d065fe3085.png" alt="PyTorch 数据类型" width="362"><figcaption><p>bfloat16 位级结构</p></figcaption></figure>
+
+##### FP8（具体类型取决于 PyTorch 版本与硬件）
++ `torch.bf8` 不是规范 dtype 名称；常见具体格式包括 `torch.float8_e4m3fn`、`torch.float8_e5m2`。
+<figure><img src="/assets/img/llm-code-and-training-principles/d772defd2d954ec6b445b11ce782724b.png" alt="PyTorch 数据类型" width="362"><figcaption><p>FP8 格式对比</p></figcaption></figure>
+#### FLOP、FLOPs 与 FLOP/s
++ FLOP：一次浮点运算；FLOPs 常被用作其复数，表示总运算量。
++ FLOP/s：每秒浮点运算次数，用于描述硬件或程序的计算吞吐率。
+
+---
+

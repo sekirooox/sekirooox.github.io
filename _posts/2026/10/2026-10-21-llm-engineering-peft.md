@@ -1,0 +1,441 @@
+---
+title: "LLM·参数高效微调 PEFT：方法与实现"
+date: 2026-10-21
+categories: ["大语言模型与强化学习", "大语言模型"]
+tags: ["llm", "pytorch", "peft", "模型微调", "lora"]
+description: "整理 BitFit、Prompt Tuning、P-Tuning、Prefix Tuning、LoRA 与 IA³ 的原理、配置和实现。"
+published: false
+math: true
+---
+
+# LLM·参数高效微调 PEFT：方法与实现
+
+本文以原始笔记 `_posts/2025/11/2025-11-26-llm_peft.md` 为基础整理，完整保留其中的代码、配置输出、公式和 5 张配图，仅对标题层级、术语和明确的技术错误做小幅修订。
+
+## 参数高效微调：PEFT
+
+> **整合修订说明**
+>
+> - `low_cpu_mem_usage=True` 只降低加载阶段的 CPU 内存峰值，不会自动把模型放到 GPU；设备由 `.to(device)` 或 `device_map` 决定。
+> - 文本初始化的 Prompt Tuning 仍训练连续 soft prompt；真正的 hard prompt 是离散文本。
+> - LoRA 学习的是 `ΔW = BA`，模型权重为 `W' = W + (α/r)BA`。
+> - `save_pretrained()` 通常保存 adapter；若需要独立完整权重，应在允许的场景下 `merge_and_unload()` 后再保存。
+
+<figure><img src="/assets/img/llm-code-and-training-principles/can-shu-gao-xiao-wei-diao-ji-ben-jie-gou.png" alt="参数高效微调" width="783"><figcaption><p>参数高效微调基本结构</p></figcaption></figure>
+### torch前置知识
+#### named_modules
++ 获得每一个**模块名**和对应参数(**完整的模块实例**)。
+```python
+model
+Qwen2ForCausalLM(
+  (model): Qwen2Model(
+    (embed_tokens): Embedding(151936, 1536)
+    (layers): ModuleList(
+      (0-27): 28 x Qwen2DecoderLayer(
+        (self_attn): Qwen2Attention(
+          (q_proj): Linear(in_features=1536, out_features=1536, bias=True)
+          (k_proj): Linear(in_features=1536, out_features=256, bias=True)
+          (v_proj): Linear(in_features=1536, out_features=256, bias=True)
+          (o_proj): Linear(in_features=1536, out_features=1536, bias=False)
+```
++ 输出结果
+```python
+model.layers.0.xxxx model.layers.0.xxxx(实例)
+```
+
+#### get_submodules
++ **获取特定子层：根据模块名称即可。**
++ 例如`module_name='linea1.0.linear2`，可以返回`model.linear1.0.linear2`对应的实例化结果。
+
+---
+### 微调模型保存
++ 所有微调模型都是使用PEFT这个框架，训练后完整的模型需要通过`PeftModel.from_pretrained`进行加载，需要提供原模型和检查点`model_id`
+
+```python
+p_model = PeftModel.from_pretrained(model, model_id="./chatbot/checkpoint-12")
+p_model
+```
++ **注意其改变了原始模型**，外层包裹了一层微调的框架，需要通过`merge_and_unload`获得原始的模型。
+```python
+PeftModelForCausalLM(
+  (base_model): LoraModel(
+```
++　这个才是正常的模型`BloomForCausalLM`，保存的文件是完整的(模型原始权重＋新微调权重合并后的结果)
+```python
+merge_model = p_model.merge_and_unload()
+merge_model.save_pretrained("./chatbot/merge_model")
+BloomForCausalLM(
+  (transformer): BloomModel(
+    (word_embeddings): Embedding(46145, 2048)
+```
+
++ PeftModel和原始model**都支持直接推理**，使用上其实没有差别。加载上有区别。
+
+```python
+ipt = tokenizer("Human: {}\n{}".format("考试有哪些技巧？", "").strip() + "\n\nAssistant: ", return_tensors="pt")
+tokenizer.decode(p_model.generate(**ipt, do_sample=False)[0], skip_special_tokens=True)
+```
+
+### BitFit
+核心思想：只微调模型**线性层的Bias参数**。
++ `low_cpu_mem_usage`：降低加载模型时的 CPU 内存峰值；它**不会自动将模型分配到 GPU**，设备放置仍由 `.to(device)` 或 `device_map` 决定。
+```python
+model = AutoModelForCausalLM.from_pretrained(local_path, low_cpu_mem_usage=True)
+```
++ `sum(param.numel() for param in model.parameters())`：获取模型参数,`param`类似tensor，可以调用shape，numel等常见命令。
++ 获取参数名和禁止梯度更新。
+```python
+num_param = 0
+for name, param in model.named_parameters():
+    print(f'name:{name} param:{param.shape}')
+name:transformer.word_embeddings.weight param:torch.Size([46145, 2048])
+name:transformer.word_embeddings_layernorm.weight param:torch.Size([2048])
+name:transformer.word_embeddings_layernorm.bias param:torch.Size([2048])
+```
+```python
+# bitfit
+# 选择模型参数里面的所有bias部分
+
+num_param = 0
+for name, param in model.named_parameters():
+    if "bias" not in name:
+        param.requires_grad = False
+    else:
+        num_param += param.numel()
+
+num_param
+```
++ 然后正常配置`TrainingArguments`然后调用`Trainer.train()`就行。
+
+```python
+args = TrainingArguments(
+    output_dir="./chatbot",
+    per_device_train_batch_size=1,
+    gradient_accumulation_steps=8,
+    logging_steps=10,
+    num_train_epochs=1
+)
+trainer = Trainer(
+    model=model,
+    args=args,
+    tokenizer=tokenizer,
+    train_dataset=tokenized_ds,
+    data_collator=DataCollatorForSeq2Seq(tokenizer=tokenizer, padding=True),
+)
+trainer.train()
+```
+
+### Prompt Tuning
++ 就是在输入中多加入一些`virtual_tokens`
++ 这些tokens的**embedding层**是新学的，与原先的embedding层无关。
++ 其他参数完全冻结
++ 对于这些tokens的分词方法，可以**参考原模型的分词器的分词方法**。
+<figure><img src="/assets/img/llm-code-and-training-principles/can-shu-gao-xiao-wei-diao-soft-prompt.png" alt="参数高效微调" width="794"><figcaption><p>Soft Prompt 结构</p></figcaption></figure>
+
+#### Soft Prompt Tuning
++ 并不知道实际的token是什么，只需要指定数量即可。
++ 一般来说，模型需要学习这些Soft Prompt的表示，因此**收敛较慢**。
+```python
+from peft import PromptTuningConfig,get_peft_model,TaskType
+config=PromptTuningConfig(task_type=TaskType.CAUSAL_LM,num_virtual_tokens=10)
+config
+model=get_peft_model(model,config)
+```
++ `model.print_trainable_parameters()`：打印**可训练的参数**
+
+#### 文本初始化的 Prompt Tuning（并非真正的 Hard Prompt）
++ 指定token的内容，**其中长度也需要指定**，可以沿用原模型分词器的分词长度，`prompt_tuning_init`，`prompt_tuning_init_text`
+
+```python
+from peft import PromptTuningConfig, get_peft_model,TaskType,PromptTuningInit
+config=PromptTuningConfig(task_type=TaskType.CAUSAL_LM,
+                          prompt_tuning_init=PromptTuningInit.TEXT,
+                          prompt_tuning_init_text="你好帅",
+                          num_virtual_tokens=len(tokenizer("你好帅")["input_ids"]),
+                          tokenizer_name_or_path=local_path,
+                         )
+config
+```
+
++ PromptTuningInit的属性：
+
+```python
+class PromptTuningInit(str, enum.Enum):
+    TEXT = "TEXT"
+    RANDOM = "RANDOM"
+```
+
+### P-Tuning
+Soft Prompt Tuning因为要学习Prompt本身的表示(缘于随机初始化token)，所以收敛非常慢，为了解决这一点，可以引入更多参数进行学习。
+一般来说可以引入MLP或者LSTM作为一个<span style="color:red">Prompt Encoder</span>
+<figure><img src="/assets/img/llm-code-and-training-principles/can-shu-gao-xiao-wei-diao-p-tuning.png" alt="参数高效微调" width="783"><figcaption><p>P-Tuning 编码器</p></figcaption></figure>
++ 用法一致，**逐一使用的是`PromptEncoderConfig`！**
+```python
+from peft import PromptEncoderConfig, TaskType, get_peft_model, PromptEncoderReparameterizationType
+config = PromptEncoderConfig(
+task_type=TaskType.CAUSAL_LM,
+    num_virtual_tokens=10,
+    encoder_reparameterization_type=PromptEncoderReparameterizationType.MLP,
+)
+config
+```
++ `PromptEncoderReparameterizationType`的属性如下：
+```python
+# class PromptEncoderReparameterizationType(str, enum.Enum):
+#     MLP = "MLP"
+#     LSTM = "LSTM"
+```
+
++ 可以**调节encoder的模型配置**，增多或者减小参数量，**只对于`PromptEncoderReparameterizationType.LSTM`有效！**
+```python
+from peft import PromptEncoderConfig, TaskType, get_peft_model, PromptEncoderReparameterizationType
+config = PromptEncoderConfig(
+task_type=TaskType.CAUSAL_LM,
+    num_virtual_tokens=10,
+    encoder_reparameterization_type=PromptEncoderReparameterizationType.LSTM,
+    encoder_hidden_size=512,
+    encoder_num_layers=2,
+    encoder_dropout=0.1
+)
+config
+```
+
++ `PromptEncoderConfig`的代码如下：
+```python
+@dataclass
+class PromptEncoderConfig(PromptLearningConfig):
+    encoder_reparameterization_type: Union[str, PromptEncoderReparameterizationType] = field(
+        default=PromptEncoderReparameterizationType.MLP,
+        metadata={"help": "How to reparameterize the prompt encoder"},
+    )
+    encoder_hidden_size: int = field(
+        default=None,
+        metadata={"help": "The hidden size of the prompt encoder"},
+    )
+    encoder_num_layers: int = field(
+        default=2,
+        metadata={"help": "The number of layers of the prompt encoder"},
+    )
+    encoder_dropout: float = field(
+        default=0.0,
+        metadata={"help": "The dropout of the prompt encoder"},
+    )
+
+    def __post_init__(self):
+        self.peft_type = PeftType.P_TUNING
+```
+
+### Prefix Tuning
+类似Soft Tuning+Encoder，主要就是在注意力的**K和V矩阵**中加入新的token，然后学习新的**嵌入层**
+也可以支持重参数化，收敛更快。
+
+<figure><img src="/assets/img/llm-code-and-training-principles/can-shu-gao-xiao-wei-diao-prefix-tuning.png" alt="参数高效微调" width="781"><figcaption><p>Prefix-Tuning 前缀缓存</p></figcaption></figure>
++ 配置文件：`prefix_projection`和`encoder_hidden_size`代表重参数化的线性层
+```python
+class PrefixTuningConfig(PromptLearningConfig):
+    """
+    This is the configuration class to store the configuration of a [`PrefixEncoder`].
+
+    Args:
+        encoder_hidden_size (`int`): The hidden size of the prompt encoder.
+        prefix_projection (`bool`): Whether to project the prefix embeddings.
+    """
+
+    encoder_hidden_size: int = field(
+        default=None,
+        metadata={"help": "The hidden size of the encoder"},
+    )
+    prefix_projection: bool = field(
+        default=False,
+        metadata={"help": "Whether to project the prefix tokens"},
+    )
+
+    def __post_init__(self):
+        self.peft_type = PeftType.PREFIX_TUNING
+```
+
++ 重参数化结果：98304=2048*24层*2个矩阵(K和V矩阵)
+```python
+model.prompt_encoder
+ModuleDict(
+  (default): PrefixEncoder(
+    (embedding): Embedding(10, 2048)
+    (transform): Sequential(
+      (0): Linear(in_features=2048, out_features=2048, bias=True)
+      (1): Tanh()
+      (2): Linear(in_features=2048, out_features=98304, bias=True)
+    )
+  )
+)
+```
+
+### Lora
+核心思想是将冻结权重与低秩更新相加。设原始权重为 $$W$$，可学习的低秩矩阵为 $$A$$ 和 $$B$$，则更新后的权重为：
+
+$$
+\begin{align}
+W' &= W + \Delta W \\
+\Delta W &= \frac{\alpha}{r}BA
+\end{align}
+$$
+
+其中，$$W'$$ 是合并后的权重，$$\Delta W$$ 是低秩更新，$$r$$ 是秩，$$\alpha$$ 是缩放系数。训练时只更新 $$A$$ 和 $$B$$，推理时可将更新合并回原始权重。
+
+**低秩矩阵就是维度较小的矩阵**，实现训练时参数大幅度下降的效果。
+
++ 配置文件：需要指定`target_modules`和`modules_to_save`两个参数
+```python
+from peft import LoraConfig, TaskType, get_peft_model
+config=LoraConfig(task_type=TaskType.CAUSAL_LM,target_modules=["dense_h_to_4h","dense_4h_to_h"],modules_to_save=["ln_f"],r=4)
+config
+```
+实现在目标模块`dense_h_to_4h`插入**lora实现的线性层**
+```python
+(dense_h_to_4h): lora.Linear(
+                        (base_layer): Linear(in_features=2048, out_features=8192, bias=True)
+                        (lora_dropout): ModuleDict(
+                          (default): Identity()
+                        )
+                        (lora_A): ModuleDict(
+                          (default): Linear(in_features=2048, out_features=4, bias=False)
+                        )
+                        (lora_B): ModuleDict(
+                          (default): Linear(in_features=4, out_features=8192, bias=False)
+                        )
+```
+
++ `target_modules`：指定应用 LoRA 的模块。列表形式通常按模块名或后缀匹配；单个字符串在部分 PEFT 版本中可作为正则表达式处理，具体行为应以当前版本为准。可通过 `named_modules()` 检查实际模块名。
+```python
+for name, parameter in model.named_parameters():
+    print(name)
+transformer.word_embeddings.weight
+transformer.word_embeddings_layernorm.weight
+transformer.word_embeddings_layernorm.bias
+transformer.h.0.input_layernorm.weight
+```
++ `modules_to_save`：训练过程中重新训练的模块名称，例如可以指定重新对输出层进行训练(这个过程不涉及Lora)
+
++ `r`：矩阵A和矩阵B的秩。降低秩可以减少训练参数。
+
+#### 实现
+##### 构建LoraLayer
++ 构建两个**A和B矩阵**，并进行初始化
++ 构建原始矩阵的参数weight，并静止梯度更新。
++ 在应用Lora时自动初始化weight参数。
+
+```python
+class LoraLayerConfig:
+    def __init__(
+        self,
+        r:int,
+        lora_alpha:int,
+        lora_dropout:float,
+        merge_weights: bool, # eval 模式中，是否将 LoRA 矩阵的值加到原权重矩阵上
+        ):
+        self.r = r
+        self.lora_alpha = lora_alpha
+        # Optional dropout
+        if lora_dropout > 0.0:
+            self.lora_dropout = nn.Dropout(p=lora_dropout)
+        else:
+            self.lora_dropout = lambda x: x
+        # Mark the weight as unmerged
+        self.merged = False
+        self.merge_weights = merge_weights
+        self.disable_adapters = False
+```
+
+```python
+class LoraLayer(nn.Linear,LoraLayerConfig):
+    def __init__(
+        self,
+        in_features: int,
+        out_features: int,
+        r: int,
+        lora_alpha: int,
+        lora_dropout: float,
+        fan_in_fan_out: bool = False,
+        merge_weights: bool = True,
+    ):
+        nn.Linear.__init__(self, in_features, out_features)
+        LoraLayerConfig.__init__(self, r, lora_alpha, lora_dropout, merge_weights)
+
+        self.fan_in_fan_out = fan_in_fan_out
+
+        # Actual trainable parameters
+        if r >0:
+            self.lora_A = nn.Linear(in_features, r, bias=False)
+            self.lora_B = nn.Linear(r, out_features, bias=False)
+
+            self.scaling = self.lora_alpha / self.r
+
+            # 调用Linear.weight
+            self.weight.requires_grad = False
+
+        self.reset_parameters()
+        if fan_in_fan_out:
+            self.weight.data = self.weight.data.T
+    # 处理转置矩阵: embedding vs Linear
+    def transpose(weight, fan_in_fan_out):
+        return weight.T if fan_in_fan_out else weight
+    def forward(
+        self,
+        x: torch.Tensor,
+    ):
+        if self.r > 0 and not self.merged:
+            result = F.linear(x, transpose(self.weight, self.fan_in_fan_out), bias=self.bias)
+            if self.r > 0:
+                result += self.lora_B(self.lora_A(self.lora_dropout(x))) * self.scaling
+            return result
+```
+##### 修改特定层为LoraLayer
++ `named_modules()`：返回模块名和对应的模块实例
++ 调用`setattr()`函数**重置当前模块的父模型**的线性层(`q_proj`)为LoraLayer。
++ 根据参数实例化即可。
+
+```python
+def apply_lora_to_model(model, target_modules, r=8, lora_alpha=16, lora_dropout=0.1):
+    for name, module in model.named_modules():
+        if any(target in name for target in target_modules) and isinstance(module, nn.Linear):
+            # 获得上一层的实例 linear1.linear2.linear3
+            # parent:linear1.linear2 child:linear3
+            if '.' in name:
+                parent_module_name , child_module_name = name.rsplit('.',1)
+                parent_module = model.get_submodule(parent_module_name)
+            else:
+                parent_module = model
+                child_module_name = name
+
+            # 创建线性层
+            lora_layer = LoraLayer(
+                in_features = module.in_features,
+                out_features = module.out_features,
+                r = r,
+                lora_alpha = lora_alpha,
+                lora_dropout = lora_dropout,
+                fan_in_fan_out = False,
+                merge_weights = True
+            )
+
+            # 复制权重
+            with torch.no_grad():
+                lora_layer.weight.copy_(module.weight.data)
+                if module.bias is not None:
+                    lora_layer.bias.copy_(module.bias.data)
+
+            # 替换模块
+            setattr(parent_module,child_module_name,lora_layer)
+            print('name: {}, module: {}'.format(name, lora_layer))
+```
+
+### IA³
+<figure><img src="/assets/img/llm-code-and-training-principles/can-shu-gao-xiao-wei-diao-ia3.png" alt="参数高效微调" width="775"><figcaption><p>IA³ 激活缩放结构</p></figcaption></figure>
+
+```python
+from peft import IA3Config, TaskType, get_peft_model
+config = IA3Config(task_type=TaskType.CAUSAL_LM)
+config
+IA3Config(peft_type=<PeftType.IA3: 'IA3'>, auto_mapping=None, base_model_name_or_path=None, revision=None, task_type=<TaskType.CAUSAL_LM: 'CAUSAL_LM'>, inference_mode=False, target_modules=None, feedforward_modules=None, fan_in_fan_out=False, modules_to_save=None, init_ia3_weights=True)
+
+```
+
