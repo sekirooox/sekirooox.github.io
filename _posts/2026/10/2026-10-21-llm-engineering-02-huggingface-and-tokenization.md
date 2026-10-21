@@ -4,7 +4,7 @@ date: 2026-10-21
 categories: ["大语言模型与强化学习", "大语言模型"]
 tags: ["llm", "pytorch", "transformers", "huggingface", "cs336"]
 description: "完整整理 Transformers、Datasets、Evaluate、Trainer、Unicode、UTF-8 与 BPE。"
-published: false
+published: true
 math: true
 ---
 

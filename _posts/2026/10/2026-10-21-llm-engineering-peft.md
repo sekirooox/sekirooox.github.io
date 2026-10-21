@@ -4,7 +4,7 @@ date: 2026-10-21
 categories: ["大语言模型与强化学习", "大语言模型"]
 tags: ["llm", "pytorch", "peft", "模型微调", "lora"]
 description: "整理 BitFit、Prompt Tuning、P-Tuning、Prefix Tuning、LoRA 与 IA³ 的原理、配置和实现。"
-published: false
+published: true
 math: true
 ---
 

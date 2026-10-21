@@ -4,7 +4,7 @@ date: 2026-10-21
 categories: ["大语言模型与强化学习", "大语言模型"]
 tags: ["llm", "agent", "mcp", "rag", "工具调用"]
 description: "整理 ReAct、Plan-Act、Function Calling、MCP、RAG、Memory、Sub-Agent 与长期任务机制。"
-published: false
+published: true
 math: true
 ---
 # LLM·Agent 与工具系统

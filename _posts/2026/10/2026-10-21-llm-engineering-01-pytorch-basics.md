@@ -4,7 +4,7 @@ date: 2026-10-21
 categories: ["大语言模型与强化学习", "大语言模型"]
 tags: ["llm", "pytorch", "transformers", "huggingface", "cs336"]
 description: "面向语言模型实现的 PyTorch 张量、模块、梯度、优化器、状态字典与数据类型基础。"
-published: false
+published: true
 math: true
 ---
 

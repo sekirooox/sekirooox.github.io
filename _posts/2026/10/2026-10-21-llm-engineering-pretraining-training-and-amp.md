@@ -4,7 +4,7 @@ date: 2026-10-21
 categories: ["大语言模型与强化学习", "大语言模型"]
 tags: ["llm", "pytorch", "transformers", "huggingface", "cs336"]
 description: "从 MiniMind 预训练数据管线到 CS336 训练、推理、实验和自动混合精度。"
-published: false
+published: true
 math: true
 ---
 

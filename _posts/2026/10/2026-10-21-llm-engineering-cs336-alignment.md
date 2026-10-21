@@ -4,7 +4,7 @@ date: 2026-10-21
 categories: ["大语言模型与强化学习", "大语言模型"]
 tags: ["llm", "pytorch", "transformers", "huggingface", "cs336"]
 description: "保留 MATH 评估、SFT、Expert Iteration、GRPO、完整训练器代码与实验结果。"
-published: false
+published: true
 math: true
 ---
 

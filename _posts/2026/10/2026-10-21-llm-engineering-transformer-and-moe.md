@@ -4,7 +4,7 @@ date: 2026-10-21
 categories: ["大语言模型与强化学习", "大语言模型"]
 tags: ["llm", "pytorch", "transformers", "huggingface", "cs336"]
 description: "从零实现现代 Decoder-only Transformer，并整理 MoE 路由与负载均衡。"
-published: false
+published: true
 math: true
 ---
 
