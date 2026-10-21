@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+require "date"
+require "time"
+require "yaml"
+
 site = ARGV.fetch(0, "_site")
 home_path = File.join(site, "index.html")
 abort "找不到生成的首页：#{home_path}" unless File.file?(home_path)
@@ -35,7 +39,17 @@ generated_posts = Dir.glob(File.join(site, "posts", "**", "index.html"))
 checks["文章均按年月目录存放"] = source_posts.all? do |path|
   path.tr("\\", "/").match?(%r{\A_posts/\d{4}/\d{2}/\d{4}-\d{2}-\d{2}-.+\.(?:md|markdown|html)\z})
 end
-checks["递归目录中的文章全部生成"] = generated_posts.length == source_posts.length
+config = YAML.safe_load(File.read("_config.yml"), permitted_classes: [Date, Time])
+published_posts = source_posts.select do |path|
+  content = File.read(path, encoding: "UTF-8")
+  front_matter = content.match(/\A---\s*\r?\n(.*?)\r?\n---\s*\r?\n/m)
+  metadata = front_matter ? YAML.safe_load(front_matter[1], permitted_classes: [Date, Time]) || {} : {}
+  next false if metadata["published"] == false
+
+  date = metadata["date"] || File.basename(path)[0, 10]
+  config["future"] || Time.parse(date.to_s) <= Time.now
+end
+checks["递归目录中应发布的文章全部生成"] = generated_posts.length == published_posts.length
 if post_path
   post = File.read(post_path, encoding: "UTF-8")
   checks["文章页不公开阅读次数"] = !post.include?('id="pageviews"')

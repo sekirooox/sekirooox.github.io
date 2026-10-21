@@ -15,26 +15,26 @@ description: "本文围绕“计算机基础·cs336-现代Transforme…”梳理
 + **在计算残差前就进行归一化 vs 在残差后进行归一化**
 + 大部分LLM都采用计算前归一化
 + 个人理解：计算残差前归一化可以确保残差部分的数值稳定，进而与原始值相加时数值也能保持稳定。
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/e89b823307d6454aabe93ca83c141282.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-transformer-moe/e89b823307d6454aabe93ca83c141282.png){: referrerpolicy="no-referrer" }
 ### doubleNorm
 + 残差前后都进行归一化处理
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/36ecccd1d7fd4b958bb69852cf2b134f.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-transformer-moe/36ecccd1d7fd4b958bb69852cf2b134f.png){: referrerpolicy="no-referrer" }
 
 ## LayerNorm vs RMSNorm
 + LayerNorm和RMSNorm本质上对于性能的影响都不大。
 + **但是RMSNorm的计算操作更少，效率有一定提升，便于并行化**。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/f732b56168f849cb89a50fd62f1eb73d.png){: referrerpolicy="no-referrer" }
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a0fb30ad8f4243748b20be295a36518d.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-transformer-moe/f732b56168f849cb89a50fd62f1eb73d.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-transformer-moe/a0fb30ad8f4243748b20be295a36518d.png){: referrerpolicy="no-referrer" }
 ## FFN vs SwiGLU
 + Swish函数：`torch.SELU()`<span style="color:red">等价于</span>`sigmoid(x)*x`
 + GLU：表示门控，使用学习单独的门控映射矩阵V，与激活值进行逐元素乘法。
 + ### 8/3 原则：引入门控矩阵带来额外的参数，为了确保参数量仍然保持一致，FFN中的线性层维度从4倍d_model缩小为8/3倍d_model(同时保持64的倍数)。
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/96fed546f15042f3b5e0396d8a803c91.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-transformer-moe/96fed546f15042f3b5e0396d8a803c91.png){: referrerpolicy="no-referrer" }
 ## 绝对位置编码 vs 相对位置编码
 + 绝对位置编码：在**获得语义嵌入后**就计算位置编码与嵌入值相加
 + 相对位置编码(ROPE)：**在计算注意力操作的QK运算时**，将相对位置编码与Q和K叠加在一起。
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/13499ca8253a40f59d67a9b08d7aea33.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-transformer-moe/13499ca8253a40f59d67a9b08d7aea33.png){: referrerpolicy="no-referrer" }
 
 
 # torch实现
@@ -95,7 +95,7 @@ class Embedding_Layer(nn.Module):
 
 ## ROPE旋转位置编码
 ### 核心思想
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/85519c088aec4446bbdb7a432fa80f61.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-transformer-moe/85519c088aec4446bbdb7a432fa80f61.png){: referrerpolicy="no-referrer" }
 
 + 我们需要让$Q_m$和$K_n$进行**注意力操作的结果与它们的相对位置有关(m-n)**，我们可以使用旋转矩阵的性质来满足这一点
 + 首先我们只考虑二维度的情况，假设$Q_m'$=$R(m\theta)Q_m$，$K_n'=R(n\theta)K_n$，R是旋转矩阵，**旋转角度与它们的位置有关**。
@@ -104,10 +104,10 @@ class Embedding_Layer(nn.Module):
 ### 计算公式
 + 旋转矩阵R是一个2x2的矩阵(我们现在只对2维的情况考虑)，假设有n个维度，**我们可以构造n/2个旋转矩阵R组成的对角矩阵**(**将n个维度拆分为n/2个组，每个组单独考虑**)。
 + 每一个**2D旋转矩阵的公式该token的相对位置i和处于第k个组共同决定**。
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/913a4614c842430eb69c2f61c07b71f6.png){: referrerpolicy="no-referrer" }
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/5af0a2af88c5400eab3f95e2743e1df0.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-transformer-moe/913a4614c842430eb69c2f61c07b71f6.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-transformer-moe/5af0a2af88c5400eab3f95e2743e1df0.png){: referrerpolicy="no-referrer" }
 + 特点：**第一组的旋转弧度最大，后面的组得到的旋转弧度迅速递减**
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/5b3c7482691a41b8baf7fd193d42b7b3.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-transformer-moe/5b3c7482691a41b8baf7fd193d42b7b3.png){: referrerpolicy="no-referrer" }
 ### 实现
 + 只考虑第d个token，我们发现其特征维度叠加ROPE位置编码的公式有这样的特点
 + 下标从0开始，对于偶数位：`output[...,0::2]=self.cos*x_even-self.sin*x_odd`

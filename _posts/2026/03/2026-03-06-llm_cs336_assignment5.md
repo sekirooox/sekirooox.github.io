@@ -329,7 +329,7 @@ def evaluate_vllm(
 + 采样一组数据
 + 然后最大化标签的负数似然比，$\max \log\pi_{\theta}(a_t\mid x_t)$
 + 反向传播和梯度更新即可
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/8007908011204c01a80137e9d2b6f363.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-cs336-alignment/8007908011204c01a80137e9d2b6f363.png){: referrerpolicy="no-referrer" }
 
 
 ### 问题（tokenize_prompt_and_output）：提示与输出的分词（2 分）
@@ -1033,10 +1033,10 @@ wandb.finish()
 + 最高eval准确率约为38%
 + format格式正确率超过90%
 + train_loss的对比其实不公平，数据集的数量和难度不一致。
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/223e67fad33e4aa08e6277a5edfb3802.png){: referrerpolicy="no-referrer" }
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/24b522d8df754ad7afd9012d9abfcb69.png){: referrerpolicy="no-referrer" }
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/114bfcf4b57b49e39f82181e1f9f2cb8.png){: referrerpolicy="no-referrer" }
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/2154c037700b4ef7b1640d136ec2a209.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-cs336-alignment/223e67fad33e4aa08e6277a5edfb3802.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-cs336-alignment/24b522d8df754ad7afd9012d9abfcb69.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-cs336-alignment/114bfcf4b57b49e39f82181e1f9f2cb8.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-cs336-alignment/2154c037700b4ef7b1640d136ec2a209.png){: referrerpolicy="no-referrer" }
 
 ### 实验结论
 + 数据集不是越大越好。仅保留少量样本的数据集在评估准确率上远远高于完整的数据集。
@@ -1044,7 +1044,7 @@ wandb.finish()
 
 # 5 MATH数据集的专家迭代
 在上一节中，我们发现通过从监督微调（SFT）数据中过滤掉不良示例，可以提升监督微调（SFT）模型的性能。本节将进一步优化：将该过滤流程应用于基础模型自身生成的推理轨迹。这一过程在文献中被称为专家迭代（expert iteration）[Anthony et al., 2017]，在语言模型领域，Cobbe et al. [2021b]、Zelikman et al. [2022]、Dohan et al. [2022]、Gulcehre et al. [2023] 等学者已对此进行了探索。
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/0016fc26dbc540c28d709074b78c17d6.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-cs336-alignment/0016fc26dbc540c28d709074b78c17d6.png){: referrerpolicy="no-referrer" }
 
 接下来，我们将在MATH数据集上运行专家迭代。
 小提示, 需为vLLM的SamplingParams传入min_tokens参数，确保不会生成空字符串（否则可能导致后续实现中出现NaN值）。具体设置如下：
@@ -1472,10 +1472,10 @@ wandb.finish()
 + 最高评估准确率约为42%，比SFT训练最好结果高5%左右
 + 格式正确率至少有95%，基本上不存在格式错误。
 + 熵值比较低，说明模型生成的多样性一般，**存在过拟合问题**。
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/72b2fa228f684d27a2cda735fb842ad8.png){: referrerpolicy="no-referrer" }
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/53f1408f1b5d4cc5a4281f46f42817b9.png){: referrerpolicy="no-referrer" }
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/8397c01209024fc6b1ef221d8eace879.png){: referrerpolicy="no-referrer" }
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/90484a4739914fd8a3f80b853ebc5bbc.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-cs336-alignment/72b2fa228f684d27a2cda735fb842ad8.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-cs336-alignment/53f1408f1b5d4cc5a4281f46f42817b9.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-cs336-alignment/8397c01209024fc6b1ef221d8eace879.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-cs336-alignment/90484a4739914fd8a3f80b853ebc5bbc.png){: referrerpolicy="no-referrer" }
 
 ### 实验结论
 + 目前模型应该**存在严重的过拟合现象**，熵的值过低。
@@ -1489,11 +1489,11 @@ wandb.finish()
 + 注意：我们一般得到的是`log_prob`，对于$\rho(\frac{a}{b})$的计算，使用**exp(loga-logb)** 的技巧
 + 原始的GRPO算法**还有一个KL散度的公式**，作为惩罚项。一般使用逐token的方式近似模型的**KL散度差别**。
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/ce3715e10987429f826cb2c12779648e.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-cs336-alignment/ce3715e10987429f826cb2c12779648e.png){: referrerpolicy="no-referrer" }
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a260f0dfccf14250b50cd9dbf278bc33.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-cs336-alignment/a260f0dfccf14250b50cd9dbf278bc33.png){: referrerpolicy="no-referrer" }
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/5c9ce2c795a24d03a3e155a487b658b2.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-cs336-alignment/5c9ce2c795a24d03a3e155a487b658b2.png){: referrerpolicy="no-referrer" }
 
 
 ```cpp

@@ -450,12 +450,12 @@ text_classification("北京上个月召开了两会")
 > 来源：`_posts/2025/11/2025-11-03-llm_huggingface.md`
 
 ### Pipeline
-<figure><img src="/assets/img/llm-code-and-training-principles/022d335f5d3147208393f4af1ebd0248.png" alt="Hugging Face 分词与模型" width="362"><figcaption><p>Pipeline 处理流程</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-huggingface-tokenization/022d335f5d3147208393f4af1ebd0248.png" alt="Hugging Face 分词与模型" width="362"><figcaption><p>Pipeline 处理流程</p></figcaption></figure>
 
 #### 模型的加载
 **不需要记忆，只需要在官网找就行。**
 
-<figure><img src="/assets/img/llm-code-and-training-principles/082aa3937b404289ad75151ede8561c1.png" alt="Hugging Face 分词与模型" width="362"><figcaption><p>本地模型加载示例</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-huggingface-tokenization/082aa3937b404289ad75151ede8561c1.png" alt="Hugging Face 分词与模型" width="362"><figcaption><p>本地模型加载示例</p></figcaption></figure>
 
 ##### 直接加载pipeline
 + 注意`local_path`指的是权重相关文件的**目录路径.**
@@ -482,7 +482,7 @@ pipe("很好玩")
 
 ### Tokenizer
 **分词+编码+中间过程(填充、阶段等)**
-<figure><img src="/assets/img/llm-code-and-training-principles/a8395bf047764b6a91adeb21a1c7e422.png" alt="Hugging Face 分词与模型" width="362"><figcaption><p>Tokenizer 处理步骤</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-huggingface-tokenization/a8395bf047764b6a91adeb21a1c7e422.png" alt="Hugging Face 分词与模型" width="362"><figcaption><p>Tokenizer 处理步骤</p></figcaption></figure>
 #### 解码和编码函数
 ##### 分词函数：`encode`(不带有掩码)
 + 分词+编码
@@ -701,9 +701,9 @@ b'hello'
 + 8，16，32指的是**位数(bit)**。
 + UTF-8指的是使用**最少一字节来存储字符**(实际是**动态存储**，例如英文字母‘a'对应一个字节，中文字符“好”对应3个字节)
 + UTF-32指的是使用4字节来存储任意字符，如果**字符不需要4个字节，则填充至4个字节**。
-<figure><img src="/assets/img/llm-code-and-training-principles/85347824a1c74ad1b77d4304bda51975.png" alt="Hugging Face 分词与模型" width="362"><figcaption><p>UTF 编码方式对比</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-huggingface-tokenization/85347824a1c74ad1b77d4304bda51975.png" alt="Hugging Face 分词与模型" width="362"><figcaption><p>UTF 编码方式对比</p></figcaption></figure>
 ##### UTF-8编码原理(了解即可)
-<figure><img src="/assets/img/llm-code-and-training-principles/2b3ca08f5fdb4369ba199c7aec10b703.png" alt="Hugging Face 分词与模型" width="362"><figcaption><p>UTF-8 编码模板</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-huggingface-tokenization/2b3ca08f5fdb4369ba199c7aec10b703.png" alt="Hugging Face 分词与模型" width="362"><figcaption><p>UTF-8 编码模板</p></figcaption></figure>
 ##### 实现
 ---
 <br><br><br><br><br><br>
@@ -713,7 +713,7 @@ b'hello'
 + 简单来说就是隔离每一个词，确保每一个词的语义完整，**避免BPE算法统计跨语义的次数**。
 
 
-<figure><img src="/assets/img/llm-code-and-training-principles/1512c1ffc20a4684bc916684dba091ea.png" alt="Hugging Face 分词与模型" width="362"><figcaption><p>BPE 预分词示例</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-huggingface-tokenization/1512c1ffc20a4684bc916684dba091ea.png" alt="Hugging Face 分词与模型" width="362"><figcaption><p>BPE 预分词示例</p></figcaption></figure>
   ---
 <br><br><br><br><br><br>
 

@@ -307,15 +307,15 @@ checkpoint = {
 
 ### 数据类型
 ##### `torch.float32`：单精度/全精度，需要４个字节来存储
-<figure><img src="/assets/img/llm-code-and-training-principles/0372baa157f84052bb68076d8950b32a.png" alt="PyTorch 数据类型" width="362"><figcaption><p>FP32 位级结构</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-pytorch-basics/0372baa157f84052bb68076d8950b32a.png" alt="PyTorch 数据类型" width="362"><figcaption><p>FP32 位级结构</p></figcaption></figure>
 ##### `torch.float16`：常用于混合精度训练和推理，占２个字节
 ##### `torch.bfloat16`：２个字节
 + 特点：和`torch.float32`一样，指数部分精度一致，但是小数部分精度较差。
-<figure><img src="/assets/img/llm-code-and-training-principles/8819616e50724b38aeb129d065fe3085.png" alt="PyTorch 数据类型" width="362"><figcaption><p>bfloat16 位级结构</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-pytorch-basics/8819616e50724b38aeb129d065fe3085.png" alt="PyTorch 数据类型" width="362"><figcaption><p>bfloat16 位级结构</p></figcaption></figure>
 
 ##### FP8（具体类型取决于 PyTorch 版本与硬件）
 + `torch.bf8` 不是规范 dtype 名称；常见具体格式包括 `torch.float8_e4m3fn`、`torch.float8_e5m2`。
-<figure><img src="/assets/img/llm-code-and-training-principles/d772defd2d954ec6b445b11ce782724b.png" alt="PyTorch 数据类型" width="362"><figcaption><p>FP8 格式对比</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-pytorch-basics/d772defd2d954ec6b445b11ce782724b.png" alt="PyTorch 数据类型" width="362"><figcaption><p>FP8 格式对比</p></figcaption></figure>
 #### FLOP、FLOPs 与 FLOP/s
 + FLOP：一次浮点运算；FLOPs 常被用作其复数，表示总运算量。
 + FLOP/s：每秒浮点运算次数，用于描述硬件或程序的计算吞吐率。

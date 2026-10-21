@@ -21,7 +21,7 @@ math: true
 > - LoRA 学习的是 `ΔW = BA`，模型权重为 `W' = W + (α/r)BA`。
 > - `save_pretrained()` 通常保存 adapter；若需要独立完整权重，应在允许的场景下 `merge_and_unload()` 后再保存。
 
-<figure><img src="/assets/img/llm-code-and-training-principles/can-shu-gao-xiao-wei-diao-ji-ben-jie-gou.png" alt="参数高效微调" width="783"><figcaption><p>参数高效微调基本结构</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-peft/can-shu-gao-xiao-wei-diao-ji-ben-jie-gou.png" alt="参数高效微调" width="783"><figcaption><p>参数高效微调基本结构</p></figcaption></figure>
 ### torch前置知识
 #### named_modules
 + 获得每一个**模块名**和对应参数(**完整的模块实例**)。
@@ -130,7 +130,7 @@ trainer.train()
 + 这些tokens的**embedding层**是新学的，与原先的embedding层无关。
 + 其他参数完全冻结
 + 对于这些tokens的分词方法，可以**参考原模型的分词器的分词方法**。
-<figure><img src="/assets/img/llm-code-and-training-principles/can-shu-gao-xiao-wei-diao-soft-prompt.png" alt="参数高效微调" width="794"><figcaption><p>Soft Prompt 结构</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-peft/can-shu-gao-xiao-wei-diao-soft-prompt.png" alt="参数高效微调" width="794"><figcaption><p>Soft Prompt 结构</p></figcaption></figure>
 
 #### Soft Prompt Tuning
 + 并不知道实际的token是什么，只需要指定数量即可。
@@ -168,7 +168,7 @@ class PromptTuningInit(str, enum.Enum):
 ### P-Tuning
 Soft Prompt Tuning因为要学习Prompt本身的表示(缘于随机初始化token)，所以收敛非常慢，为了解决这一点，可以引入更多参数进行学习。
 一般来说可以引入MLP或者LSTM作为一个<span style="color:red">Prompt Encoder</span>
-<figure><img src="/assets/img/llm-code-and-training-principles/can-shu-gao-xiao-wei-diao-p-tuning.png" alt="参数高效微调" width="783"><figcaption><p>P-Tuning 编码器</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-peft/can-shu-gao-xiao-wei-diao-p-tuning.png" alt="参数高效微调" width="783"><figcaption><p>P-Tuning 编码器</p></figcaption></figure>
 + 用法一致，**逐一使用的是`PromptEncoderConfig`！**
 ```python
 from peft import PromptEncoderConfig, TaskType, get_peft_model, PromptEncoderReparameterizationType
@@ -229,7 +229,7 @@ class PromptEncoderConfig(PromptLearningConfig):
 类似Soft Tuning+Encoder，主要就是在注意力的**K和V矩阵**中加入新的token，然后学习新的**嵌入层**
 也可以支持重参数化，收敛更快。
 
-<figure><img src="/assets/img/llm-code-and-training-principles/can-shu-gao-xiao-wei-diao-prefix-tuning.png" alt="参数高效微调" width="781"><figcaption><p>Prefix-Tuning 前缀缓存</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-peft/can-shu-gao-xiao-wei-diao-prefix-tuning.png" alt="参数高效微调" width="781"><figcaption><p>Prefix-Tuning 前缀缓存</p></figcaption></figure>
 + 配置文件：`prefix_projection`和`encoder_hidden_size`代表重参数化的线性层
 ```python
 class PrefixTuningConfig(PromptLearningConfig):
@@ -429,7 +429,7 @@ def apply_lora_to_model(model, target_modules, r=8, lora_alpha=16, lora_dropout=
 ```
 
 ### IA³
-<figure><img src="/assets/img/llm-code-and-training-principles/can-shu-gao-xiao-wei-diao-ia3.png" alt="参数高效微调" width="775"><figcaption><p>IA³ 激活缩放结构</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-peft/can-shu-gao-xiao-wei-diao-ia3.png" alt="参数高效微调" width="775"><figcaption><p>IA³ 激活缩放结构</p></figcaption></figure>
 
 ```python
 from peft import IA3Config, TaskType, get_peft_model

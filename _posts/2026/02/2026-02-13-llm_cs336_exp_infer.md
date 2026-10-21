@@ -62,7 +62,7 @@ echo "=========================================="
 ## 实验结果
 + 代码有一些bug，仅供娱乐
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/05fdf1bd128b417486e5351e1abf222a.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-pretraining-training-amp/05fdf1bd128b417486e5351e1abf222a.png){: referrerpolicy="no-referrer" }
 
 # 学习率实验
 ## 脚本
@@ -157,7 +157,7 @@ done
 ```
 ## 结果
 + 6e-3是当前实验条件下最优的最大学习率。
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/99d79e946110406682137ebe82f50a08.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-pretraining-training-amp/99d79e946110406682137ebe82f50a08.png){: referrerpolicy="no-referrer" }
 ---
 <br><br><br><br>
 # 推理

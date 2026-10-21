@@ -21,26 +21,26 @@ math: true
 + **在计算残差前就进行归一化 vs 在残差后进行归一化**
 + 大部分LLM都采用计算前归一化
 + 个人理解：计算残差前归一化可以确保残差部分的数值稳定，进而与原始值相加时数值也能保持稳定。
-<figure><img src="/assets/img/llm-code-and-training-principles/e89b823307d6454aabe93ca83c141282.png" alt="Transformer架构" width="700"><figcaption><p>PreNorm 与 PostNorm</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-transformer-moe/e89b823307d6454aabe93ca83c141282.png" alt="Transformer架构" width="700"><figcaption><p>PreNorm 与 PostNorm</p></figcaption></figure>
 ##### doubleNorm
 + 残差前后都进行归一化处理
-<figure><img src="/assets/img/llm-code-and-training-principles/36ecccd1d7fd4b958bb69852cf2b134f.png" alt="Transformer架构" width="700"><figcaption><p>DoubleNorm 结构</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-transformer-moe/36ecccd1d7fd4b958bb69852cf2b134f.png" alt="Transformer架构" width="700"><figcaption><p>DoubleNorm 结构</p></figcaption></figure>
 
 #### LayerNorm vs RMSNorm
 + LayerNorm和RMSNorm本质上对于性能的影响都不大。
 + **但是RMSNorm的计算操作更少，效率有一定提升，便于并行化**。
 
-<figure><img src="/assets/img/llm-code-and-training-principles/f732b56168f849cb89a50fd62f1eb73d.png" alt="Transformer架构" width="700"><figcaption><p>LayerNorm 计算</p></figcaption></figure>
-<figure><img src="/assets/img/llm-code-and-training-principles/a0fb30ad8f4243748b20be295a36518d.png" alt="Transformer架构" width="700"><figcaption><p>RMSNorm 计算</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-transformer-moe/f732b56168f849cb89a50fd62f1eb73d.png" alt="Transformer架构" width="700"><figcaption><p>LayerNorm 计算</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-transformer-moe/a0fb30ad8f4243748b20be295a36518d.png" alt="Transformer架构" width="700"><figcaption><p>RMSNorm 计算</p></figcaption></figure>
 #### FFN vs SwiGLU
 + Swish/SiLU 函数可写为 `torch.nn.functional.silu(x)`，等价于 `sigmoid(x) * x`；它不是 SELU。
 + GLU：表示门控，使用学习单独的门控映射矩阵V，与激活值进行逐元素乘法。
 + ### 8/3 原则：引入门控矩阵带来额外的参数，为了确保参数量仍然保持一致，FFN中的线性层维度从4倍d_model缩小为8/3倍d_model(同时保持64的倍数)。
-<figure><img src="/assets/img/llm-code-and-training-principles/96fed546f15042f3b5e0396d8a803c91.png" alt="Transformer架构" width="700"><figcaption><p>SwiGLU 门控结构</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-transformer-moe/96fed546f15042f3b5e0396d8a803c91.png" alt="Transformer架构" width="700"><figcaption><p>SwiGLU 门控结构</p></figcaption></figure>
 #### 绝对位置编码 vs 相对位置编码
 + 绝对位置编码：在**获得语义嵌入后**就计算位置编码与嵌入值相加
 + 相对位置编码（RoPE）：在计算注意力前，按位置对 Q 和 K 的二维子空间执行旋转，使内积携带相对位置信息。
-<figure><img src="/assets/img/llm-code-and-training-principles/13499ca8253a40f59d67a9b08d7aea33.png" alt="Transformer架构" width="700"><figcaption><p>绝对与相对位置编码</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-transformer-moe/13499ca8253a40f59d67a9b08d7aea33.png" alt="Transformer架构" width="700"><figcaption><p>绝对与相对位置编码</p></figcaption></figure>
 
 
 ### torch实现
@@ -101,7 +101,7 @@ class Embedding_Layer(nn.Module):
 
 #### ROPE旋转位置编码
 ##### 核心思想
-<figure><img src="/assets/img/llm-code-and-training-principles/85519c088aec4446bbdb7a432fa80f61.png" alt="Transformer架构" width="700"><figcaption><p>RoPE 旋转示意</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-transformer-moe/85519c088aec4446bbdb7a432fa80f61.png" alt="Transformer架构" width="700"><figcaption><p>RoPE 旋转示意</p></figcaption></figure>
 
 + 我们需要让$Q_m$和$K_n$进行**注意力操作的结果与它们的相对位置有关(m-n)**，我们可以使用旋转矩阵的性质来满足这一点
 + 首先我们只考虑二维度的情况，假设$Q_m'$=$R(m\theta)Q_m$，$K_n'=R(n\theta)K_n$，R是旋转矩阵，**旋转角度与它们的位置有关**。
@@ -110,10 +110,10 @@ class Embedding_Layer(nn.Module):
 ##### 计算公式
 + 旋转矩阵R是一个2x2的矩阵(我们现在只对2维的情况考虑)，假设有n个维度，**我们可以构造n/2个旋转矩阵R组成的对角矩阵**(**将n个维度拆分为n/2个组，每个组单独考虑**)。
 + 每一个**2D旋转矩阵的公式该token的相对位置i和处于第k个组共同决定**。
-<figure><img src="/assets/img/llm-code-and-training-principles/913a4614c842430eb69c2f61c07b71f6.png" alt="Transformer架构" width="374"><figcaption><p>二维旋转矩阵</p></figcaption></figure>
-<figure><img src="/assets/img/llm-code-and-training-principles/5af0a2af88c5400eab3f95e2743e1df0.png" alt="Transformer架构" width="637"><figcaption><p>旋转角度计算</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-transformer-moe/913a4614c842430eb69c2f61c07b71f6.png" alt="Transformer架构" width="374"><figcaption><p>二维旋转矩阵</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-transformer-moe/5af0a2af88c5400eab3f95e2743e1df0.png" alt="Transformer架构" width="637"><figcaption><p>旋转角度计算</p></figcaption></figure>
 + 特点：**第一组的旋转弧度最大，后面的组得到的旋转弧度迅速递减**
-<figure><img src="/assets/img/llm-code-and-training-principles/5b3c7482691a41b8baf7fd193d42b7b3.png" alt="Transformer架构" width="700"><figcaption><p>RoPE 频率分布</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-transformer-moe/5b3c7482691a41b8baf7fd193d42b7b3.png" alt="Transformer架构" width="700"><figcaption><p>RoPE 频率分布</p></figcaption></figure>
 ##### 实现
 + 只考虑第 $$d$$ 个 token，可以发现 RoPE 作用于特征维度后具有如下形式。
 + 下标从0开始，对于偶数位：`output[...,0::2]=self.cos*x_even-self.sin*x_odd`
@@ -402,7 +402,7 @@ class TransformerLM(nn.Module):
 
 ## 本部分资源完整性
 
-- 两篇原文的 17 张图片均已保存到 `/assets/img/llm-code-and-training-principles/`。
+- 两篇原文的 17 张图片均已保存到 `/assets/img/posts/llm-transformer-moe/`。
 - 本部分图片引用均已改为站点内的本地路径，不再依赖 CSDN 外链。
 - 原文没有其他需要复制的本地附件。
 
@@ -517,7 +517,7 @@ torch.Size([2, 4, 1])
 #### 核心思想
 >混合专家模型（Mixture of Experts，MoE）是一种先进的神经网络架构，旨在通过整合多个模型或“专家”的预测来提升整体模型性能。MoE模型的核心思想是将**输入数据分配给不同的专家子模型，然后将所有子模型的输出进行合并**，以生成最终结果。这种分配可以根据输入数据的特征进行动态调整，确保每个专家处理其最擅长的数据类型或任务方面，从而实现更高效、准确的预测。
 
-<figure><img src="/assets/img/llm-code-and-training-principles/0411ae8b196d424e965065c9ea9b6e63.png" alt="Transformer架构" width="700"><figcaption><p>MoE 架构示意</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-transformer-moe/0411ae8b196d424e965065c9ea9b6e63.png" alt="Transformer架构" width="700"><figcaption><p>MoE 架构示意</p></figcaption></figure>
 
 #### 优势
 + 模型索然很大，但是推理速度快。例如同样的FLOPs，**由于只激活少数专家，实际激活参数量比较低，推理速度比同样参数的密集模型快，而且可以得到更好的结果**。
@@ -533,27 +533,27 @@ torch.Size([2, 4, 1])
 #### MoE的架构
 + **多个不同的MLP** vs 多个不同的 Transformer头
 + 注意：为了确保参数量不会爆炸，**MLP的d_ff通常会大幅度减小，甚至比d_model还小**
-<figure><img src="/assets/img/llm-code-and-training-principles/7ec0b6ebc5194c6b85790620039fbdd2.png" alt="Transformer架构" width="700"><figcaption><p>专家路由过程</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-transformer-moe/7ec0b6ebc5194c6b85790620039fbdd2.png" alt="Transformer架构" width="700"><figcaption><p>专家路由过程</p></figcaption></figure>
 #### 路由算法
 + 基本分类：**为每一个token选专家** vs 为每一个专家选token
-<figure><img src="/assets/img/llm-code-and-training-principles/85eaeb3744404f2fa05bf5ca79e4cf16.png" alt="Transformer架构" width="700"><figcaption><p>Top-k 路由</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-transformer-moe/85eaeb3744404f2fa05bf5ca79e4cf16.png" alt="Transformer架构" width="700"><figcaption><p>Top-k 路由</p></figcaption></figure>
 + **通常是为每一个token选专家：具体策略可以分类为 随机选择，RL算法，TOPK，哈希法。**
 ##### TOPK算法
 + 基本思想：**将路由器认为是一个简单的MLP**，给定token x，**映射为专家选择的概率s**，选择前K个专家。
 + 将专家计算的结果和选择概率**加权求和**与原输入残差链接。
 
-<figure><img src="/assets/img/llm-code-and-training-principles/7abc47ca49c5472982c5900958c7fcc5.png" alt="Transformer架构" width="700"><figcaption><p>专家容量分配</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-transformer-moe/7abc47ca49c5472982c5900958c7fcc5.png" alt="Transformer架构" width="700"><figcaption><p>专家容量分配</p></figcaption></figure>
 
 #### 路由选择函数的训练目标(损失函数)
 + 核心思想：**避免只选择特定专家和设备**
-<figure><img src="/assets/img/llm-code-and-training-principles/90f6f2cb784e4852afab2fca166974f7.png" alt="Transformer架构" width="700"><figcaption><p>负载均衡损失</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-transformer-moe/90f6f2cb784e4852afab2fca166974f7.png" alt="Transformer架构" width="700"><figcaption><p>负载均衡损失</p></figcaption></figure>
 + $f_i$：统计所有batch/设备中**实际选择专家i的比例**
 + $P_i$ ：统计所有batch/设备中路由器选择专家i的概率(**想选择专家i的比例**)
 + 惩罚**路由器想选择专家i且实际选择专家i的情况**。
 
-<figure><img src="/assets/img/llm-code-and-training-principles/815ca11ac25c476195e4a3df90941c87.png" alt="Transformer架构" width="700"><figcaption><p>专家并行示意</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-transformer-moe/815ca11ac25c476195e4a3df90941c87.png" alt="Transformer架构" width="700"><figcaption><p>专家并行示意</p></figcaption></figure>
 + 直接对于softmax分数进行显示调整的方法：
-<figure><img src="/assets/img/llm-code-and-training-principles/870c19396bca4eb2b5202a5ea8068c23.png" alt="Transformer架构" width="700"><figcaption><p>MoE 输出合并</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-transformer-moe/870c19396bca4eb2b5202a5ea8068c23.png" alt="Transformer架构" width="700"><figcaption><p>MoE 输出合并</p></figcaption></figure>
 
 
 

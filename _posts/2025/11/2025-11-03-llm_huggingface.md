@@ -9,12 +9,12 @@ description: "本文围绕“LLM基础·Huggingface使用教程”梳理核心�
 ---
 
 # Pipeline
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/022d335f5d3147208393f4af1ebd0248.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-huggingface-tokenization/022d335f5d3147208393f4af1ebd0248.png){: referrerpolicy="no-referrer" }
 
 ## 模型的加载
 **不需要记忆，只需要在官网找就行。**
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/082aa3937b404289ad75151ede8561c1.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-huggingface-tokenization/082aa3937b404289ad75151ede8561c1.png){: referrerpolicy="no-referrer" }
 
 ### 直接加载pipeline
 + 注意`local_path`指的是权重相关文件的**目录路径.**
@@ -41,7 +41,7 @@ pipe("很好玩")
 
 # Tokenizer
 **分词+编码+中间过程(填充、阶段等)**
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/a8395bf047764b6a91adeb21a1c7e422.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-huggingface-tokenization/a8395bf047764b6a91adeb21a1c7e422.png){: referrerpolicy="no-referrer" }
 ## 解码和编码函数
 ### 分词函数：`encode`(不带有掩码)
 + 分词+编码

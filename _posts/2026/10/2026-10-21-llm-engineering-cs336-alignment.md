@@ -335,7 +335,7 @@ def evaluate_vllm(
 + 采样一组数据
 + 然后最大化标签的负数似然比，$\max \log\pi_{\theta}(a_t\mid x_t)$
 + 反向传播和梯度更新即可
-<figure><img src="/assets/img/llm-code-and-training-principles/cs336-grpo-sft-math-ping-gu.png" alt="CS336 SFT 与 GRPO" width="1163"><figcaption><p>MATH 评估基线</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-cs336-alignment/cs336-grpo-sft-math-ping-gu.png" alt="CS336 SFT 与 GRPO" width="1163"><figcaption><p>MATH 评估基线</p></figcaption></figure>
 
 
 ##### 问题（tokenize_prompt_and_output）：提示与输出的分词（2 分）
@@ -1039,10 +1039,10 @@ wandb.finish()
 + 最高eval准确率约为38%
 + format格式正确率超过90%
 + train_loss的对比其实不公平，数据集的数量和难度不一致。
-<figure><img src="/assets/img/llm-code-and-training-principles/cs336-grpo-sft-sft-jie-guo.png" alt="CS336 SFT 与 GRPO" width="1430"><figcaption><p>SFT 实验结果</p></figcaption></figure>
-<figure><img src="/assets/img/llm-code-and-training-principles/cs336-grpo-sft-sft-qu-xian.png" alt="CS336 SFT 与 GRPO" width="1443"><figcaption><p>SFT 训练曲线</p></figcaption></figure>
-<figure><img src="/assets/img/llm-code-and-training-principles/cs336-grpo-sft-sft-yang-li.png" alt="CS336 SFT 与 GRPO" width="1443"><figcaption><p>SFT 生成样例</p></figcaption></figure>
-<figure><img src="/assets/img/llm-code-and-training-principles/cs336-grpo-sft-sft-ri-zhi.png" alt="CS336 SFT 与 GRPO" width="1451"><figcaption><p>SFT 日志记录</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-cs336-alignment/cs336-grpo-sft-sft-jie-guo.png" alt="CS336 SFT 与 GRPO" width="1430"><figcaption><p>SFT 实验结果</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-cs336-alignment/cs336-grpo-sft-sft-qu-xian.png" alt="CS336 SFT 与 GRPO" width="1443"><figcaption><p>SFT 训练曲线</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-cs336-alignment/cs336-grpo-sft-sft-yang-li.png" alt="CS336 SFT 与 GRPO" width="1443"><figcaption><p>SFT 生成样例</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-cs336-alignment/cs336-grpo-sft-sft-ri-zhi.png" alt="CS336 SFT 与 GRPO" width="1451"><figcaption><p>SFT 日志记录</p></figcaption></figure>
 
 ##### 实验结论
 + 数据集不是越大越好。仅保留少量样本的数据集在评估准确率上远远高于完整的数据集。
@@ -1050,7 +1050,7 @@ wandb.finish()
 
 ### 5 MATH数据集的专家迭代
 在上一节中，我们发现通过从监督微调（SFT）数据中过滤掉不良示例，可以提升监督微调（SFT）模型的性能。本节将进一步优化：将该过滤流程应用于基础模型自身生成的推理轨迹。这一过程在文献中被称为专家迭代（expert iteration）[Anthony et al., 2017]，在语言模型领域，Cobbe et al. [2021b]、Zelikman et al. [2022]、Dohan et al. [2022]、Gulcehre et al. [2023] 等学者已对此进行了探索。
-<figure><img src="/assets/img/llm-code-and-training-principles/cs336-grpo-sft-zhuan-jia-die-dai.png" alt="CS336 SFT 与 GRPO" width="1002"><figcaption><p>专家迭代结果</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-cs336-alignment/cs336-grpo-sft-zhuan-jia-die-dai.png" alt="CS336 SFT 与 GRPO" width="1002"><figcaption><p>专家迭代结果</p></figcaption></figure>
 
 接下来，我们将在MATH数据集上运行专家迭代。
 小提示, 需为vLLM的SamplingParams传入min_tokens参数，确保不会生成空字符串（否则可能导致后续实现中出现NaN值）。具体设置如下：
@@ -1478,10 +1478,10 @@ wandb.finish()
 + 最高评估准确率约为42%，比SFT训练最好结果高5%左右
 + 格式正确率至少有95%，基本上不存在格式错误。
 + 熵值比较低，说明模型生成的多样性一般，**存在过拟合问题**。
-<figure><img src="/assets/img/llm-code-and-training-principles/cs336-grpo-sft-ei-cai-yang.png" alt="CS336 SFT 与 GRPO" width="1456"><figcaption><p>专家迭代采样</p></figcaption></figure>
-<figure><img src="/assets/img/llm-code-and-training-principles/cs336-grpo-sft-ei-xun-lian.png" alt="CS336 SFT 与 GRPO" width="1445"><figcaption><p>专家迭代训练</p></figcaption></figure>
-<figure><img src="/assets/img/llm-code-and-training-principles/cs336-grpo-sft-ei-jie-guo.png" alt="CS336 SFT 与 GRPO" width="1425"><figcaption><p>专家迭代评估</p></figcaption></figure>
-<figure><img src="/assets/img/llm-code-and-training-principles/cs336-grpo-sft-grpo-liu-cheng.png" alt="CS336 SFT 与 GRPO" width="1447"><figcaption><p>GRPO 训练流程</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-cs336-alignment/cs336-grpo-sft-ei-cai-yang.png" alt="CS336 SFT 与 GRPO" width="1456"><figcaption><p>专家迭代采样</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-cs336-alignment/cs336-grpo-sft-ei-xun-lian.png" alt="CS336 SFT 与 GRPO" width="1445"><figcaption><p>专家迭代训练</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-cs336-alignment/cs336-grpo-sft-ei-jie-guo.png" alt="CS336 SFT 与 GRPO" width="1425"><figcaption><p>专家迭代评估</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-cs336-alignment/cs336-grpo-sft-grpo-liu-cheng.png" alt="CS336 SFT 与 GRPO" width="1447"><figcaption><p>GRPO 训练流程</p></figcaption></figure>
 
 ##### 实验结论
 + 目前模型应该**存在严重的过拟合现象**，熵的值过低。
@@ -1495,11 +1495,11 @@ wandb.finish()
 + 注意：我们一般得到的是`log_prob`，对于$\rho(\frac{a}{b})$的计算，使用**exp(loga-logb)** 的技巧
 + 原始的GRPO算法**还有一个KL散度的公式**，作为惩罚项。一般使用逐token的方式近似模型的**KL散度差别**。
 
-<figure><img src="/assets/img/llm-code-and-training-principles/cs336-grpo-sft-grpo-kl.png" alt="CS336 SFT 与 GRPO" width="548"><figcaption><p>KL 散度估计</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-cs336-alignment/cs336-grpo-sft-grpo-kl.png" alt="CS336 SFT 与 GRPO" width="548"><figcaption><p>KL 散度估计</p></figcaption></figure>
 
-<figure><img src="/assets/img/llm-code-and-training-principles/cs336-grpo-sft-grpo-cai-jian.png" alt="CS336 SFT 与 GRPO" width="987"><figcaption><p>GRPO 裁剪机制</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-cs336-alignment/cs336-grpo-sft-grpo-cai-jian.png" alt="CS336 SFT 与 GRPO" width="987"><figcaption><p>GRPO 裁剪机制</p></figcaption></figure>
 
-<figure><img src="/assets/img/llm-code-and-training-principles/cs336-grpo-sft-grpo-sun-shi.png" alt="CS336 SFT 与 GRPO" width="981"><figcaption><p>GRPO 损失函数</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-cs336-alignment/cs336-grpo-sft-grpo-sun-shi.png" alt="CS336 SFT 与 GRPO" width="981"><figcaption><p>GRPO 损失函数</p></figcaption></figure>
 
 
 ```python
@@ -1742,7 +1742,7 @@ def train_step(self,global_it:int)->dict[str:float,str:float]:
 
 ### 本部分资源审计
 
-- 共保留 23 处图片引用，均已改为仓库内的 `/assets/img/llm-code-and-training-principles/` 路径。
+- 共保留 23 处图片引用，均已改为仓库内的 `/assets/img/posts/llm-cs336-alignment/` 路径。
 - 对应的 23 个 PNG 文件均已在本地找到，没有缺失图片。
 - 原文误标为 `cpp` 的 Python 代码围栏已改为 `python`；全部代码围栏数量闭合。
 - 代码中依赖的 `cs336_basics`、`cs336_alignment`、数据集、模型权重和外部训练环境并非本文静态资源，读者需按课程作业仓库准备运行环境。

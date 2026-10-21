@@ -71,7 +71,7 @@ for _ in range(max_new_tokens):
 ```
 
 ## 从logits中采样得到`next_token`的方法
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/352d8af8673e452892b983e24083f44d.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-pretraining-training-amp/352d8af8673e452892b983e24083f44d.png){: referrerpolicy="no-referrer" }
 
 + 常见策略
 + 贪心 vs topk vs topp

@@ -45,9 +45,9 @@ b'hello'
 + 8，16，32指的是**位数(bit)**。
 + UTF-8指的是使用**最少一字节来存储字符**(实际是**动态存储**，例如英文字母‘a'对应一个字节，中文字符“好”对应3个字节)
 + UTF-32指的是使用4字节来存储任意字符，如果**字符不需要4个字节，则填充至4个字节**。
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/85347824a1c74ad1b77d4304bda51975.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-huggingface-tokenization/85347824a1c74ad1b77d4304bda51975.png){: referrerpolicy="no-referrer" }
 ### UTF-8编码原理(了解即可)
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/2b3ca08f5fdb4369ba199c7aec10b703.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-huggingface-tokenization/2b3ca08f5fdb4369ba199c7aec10b703.png){: referrerpolicy="no-referrer" }
 ### 实现
 ---
 <br><br><br><br><br><br>
@@ -57,7 +57,7 @@ b'hello'
 + 简单来说就是隔离每一个词，确保每一个词的语义完整，**避免BPE算法统计跨语义的次数**。
 
 
-![在这里插入图片描述](https://i-blog.csdnimg.cn/direct/1512c1ffc20a4684bc916684dba091ea.png){: referrerpolicy="no-referrer" }
+![在这里插入图片描述](/assets/img/posts/llm-huggingface-tokenization/1512c1ffc20a4684bc916684dba091ea.png){: referrerpolicy="no-referrer" }
   ---
 <br><br><br><br><br><br>
 

@@ -656,7 +656,7 @@ for _ in range(max_new_tokens):
 ```
 
 #### 从logits中采样得到`next_token`的方法
-<figure><img src="/assets/img/llm-code-and-training-principles/352d8af8673e452892b983e24083f44d.png" alt="预训练与混合精度" width="700"><figcaption><p>训练损失曲线</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-pretraining-training-amp/352d8af8673e452892b983e24083f44d.png" alt="预训练与混合精度" width="700"><figcaption><p>训练损失曲线</p></figcaption></figure>
 
 + 常见策略
 + 贪心 vs topk vs topp
@@ -898,7 +898,7 @@ echo "=========================================="
 #### 实验结果
 + 代码有一些bug，仅供娱乐
 
-<figure><img src="/assets/img/llm-code-and-training-principles/05fdf1bd128b417486e5351e1abf222a.png" alt="预训练与混合精度" width="700"><figcaption><p>生成结果对比</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-pretraining-training-amp/05fdf1bd128b417486e5351e1abf222a.png" alt="预训练与混合精度" width="700"><figcaption><p>生成结果对比</p></figcaption></figure>
 
 ### 学习率实验
 #### 脚本
@@ -993,7 +993,7 @@ done
 ```
 #### 结果
 + 6e-3是当前实验条件下最优的最大学习率。
-<figure><img src="/assets/img/llm-code-and-training-principles/99d79e946110406682137ebe82f50a08.png" alt="预训练与混合精度" width="700"><figcaption><p>学习率实验结果</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-pretraining-training-amp/99d79e946110406682137ebe82f50a08.png" alt="预训练与混合精度" width="700"><figcaption><p>学习率实验结果</p></figcaption></figure>
 ---
 <br><br><br><br>
 ### 推理
@@ -1377,17 +1377,17 @@ $$
 + 在涉及前向过程中，可以使用**低精度**。
 + 在涉及梯度更新过程中，优化器会保存**较高精度的模型参数**和并使用**较高精度的梯度值**。
 
-<figure><img src="/assets/img/llm-code-and-training-principles/2026-03-24-llm_amp-01.png" alt="预训练与混合精度" width="700"><figcaption><p>AMP 数据流</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-pretraining-training-amp/2026-03-24-llm_amp-01.png" alt="预训练与混合精度" width="700"><figcaption><p>AMP 数据流</p></figcaption></figure>
 + 对于高精度的数学计算操作：**例如矩阵加法，softmax操作，强制使用高精度。**
 
 
 #### Loss scaling
 + 动机：**低精度的高数值部分使用较少**，可以考虑**将梯度更新缩放N倍，确保不会溢出，然后转换位低精度来进行更新**。
 
-<figure><img src="/assets/img/llm-code-and-training-principles/2026-03-24-llm_amp-02.png" alt="预训练与混合精度" width="620"><figcaption><p>Loss Scaling 原理</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-pretraining-training-amp/2026-03-24-llm_amp-02.png" alt="预训练与混合精度" width="620"><figcaption><p>Loss Scaling 原理</p></figcaption></figure>
 Loss scaling 的本质是在反向传播前对 **loss 进行数值放大**，使得在 **FP16 精度下计算的梯度不会发生下溢**；在得到梯度后再进行反缩放（unscale），恢复真实梯度，并在 FP32 master weight 上进行更新，从而保证数值稳定性和更新精度。
 
-<figure><img src="/assets/img/llm-code-and-training-principles/2026-03-24-llm_amp-03.png" alt="预训练与混合精度" width="700"><figcaption><p>梯度反缩放流程</p></figcaption></figure>
+<figure><img src="/assets/img/posts/llm-pretraining-training-amp/2026-03-24-llm_amp-03.png" alt="预训练与混合精度" width="700"><figcaption><p>梯度反缩放流程</p></figcaption></figure>
 ### 实现
 + `with torch.cuda.amp.autocast(device_type="cuda", dtype=torch.float16)`：模型会**在这个上下文下，优先选择FP16精度**，**对于需要高精度的操作例如softmax，计算过程仍然使用FP32，不受影响**。
 + `scaler.scale(loss).backward() `：缩放损失，确保FP16的梯度不会溢出。
