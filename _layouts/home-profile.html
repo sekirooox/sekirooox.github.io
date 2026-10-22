@@ -1,98 +1,57 @@
 ---
 layout: default
-script_includes:
-  - home-stats
 ---
 
 {% assign stats = site.data.visitor_stats_generated | default: site.data.visitor_stats %}
+{% assign latest_post = site.posts | sort: 'date' | last %}
 
 <div id="home-profile" class="home-profile-page">
-  <section class="profile-hero" aria-labelledby="profile-title">
-    <img
-      class="profile-avatar"
-      src="{{ site.avatar | relative_url }}"
-      width="144"
-      height="144"
-      alt="{{ site.social.name }} 的头像"
-    >
-
+  <header class="profile-hero">
+    <img class="profile-avatar" src="{{ site.avatar | relative_url }}" width="64" height="64" alt="{{ site.social.name | escape }} 的头像">
     <div class="profile-copy">
-      <p class="profile-eyebrow">你好，我是</p>
-      <h1 id="profile-title">{{ site.social.name }}</h1>
-      <p class="profile-tagline">{{ site.tagline }}</p>
-      <div class="profile-intro">
-        {% include profile-intro.html %}
-      </div>
-
-      <nav class="profile-actions" aria-label="个人主页快捷入口">
-        <a class="btn btn-primary" href="{{ '/archives/' | relative_url }}">浏览文章</a>
-        <a class="btn btn-outline-secondary" href="{{ site.social.links[0] }}">GitHub</a>
-        <a class="btn btn-outline-secondary" href="{{ '/feed.xml' | relative_url }}">RSS</a>
-      </nav>
+      <h1>{{ site.social.name | escape }}</h1>
+      <p class="profile-tagline">{{ site.tagline | escape }}</p>
     </div>
-  </section>
+  </header>
+
+  {% if latest_post %}
+    {% assign summary = latest_post.description | default: latest_post.excerpt %}
+    <section id="latest-post" class="latest-post" aria-labelledby="latest-post-title">
+      <div class="latest-post-header">
+        <h2>最近发布</h2>
+        <time datetime="{{ latest_post.date | date_to_xmlschema }}">{{ latest_post.date | date: '%Y-%m-%d' }}</time>
+      </div>
+      <h3 id="latest-post-title" class="latest-post-title">
+        <a href="{{ latest_post.url | relative_url }}">{{ latest_post.title | strip_html | escape }}</a>
+      </h3>
+      <p class="latest-post-summary">{{ summary | markdownify | strip_html | normalize_whitespace | truncate: 260 | escape }}</p>
+      <nav class="latest-post-actions" aria-label="文章入口">
+        <a href="{{ latest_post.url | relative_url }}">阅读全文</a>
+        <a href="{{ '/archives/' | relative_url }}">全部文章</a>
+      </nav>
+    </section>
+  {% else %}
+    <p class="latest-post-empty">文章整理中，欢迎稍后回来阅读。</p>
+  {% endif %}
 
   <section class="visitor-card" aria-labelledby="visitor-title">
     <div class="visitor-heading">
-      <div>
-        <p class="visitor-kicker">VISITOR RANKING</p>
-        <h2 id="visitor-title">国家与地区访问榜</h2>
-      </div>
-
-      <div class="visitor-total">
-        <span class="visitor-total-label">累计访问</span>
-        <strong id="visitor-total-value">
-          {% if stats.available %}
-            {{ stats.total_visits }}
-          {% else %}
-            —
-          {% endif %}
-        </strong>
-      </div>
+      <h2 id="visitor-title">访客足迹</h2>
+      <p class="visitor-total">累计访问 <strong id="visitor-total-value">{% if stats.available %}{{ stats.total_visits }}{% else %}—{% endif %}</strong></p>
     </div>
-
     {% if stats.available %}
-      <ol class="visitor-ranking" aria-label="访问量前十五的国家和地区">
-        {% for country in stats.display_countries %}
+      <ul class="visitor-ranking" aria-label="访问量前十五的国家和地区">
+        {% for country in stats.countries limit: 15 %}
           {% capture flag_path %}/assets/vendor/flag-icons/flags/4x3/{{ country.code | downcase }}.svg{% endcapture %}
-          <li class="visitor-country{% if country.source == 'gdp_fallback' %} visitor-country-fallback{% endif %}">
-            <span class="visitor-rank" aria-hidden="true">{{ forloop.index }}</span>
-            <img
-              class="visitor-flag"
-              src="{{ flag_path | relative_url }}"
-              width="48"
-              height="36"
-              alt=""
-              loading="lazy"
-            >
-            <span class="visitor-country-copy">
-              <strong data-country-code="{{ country.code }}">{{ country.name | escape }}</strong>
-              <small>
-                {{ country.code }}
-                {% if country.source == 'gdp_fallback' %} · GDP 榜单补位{% endif %}
-              </small>
-            </span>
-            <span class="visitor-count">
-              <strong>{{ country.visits }}</strong>
-              <small>次访问</small>
-            </span>
+          <li class="visitor-country" title="{{ country.name | escape }}：{{ country.visits }} 次访问">
+            <img class="visitor-flag" src="{{ flag_path | relative_url }}" width="20" height="15" alt="" loading="lazy">
+            <span>{{ country.code | escape }}</span>
           </li>
         {% endfor %}
-      </ol>
-
-      {% if stats.unknown_visits > 0 %}
-        <p class="visitor-unknown">另有 {{ stats.unknown_visits }} 次访问无法识别国家或地区。</p>
-      {% endif %}
-
-      <p class="visitor-note">
-        更新于 {{ stats.generated_at | date: '%Y-%m-%d %H:%M UTC' }}。
-        榜单优先显示访问量最高的 15 个国家和地区；数量不足时以世界银行 2024 年 GDP 前 15 名补足，补位项显示 0 次。
-        国家和地区根据网络位置推断；数字采用 GoatCounter 的访问口径，并非永久唯一用户。
-      </p>
+      </ul>
+      <p class="visitor-note">更新于 {{ stats.generated_at | date: '%Y-%m-%d' }}；仅展示实际访问来源，统计并非独立用户数。</p>
     {% else %}
-      <div class="visitor-unavailable" role="status">
-        访客统计服务暂不可用，请稍后再试。
-      </div>
+      <p class="visitor-unavailable" role="status">访客统计暂不可用。</p>
     {% endif %}
   </section>
 </div>

@@ -4,7 +4,7 @@
 
 - 线上站点使用 `mayl.goatcounter.com`，`_config.yml` 中的 `analytics.goatcounter.id: mayl` 让 GoatCounter 在生产环境跟踪全站。
 - `pageviews.provider` 保持为空，因此文章标题下不公开阅读次数。
-- 首页公开建站以来的累计访问数、访问量前 15 的国家和地区及未知地区数量。数据是 GitHub Actions 在构建前读取的快照，浏览器不会接触 API Token。
+- 首页以紧凑区域显示累计访问数及最多 15 个真实来源的国旗和两位国家/地区代码，具体访问次数放在悬停提示中。数据是 GitHub Actions 在构建前读取的快照，浏览器不会接触 API Token。
 - Pull Request 使用 `test/fixtures/visitor-stats.json` 测试数据，只验证页面布局。测试数据带有 `fixture: true` 标记。
 - 公开文件只含国家级汇总，不含 IP、城市、设备标识、浏览器或单次访问明细。
 
@@ -29,11 +29,11 @@ Token 只能保存在 GitHub Actions Secret 中。不要把它放进 `_config.ym
 - 合并重复国家代码，将无法识别的代码计入“未知地区”；
 - 原子写入 `_data/visitor_stats_generated.json`。
 
-脚本保留全部国家汇总，同时生成 `display_countries` 供首页展示。它先取访问量最高的 15 个国家和地区；实际访问来源不足 15 个时，按世界银行 2024 年现价美元 GDP 前 15 个经济体依次补位，并跳过已经在访问榜中的国家。补位项的访问数为 0，页面会显示“GDP 榜单补位”，不会把补位国家误算进累计访问。国旗来自仓库内固定的 `flag-icons 7.5.0` SVG，不会向第三方图片服务发送访客请求。
+脚本保留全部国家汇总及兼容字段 `display_countries`。首页直接使用按访问量排序的 `countries`，最多展示 15 项，不再显示 GDP 补位项。国旗来自仓库内固定的 `flag-icons 7.5.0` SVG，不会向第三方图片服务发送访客请求。
 
 生成文件被 `.gitignore` 排除，只存在于当次 Actions 工作区和最终静态站点中。工作流只在推送到 `main` 或手动运行时读取真实数据，没有定时任务。要单独刷新首页数字，在仓库 **Actions → Build and Deploy → Run workflow** 中选择 `main` 运行。
 
-本地预览默认显示“统计数据将在生产部署时生成”。需要检查完整布局时，可以临时复制测试数据：
+本地预览默认显示统计不可用状态。需要检查完整布局时，可以临时复制测试数据：
 
 ```powershell
 Copy-Item test/fixtures/visitor-stats.json _data/visitor_stats_generated.json
@@ -44,7 +44,7 @@ Copy-Item test/fixtures/visitor-stats.json _data/visitor_stats_generated.json
 
 ## 失败策略与排查
 
-缺少 Token、401、403、429、服务异常、非法 JSON 或字段不符合约定时，抓取脚本以非零状态退出，部署随即停止。GitHub Pages 会继续提供上一次成功发布的版本，不会用错误的零统计覆盖首页。
+缺少 Token、401、403、429、服务异常、非法 JSON 或字段不符合约定时，抓取脚本以非零状态退出。部署工作流最多重试三次，仍失败时使用内置不可用状态继续构建，不会伪造零访问数据。
 
 - **缺少 Token**：确认 Secret 名称精确为 `GOATCOUNTER_API_KEY`，并且运行事件是 `main` 推送或手动执行。PR 不读取 Secret。
 - **401**：重新创建 Token 或检查复制值是否完整。

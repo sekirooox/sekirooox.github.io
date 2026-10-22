@@ -44,6 +44,7 @@ jobs:
         run: |
           ruby test/visitor_stats_fetch_test.rb
           ruby test/social_contact_generator_test.rb
+          bundle exec ruby test/home_profile_test.rb
 
       - name: Prepare visitor statistics
         env:

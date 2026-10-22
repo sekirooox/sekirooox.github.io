@@ -3,7 +3,7 @@
 require "uri"
 
 module MaylBlog
-  # 从 _config.yml 的 social.links 为侧边栏社交入口补充 URL。
+  # 从 _config.yml 的 social.links 为关于页社交入口补充 URL。
   # 只接受 HTTPS 且主机名与 contact.yml 声明一致的链接。
   class SocialContactGenerator < Jekyll::Generator
     safe true

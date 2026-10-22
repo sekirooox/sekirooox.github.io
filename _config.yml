@@ -56,6 +56,7 @@ social:
   fediverse_handle: # 联邦社交账号，例如 "@username@domain.com"；不使用则留空
   links:
     # 第一项也是页脚作者姓名的跳转链接；这里只填写公开主页地址。
+    - https://sekirooox.github.io/about/
     - https://github.com/sekirooox
     # 可取消下方注释并填写真实地址，添加更多社交主页。
     - https://www.facebook.com/profile.php?id=61594827508707
@@ -97,9 +98,8 @@ pageviews:
   provider:
 
 # ── 4. 外观与阅读体验（常用装饰设置） ──
-# 默认配色：留空跟随系统；light 为浅色，dark 为深色。
-# 访客也可通过侧栏底部的主题切换按钮选择偏好。
-theme_mode: # 可填 light 或 dark，也可留空
+# 固定浅色阅读界面；侧栏不提供主题切换。
+theme_mode: light
 
 # 媒体 CDN 地址，例如 https://cdn.com；当前本地头像和图片无需填写。
 # 设置后会为以 / 开头的相对媒体路径添加 CDN 前缀，影响头像、图片、音频和视频。

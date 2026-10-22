@@ -13,7 +13,7 @@ Ruby 版本固定在 `.ruby-version`；完整依赖由 `Gemfile.lock` 管理。G
 1. 在 GitHub 仓库 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**。必须从原先的分支构建切换：Chirpy 使用 Jekyll 4 与自定义插件，不能继续依赖旧的内置构建。
 2. 提交本次迁移的全部文件并推送到 `main`。先检查 `git status`，确保不包含 `.tools`、`vendor`、`_site`。
 3. 在 Actions 查看 **Build and Deploy**。`build` 成功且链接检查通过后才会执行 `deploy`。
-4. 打开站点，检查个人首页、访客地图、分类、标签、归档、关于和示例文章。PR 只构建检查，不发布。
+4. 打开站点，检查个人首页、访客足迹、分类、标签、归档、关于和示例文章。PR 只构建检查，不发布。
 
 ```sh
 git add .
@@ -64,7 +64,7 @@ bundle exec jekyll serve --livereload
 bash tools/test.sh
 ```
 
-该命令模拟生产环境构建，并检查生成 HTML 的内部链接和图片。外部网站可用性不作为构建阻断条件。它不代替浏览器检查：还应测试搜索、明暗切换、手机导航、公式、Mermaid 与图片。
+该命令模拟生产环境构建，并检查生成 HTML 的内部链接和图片。外部网站可用性不作为构建阻断条件。它不代替浏览器检查：还应测试搜索、手机导航、公式、Mermaid 与图片。
 
 ## 4. 项目结构
 
@@ -77,10 +77,10 @@ bash tools/test.sh
 ├── _posts/YYYY/MM/            按年月分组的已发布文章
 ├── _drafts/                   草稿（需要时创建）
 ├── _tabs/                     侧栏栏目：分类、标签、归档、关于
-├── _data/contact.yml          侧栏社交链接
+├── _data/contact.yml          关于页社交链接
 ├── _data/visitor_stats.yml    本地无统计数据时的回退内容
 ├── _layouts/home-profile.html 个人首页布局
-├── _includes/                首页介绍、统计地图和主题扩展钩子
+├── _includes/                关于页介绍、侧栏和主题扩展钩子
 ├── _plugins/                  按 Git 历史生成文章更新时间
 ├── assets/img/                头像和文章图片
 ├── templates/post.md          可复制的文章模板，不发布到站点
@@ -98,9 +98,9 @@ bash tools/test.sh
 
 ## 5. 首页与个人信息
 
-在 `_config.yml` 修改 `title`、`tagline`、`description`、`social.name` 和 `github.username`。头像是 `assets/img/avatar.svg`，可换成自己的 PNG/JPG 并更新 `avatar` 路径。首页简短介绍位于 `_includes/profile-intro.html`，`_tabs/about.md` 是更完整的关于页。
+在 `_config.yml` 修改 `title`、`tagline`、`description`、`social.name` 和 `github.username`。头像是 `assets/img/avatar.svg`，可换成自己的 PNG/JPG 并更新 `avatar` 路径。首页名称与副标题来自站点配置；`_includes/profile-intro.html` 用于关于页介绍，`_tabs/about.md` 下方集中展示 GitHub、邮箱、Facebook、X 和 RSS。
 
-首页大头像和全站侧栏共用 `_config.yml` 的 `avatar`，README 顶部单独引用同一张图片。同名替换 `assets/img/avatar.svg` 后，请同步更新配置和 README 中 `?v=` 后的版本标记（可使用日期或文件哈希前缀），让浏览器重新加载图片。这个参数不是文件名的一部分，无需创建带问号的文件。修改配置后需重启本地预览；线上需重新构建部署。网站 favicon 和分享预览图是独立配置，不会随头像自动替换。
+首页头像和全站侧栏共用 `_config.yml` 的 `avatar`，README 顶部单独引用同一张图片。同名替换 `assets/img/avatar.svg` 后，请同步更新配置和 README 中 `?v=` 后的版本标记（可使用日期或文件哈希前缀），让浏览器重新加载图片。这个参数不是文件名的一部分，无需创建带问号的文件。修改配置后需重启本地预览；线上需重新构建部署。网站 favicon 和分享预览图是独立配置，不会随头像自动替换。
 
 当前用户主页必须保持：
 
@@ -113,7 +113,7 @@ timezone: Asia/Shanghai
 
 `url` 末尾不加斜杠。用户主页的 `baseurl` 必须为空，工作流直接构建并上传 `_site`。如果以后改回项目站点，才需要将 `baseurl` 设置为仓库路径，并同步检查构建目录。
 
-首页使用专用 `home-profile` 布局，只显示自我介绍和访客统计，不列出文章，也不生成 `/page2/`。文章仍可通过分类、标签、归档、搜索和直接链接访问。要改首页正文，编辑 `_includes/profile-intro.html`；要改布局或地图说明，分别编辑 `_layouts/home-profile.html` 和 `_includes/home-stats.html`。明暗模式默认跟随系统，可用 `theme_mode: light` 或 `dark` 指定初始偏好。
+首页使用专用 `home-profile` 布局，自动按发布日期选择最新文章（不受置顶影响），在访客足迹上方显示标题、日期和最多 260 字符的摘要。摘要优先使用已有 `description`，否则使用 Jekyll 自动生成的 `excerpt`；经 Markdown 渲染、去除 HTML、合并空白并转义后输出，不调用 AI。没有文章时显示空状态。首页不生成 `/page2/`。访客足迹只显示最多 15 个真实来源的国旗和两位代码，支持换行。布局位于 `_layouts/home-profile.html`，首页样式位于 `assets/css/home.scss`。全站固定 `theme_mode: light`，白色无壁纸；本地 `_includes/sidebar.html` 不输出模式切换或社交按钮，旧明暗壁纸已删除。
 
 访客统计由部署工作流从 GoatCounter API 读取，Token 只保存在 `GOATCOUNTER_API_KEY` Secret 中。文章页不公开阅读次数；完整配置、统计口径、手动刷新与故障处理见 [`docs/ANALYTICS.md`](ANALYTICS.md)。
 
@@ -202,12 +202,12 @@ permalink: /projects/
 | 文章目录 | `toc` | 全局配置或文章单独设为 false |
 | 数学公式 | 文章 `math: true` | 用 `$$` 包裹块级公式 |
 | Mermaid | 文章 `mermaid: true` | 使用 mermaid 代码围栏 |
-| RSS | `/feed.xml` | 自动生成，社交栏已启用 |
+| RSS | `/feed.xml` | 自动生成，入口位于关于页 |
 | 搜索 | 主题内置 | 新文章构建后自动进入索引 |
 | 评论 | `comments` | 先配置服务，再启用 provider |
 | 访问统计 | `analytics`、部署 Secret | 已启用全站 GoatCounter，首页公开构建时汇总 |
 | PWA | `pwa` | 默认启用安装与离线缓存 |
-| 社交入口 | `_data/contact.yml` | 新增 type、icon、url |
+| 关于页社交入口 | `_data/contact.yml`、`_includes/about-contact.html` | GitHub 与邮箱读取站点配置，其他链接经域名校验 |
 | 编辑文章按钮 | `actions.edit_post` | 启用后填写仓库 edit/main 地址 |
 
 ### Giscus 评论

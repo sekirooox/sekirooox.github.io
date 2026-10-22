@@ -20,9 +20,9 @@
 
 ## 关于这个项目
 
-你好，我是 **MayL**。首页用于自我介绍并展示匿名汇总的访客足迹；技术实践、学习笔记和生活随笔可从归档、分类、标签或搜索进入。
+你好，我是 **MayL**。首页自动展示最新文章摘要，并在底部显示简洁的访客足迹；个人联系方式集中在关于页；技术实践、学习笔记和生活随笔可从归档、分类、标签或搜索进入。
 
-项目从 GitHub Skills 的 GitHub Pages 练习起步，目前使用官方 **Chirpy 7.6.0** 主题，通过 GitHub Actions 构建和发布。主题提供响应式布局、明暗模式、站内搜索、分类与标签、文章目录、数学公式、Mermaid 流程图和 RSS。
+项目从 GitHub Skills 的 GitHub Pages 练习起步，目前使用官方 **Chirpy 7.6.0** 主题，通过 GitHub Actions 构建和发布。主题提供响应式布局、站内搜索、分类与标签、文章目录、数学公式、Mermaid 流程图和 RSS。
 
 ## 快速开始
 
@@ -56,7 +56,8 @@
 | --- | --- |
 | 新增文章 | 复制 [文章模板](templates/post.md) 到 `_posts/YYYY/MM/YYYY-MM-DD-english-slug.md` |
 | 修改站点名称、简介、时区 | 编辑 [`_config.yml`](_config.yml) |
-| 修改首页简短介绍 | 编辑 [`_includes/profile-intro.html`](_includes/profile-intro.html) |
+| 修改首页名称与简介 | 编辑 `_config.yml` 中的 `social.name` 和 `tagline` |
+| 最新文章摘要 | 自动选取最新发布日期；优先 `description`，否则截取文章摘要，最多 260 字符 |
 | 修改完整个人介绍 | 编辑 [`_tabs/about.md`](_tabs/about.md) |
 | 新增独立栏目 | 在 `_tabs/` 中创建页面，设置 `title`、`icon`、`order` 和 `permalink` |
 | 增加分类或标签 | 修改文章 Front Matter 中的 `categories`、`tags`，页面自动生成 |
@@ -82,7 +83,7 @@
 ├── _posts/YYYY/MM/             按年月分组的博客文章
 ├── _tabs/                      分类、标签、归档、关于等栏目
 ├── _data/                      社交链接与访客统计回退数据
-├── _includes/                  首页介绍、统计地图和主题扩展钩子
+├── _includes/                  关于页介绍、侧栏和主题扩展钩子
 ├── _layouts/home-profile.html  独立个人首页布局
 ├── _plugins/                   文章更新时间插件
 ├── assets/img/                 头像与文章图片
@@ -113,7 +114,7 @@ GoatCounter 在生产环境跟踪全站，但文章页不公开阅读次数。�
 bash tools/test.sh
 ```
 
-脚本执行生产构建，并检查生成页面的内部链接、图片与脚本引用。浏览器中的搜索、主题切换和移动端布局仍需实际检查。
+脚本执行生产构建，并检查生成页面的内部链接、图片与脚本引用。浏览器中的搜索、手机导航和移动端布局仍需实际检查。
 
 - [完整使用与维护手册](docs/MAINTENANCE.md)：环境、部署、项目结构、写作、栏目扩展、升级与排错。
 - [迁移验证记录](docs/VERIFICATION.md)：本次迁移已完成的检查及验证边界。

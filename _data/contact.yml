@@ -1,4 +1,4 @@
-# 侧边栏底部入口，显示顺序与本文件一致。
+# 关于页联系方式；侧栏不再显示社交入口。
 # social_host 由 _plugins/social-contact-generator.rb 从 _config.yml 的
 # social.links 中解析；找不到对应域名时，该入口不会输出。
 

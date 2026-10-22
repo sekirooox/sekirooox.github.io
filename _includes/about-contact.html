@@ -1,0 +1,10 @@
+<ul class="about-contact">
+  <li><a href="https://github.com/{{ site.github.username | escape }}" target="_blank" rel="noopener noreferrer">GitHub · {{ site.github.username | escape }}</a></li>
+  <li><a href="mailto:{{ site.social.email | escape }}">邮箱 · {{ site.social.email | escape }}</a></li>
+  {% for entry in site.data.contact %}
+    {% if entry.social_host and entry.url %}
+      <li><a href="{{ entry.url | escape }}" target="_blank" rel="noopener noreferrer">{% if entry.type == 'x' %}X · @{{ site.twitter.username | escape }}{% else %}{{ entry.type | capitalize }}{% endif %}</a></li>
+    {% endif %}
+  {% endfor %}
+  <li><a href="{{ '/feed.xml' | relative_url }}">RSS 订阅</a></li>
+</ul>

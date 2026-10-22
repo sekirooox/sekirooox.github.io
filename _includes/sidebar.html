@@ -1,0 +1,32 @@
+<!-- Based on Chirpy 7.6.0; contacts live on /about/, with a fixed light theme. -->
+<aside aria-label="Sidebar" id="sidebar" class="d-flex flex-column align-items-end">
+  <header class="profile-wrapper">
+    <a href="{{ '/' | relative_url }}" id="avatar" class="rounded-circle">
+      {% if site.avatar != empty and site.avatar %}
+        {% capture avatar_url %}{% include media-url.html src=site.avatar %}{% endcapture %}
+        <img src="{{ avatar_url | strip }}" width="112" height="112" alt="{{ site.social.name | escape }} 的头像">
+      {% endif %}
+    </a>
+    <a class="site-title d-block" href="{{ '/' | relative_url }}">{{ site.title }}</a>
+    <p class="site-subtitle fst-italic mb-0">{{ site.tagline }}</p>
+  </header>
+  <nav class="flex-column flex-grow-1 w-100 ps-0" aria-label="主要导航">
+    <ul class="nav">
+      <li class="nav-item{% if page.url == '/' %} active{% endif %}">
+        <a href="{{ '/' | relative_url }}" class="nav-link"{% if page.url == '/' %} aria-current="page"{% endif %}>
+          <i class="fa-fw fas fa-home" aria-hidden="true"></i>
+          <span>{{ site.data.locales[include.lang].tabs.home | upcase }}</span>
+        </a>
+      </li>
+      {% for tab in site.tabs %}
+        {% assign tab_key = tab.url | remove: '/' %}
+        <li class="nav-item{% if tab.url == page.url %} active{% endif %}">
+          <a href="{{ tab.url | relative_url }}" class="nav-link"{% if tab.url == page.url %} aria-current="page"{% endif %}>
+            <i class="fa-fw {{ tab.icon }}" aria-hidden="true"></i>
+            <span>{{ site.data.locales[include.lang].tabs[tab_key] | default: tab.title | upcase }}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+</aside>
