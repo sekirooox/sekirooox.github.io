@@ -9,6 +9,14 @@ home_path = File.join(site, "index.html")
 abort "找不到生成的首页：#{home_path}" unless File.file?(home_path)
 
 home = File.read(home_path, encoding: "UTF-8")
+home_date = home[/id="latest-post".*?<time datetime="([^"]+)"/m, 1]
+site_offset = home_date ? Time.iso8601(home_date).strftime("%:z") : "+00:00"
+parse_post_date = lambda do |value|
+  text = value.to_s
+  # Date-only metadata means midnight in the site timezone, not the CI timezone.
+  text += " 00:00:00 #{site_offset}" if text.match?(/\A\d{4}-\d{2}-\d{2}\z/)
+  Time.parse(text)
+end
 visitor_ranking_ready =
   home.scan(/class="visitor-country(?: |")/).length <= 15 &&
   home.include?('class="visitor-ranking"') &&
@@ -45,15 +53,16 @@ published_posts = source_posts.select do |path|
   next false if metadata["published"] == false
 
   date = metadata["date"] || File.basename(path)[0, 10]
-  config["future"] || Time.parse(date.to_s) <= Time.now
+  config["future"] || parse_post_date.call(date) <= Time.now
 end
 checks["递归目录中应发布的文章全部生成"] = generated_posts.length == published_posts.length
 latest_date = published_posts.map do |path|
   content = File.read(path, encoding: "UTF-8")
   metadata = YAML.safe_load(content.match(/\A---\s*\r?\n(.*?)\r?\n---/m)[1], permitted_classes: [Date, Time])
-  Time.parse((metadata["date"] || File.basename(path)[0, 10]).to_s)
+  parse_post_date.call(metadata["date"] || File.basename(path)[0, 10])
 end.max
-checks["首页自动选择发布日期最新的文章"] = latest_date && home.include?('datetime="' + latest_date.iso8601 + '"')
+checks["首页自动选择发布日期最新的文章"] =
+  latest_date && home_date && Time.iso8601(home_date) == latest_date
 about = File.read(File.join(site, "about", "index.html"), encoding: "UTF-8")
 checks["联系方式集中于关于页"] = about.include?('class="about-contact"') &&
   about.include?("https://github.com/") && about.include?("mailto:") &&
