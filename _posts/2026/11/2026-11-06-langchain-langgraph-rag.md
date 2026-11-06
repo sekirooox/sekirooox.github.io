@@ -12,7 +12,7 @@ mermaid: true
 
 示例保留了 Notebook 中的代码片段与部分输出，并非可直接独立运行的脚本；`markdown_path`、`embedding_model_path` 以及相关类的导入需在运行环境中准备。截断的输出均作为文本展示。
 
-## RAG 数据流
+# RAG 数据流
 
 加载器将文档读为 `list[Document]`，分块后仍为 `list[Document]`；文档块经嵌入计算后存入向量库。查询得到的文档块拼接为上下文，再与问题一起构造提示消息，交给模型生成回答。
 
@@ -334,7 +334,7 @@ answer = chain.invoke( # 需要填写 prompt对应的输入
 answer
 ```
 
-## RAG 技术进阶
+# RAG 技术进阶
 
 ### 文档加载器
 
