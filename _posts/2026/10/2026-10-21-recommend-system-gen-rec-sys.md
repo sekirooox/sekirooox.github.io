@@ -7,10 +7,13 @@ tags: [推荐系统, 生成式推荐, Transformer, LLM, 语义ID, 向量量化]
 render_with_liquid: false
 pin: false
 math: true
-mermaid: false
+mermaid: true
 ---
 
 # 生成式推荐系统
+
+本文沿着三条线整理生成式推荐：先对照判别式与生成式建模，再看语义 ID 如何支持 TIGER 检索，最后比较工业排序架构与 OneRec 的端到端训练。
+
 ## 判别式推荐与生成式推荐
 
 ### 判别式推荐
@@ -147,7 +150,7 @@ $$
 
 <figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-yu-yi-zu-he-kong-jian.png" alt="生成式推荐" width="720"><figcaption><p>语义组合空间</p></figcaption></figure>
 
-- 层次结构：层次化编码为模型提供较强的<span style="color:red">归纳偏置</span>。模型学习到用户偏好“篮球”（如 `token 5`）后，可将偏好迁移到具有相同前缀（如 `[10, 5, ...]`）的物品，实现基于前缀的泛化。
+- 层次结构：层次化编码为模型提供较强的<span style="color:red">归纳偏置</span>。模型可把对“篮球”前缀 `[10, 5]` 的偏好迁移到共享该前缀的其他物品。
 
 <figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-yu-yi-biao-shi-ceng-ci.png" alt="生成式推荐" width="720"><figcaption><p>语义标识层次</p></figcaption></figure>
 
@@ -179,7 +182,9 @@ $$
 
 $$
 \begin{align}
-\mathcal L_{\mathrm{VQ}} &= \underbrace{\lVert\mathbf x-\hat{\mathbf x}\rVert_2^2}_{\mathcal L_{\mathrm{recon}}}+\underbrace{\lVert\operatorname{sg}[\mathbf z_e]-\mathbf z_q\rVert_2^2}_{\mathcal L_{\mathrm{codebook}}}+\underbrace{\beta\lVert\mathbf z_e-\operatorname{sg}[\mathbf z_q]\rVert_2^2}_{\mathcal L_{\mathrm{commit}}}
+\mathcal L_{\mathrm{VQ}} &= \underbrace{\lVert\mathbf x-\hat{\mathbf x}\rVert_2^2}_{\mathcal L_{\mathrm{recon}}}\notag\\
+&\quad+\underbrace{\lVert\operatorname{sg}[\mathbf z_e]-\mathbf z_q\rVert_2^2}_{\mathcal L_{\mathrm{codebook}}}\notag\\
+&\quad+\underbrace{\beta\lVert\mathbf z_e-\operatorname{sg}[\mathbf z_q]\rVert_2^2}_{\mathcal L_{\mathrm{commit}}}
 \end{align}
 $$
 
@@ -232,7 +237,9 @@ $$
 
 $$
 \begin{align}
-\mathcal L_{\mathrm{RQ}} &= \lVert\mathbf x-\hat{\mathbf x}\rVert_2^2+\sum_{\ell=1}^{L}\left[\lVert\operatorname{sg}[\mathbf r_{\ell-1}]-\mathbf e_{k_\ell}^{(\ell)}\rVert_2^2+\beta\lVert\mathbf r_{\ell-1}-\operatorname{sg}[\mathbf e_{k_\ell}^{(\ell)}]\rVert_2^2\right],\\
+\mathcal L_{\mathrm{RQ}} &= \lVert\mathbf x-\hat{\mathbf x}\rVert_2^2\notag\\
+&\quad+\sum_{\ell=1}^{L}\lVert\operatorname{sg}[\mathbf r_{\ell-1}]-\mathbf e_{k_\ell}^{(\ell)}\rVert_2^2\notag\\
+&\quad+\beta\sum_{\ell=1}^{L}\lVert\mathbf r_{\ell-1}-\operatorname{sg}[\mathbf e_{k_\ell}^{(\ell)}]\rVert_2^2,\\
 \frac{\partial\mathcal L}{\partial\mathbf r_{\ell-1}} &\approx \frac{\partial\mathcal L}{\partial\mathbf e_{k_\ell}^{(\ell)}}
 \end{align}
 $$
@@ -292,7 +299,7 @@ $$
 
 #### SID 冲突
 
-量化存在信息损失，`多个物品可能映射到相同的语义` ID（SID）序列。根本原因之一是**码本利用不均衡**：大量物品集中在**少数聚类**中心附近，而部分中心很少被使用，使实际容量低于理论容量。
+量化存在信息损失，<span style="color:red">多个物品可能映射到同一个语义 ID</span>。根本原因之一是**码本利用不均衡**：大量物品集中在**少数聚类**中心附近，而部分中心很少被使用，使实际容量低于理论容量。
 
 缓解策略主要分为两类：训练阶段**改进量化**算法，例如采用均匀分配或限制聚类中心容量；推理阶段则接受冲突，并在 SID 序列中加入额外信息消除歧义，例如以前几层捕获共性语义、以后几层编码独特特征。
 
@@ -308,206 +315,285 @@ $$
 
 融合方法可分为表示层融合和量化层融合：前者通过门控机制或对比学习整合多模态表示；后者为不同模态维护独立量化通道，并在码本层面整合信息，例如使用模态专属码本或混合专家架构动态分配权重。
 
-
 # 推荐系统的scaling
 
 ## DLRM系统的scaling困难
 
-首先是特征瓶颈。DLRM依赖手工设计的数值型特征（如点击率、平均观看时长等统计特征）来压缩历史信息。当增加模型容量时，这些预聚合的特征成为信息瓶颈：模型能力提升了，但输入信息的丰富度没有提升。
+**特征瓶颈。** DLRM 常用点击率、平均观看时长等统计量压缩用户历史。扩大模型容量后，输入仍是这些预聚合特征，模型能利用的历史信息仍受限。
 
-其次是架构碎片化。DLRM由异构的模块组成（FM、DCN、DIN、MMoE等），每个模块针对特定类型的特征交互优化。增加某个模块的容量往往只能带来局部改善，难以产生系统性的提升。
+**架构碎片化。** FM、DCN、DIN、MMoE 等模块分别处理不同的特征交互或任务。只扩大单个模块，收益往往局限在该模块负责的部分。
 
-最后是训练范式的限制。传统DLRM采用的是item-level建模：对每个候选项独立计算评分，每个训练样本只对应一个
-三元组。这意味着模型每次只能从单个交互中学习一个监督信号，增加模型容量不会增加每个样本提供的信息量。而且，这种范式的计算成本随候选集规模线性增长，独立评分机制也无法捕捉候选之间的关联。
-
-这三个限制共同作用，让传统DLRM难以实现持续的规模化收益。突破这个困境，需要的不仅是工程优化，而是范式的转变。
+**逐物品评分。** 每条训练样本对应一个用户—物品—动作三元组，只提供一次交互的监督信号。推理时独立评分，计算成本随候选数量线性增长，也难以直接利用候选之间的关联。
 
 ## 用户的行为序列建模：物品+行动
+
 传统方法只建模物品序列，预测下一个物品，却没有考虑用户对每个物品的响应。
 
-现有方法将用户行为序列建模为**物品和行动**的序列，模型在学习这样一个序列时，`隐式学习`到了传统方法中**召回和排序**的概念
+交替记录物品和响应，得到序列 $$[\phi_0,a_0,\ldots,\phi_{n-1},a_{n-1}]$$。其中，$$\phi_i$$ 是第 $$i$$ 个物品，$$a_i$$ 是对应的用户动作。预测后续物品对应召回，给定候选物品预测用户响应对应排序。
 
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-01.png" alt="生成式推荐" width="720"><figcaption><p>仅按物品建模</p></figcaption></figure>
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-01.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示28</p></figcaption></figure>
-
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-02.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示29</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-02.png" alt="生成式推荐" width="720"><figcaption><p>物品与动作交替序列</p></figcaption></figure>
 
 ## 统一的特征空间
 
 传统DLRM的一个显著特点是特征的异构性和碎片化。一个典型的工业级推荐模型可能使用上千个特征，包括类别型（Sparse）特征和数值型（Dense）特征。
 
-对于离散型特征，例如用户id和类目属性，应该当**保留和去重**。
+用户 ID、类目等离散特征可以保留并去重。对于点击率等历史聚合指标，序列模型可以尝试直接从原始行为中学习相关规律。
 
-对于连续型特征，例如用户的CTR，可以通过对**类别型**特征，也就是用户行为序列，进行**隐式的推断和理解**，让更强的LLM自动学习这些特征。   
+> 是否保留数值特征取决于任务。统计特征仍可能为模型提供有用的归纳偏置。
 
->也就是忽略数值型特征，但是这`不一定有效`。数值型特征可以起到**很强的偏置作用**！
-
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-03.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示30</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-03.png" alt="生成式推荐" width="720"><figcaption><p>推荐特征空间对照</p></figcaption></figure>
 
 ## 训练效率的提升
+
 一次前向传播，可以从序列中**学习多个物品的动作**，比传统方法的**用户-物品-动作**三元组预测需要的前向传播次数更少。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-04.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示31</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-04.png" alt="生成式推荐" width="720"><figcaption><p>单次前向的多位置监督</p></figcaption></figure>
 
+# TIGER：Recommender Systems with Generative Retrieval
+
+1. TIGER 为每个物品分配语义 ID（SID），根据用户的交互历史生成下一个物品的 SID，再通过查找表返回物品。
+2. 论文在 Amazon Reviews 的三个子数据集上用 Recall 和 NDCG 评估顺序推荐，并与当时的基线比较。
+3. SID 的层次结构还支持两种用法。冷启动时按前缀匹配未见物品。需要增加多样性时，在不同层级调整解码采样。
+
+图表来自 [TIGER 原论文](https://arxiv.org/abs/2305.05065)。
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tiger-jian-suo-zong-lan.png" alt="生成式推荐" width="680"><figcaption><p>TIGER 检索总览</p></figcaption></figure>
+
+## 框架
+
+TIGER 先根据物品内容构建 SID，再用编码器—解码器预测 SID。两部分的衔接点是由离散码字组成的物品标识。
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tiger-bian-ma-jie-ma.png" alt="生成式推荐" width="960"><figcaption><p>TIGER 编码与解码</p></figcaption></figure>
+
+### RQ-VAE 生成物品 SID
+
+**内容编码。** 实验将标题、价格、品牌和类目等属性拼成文本，再用预训练的 Sentence-T5 生成 768 维物品向量。RQ-VAE 对该向量进行残差量化，前三级各输出一个码字。训练首批数据时，用 K-Means 的聚类中心初始化码本，以降低码本坍缩风险。
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tiger-can-cha-liang-hua.png" alt="生成式推荐" width="900"><figcaption><p>TIGER 残差量化</p></figcaption></figure>
+
+**冲突处理。** RQ-VAE 训练完成后，TIGER 在三码前缀末尾追加一个消歧码。例如，两个共享前缀 `(7, 1, 4)` 的物品分别获得 `(7, 1, 4, 0)` 和 `(7, 1, 4, 1)`。没有冲突时第四码取 0。最终，查找表将每个完整的四码 SID 映射到一个物品。
+
+**层次结构。** 同一个首码之下，第二码还能区分更细的类目分布。下图对比了按首码和第二码分组的结果。
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tiger-ma-zi-lei-mu-fen-bu.png" alt="生成式推荐" width="960"><figcaption><p>码字与类目分布</p></figcaption></figure>
+
+### T5X 编码器—解码器
+
+输入由一个用户令牌和一串历史物品的 SID 令牌组成。给定 $$n$$ 个历史物品，模型预测第 $$n+1$$ 个物品的 SID。TIGER 使用 T5X 实现 Transformer 编码器—解码器。
+
+四个码位分别使用 256 个令牌，共 $$4\times256=1024$$ 个物品码字令牌。用户 ID 哈希到 2,000 个用户令牌之一。用户令牌为检索提供额外的个性化信息。
+
+## 实验
+
+### 冷启动实验
+
+在 Amazon Beauty 数据集上，论文从训练分区移除 5% 的测试物品，模拟上线后新增的物品。RQ-VAE 和序列模型都在剩余的训练数据上训练。训练完成后，再为语料库中的所有物品编码，包括被移除的未见物品。
+
+预测 SID 后，用完整四码查找已见物品，并将前三码相同的未见物品纳入候选。超参数 $$\varepsilon$$ 限制前 $$K$$ 个结果中未见物品的比例。图中在 $$\varepsilon=0.1$$ 时，TIGER 在所报告的各个 Recall@K 上均高于 `Semantic_KNN`；右图中，所测试的 $$\varepsilon\ge0.1$$ 设置也高于该基线。
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tiger-leng-qi-dong-zhao-hui.png" alt="生成式推荐" width="960"><figcaption><p>冷启动召回与编码消融</p></figcaption></figure>
+
+### 多样性实验
+
+论文用 **Entropy@K** 衡量前 $$K$$ 个预测物品的真实类目分布。提高解码温度后，表中的类别熵随之上升。由于 SID 具有层次结构，对首码采样可以改变粗粒度类目，对后续码位采样则可在类目内部扩大选择。
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tiger-wen-du-lei-mu-shang.png" alt="生成式推荐" width="620"><figcaption><p>解码温度与类目熵</p></figcaption></figure>
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tiger-wen-du-lei-mu-shi-li.png" alt="生成式推荐" width="960"><figcaption><p>不同温度的推荐类目</p></figcaption></figure>
+
+### 无效 SID
+
+自回归解码有时会生成查找表中不存在的四码组合。可以扩大束搜索范围，再筛掉无效结果。论文也讨论了前缀匹配，用部分匹配的 SID 检索语义接近的物品，并将这一扩展留作后续工作。
+
+### SID 量化的可扩展性
+
+论文将三个数据集合并生成 SID，再在 Beauty 上评估推荐效果。对比仅用 Beauty 学习的 SID，联合量化的指标略有下降。
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tiger-lian-he-liang-hua.png" alt="生成式推荐" width="900"><figcaption><p>联合量化的检索表现</p></figcaption></figure>
+
+# 工业推荐的序列建模与排序架构
 
 ## HSTU
 
 ### point-wise聚合替代softmax注意力机制
-不进行softmax操作，突出用户对物品的`绝对兴趣`的强度。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-05.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示32</p></figcaption></figure>
+HSTU 用逐元素激活替代 softmax，保留用户对物品的<span style="color:red">绝对兴趣</span>强度。若序列长度为 $$T$$，查询与键矩阵 $$\mathbf Q,\mathbf K\in\mathbb R^{T\times d_k}$$，值矩阵 $$\mathbf V\in\mathbb R^{T\times d_v}$$，聚合可写为
+
+$$
+\mathbf Y=\operatorname{SiLU}(\mathbf Q\mathbf K^{\mathsf T}+\mathbf B)\mathbf V
+$$
+
+其中，$$\mathbf B\in\mathbb R^{T\times T}$$ 是位置与时间相关的注意力偏置，$$\mathbf Y\in\mathbb R^{T\times d_v}$$ 是聚合结果。
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-05.png" alt="生成式推荐" width="720"><figcaption><p>HSTU 注意力计算</p></figcaption></figure>
 
 ### 绝对位置编码和时序编码
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-06.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示33</p></figcaption></figure>
+HSTU 的相对注意力偏置可写成 $$B_{ij}=f(p_i-p_j,t_i-t_j,\mathrm{type}_i,\mathrm{type}_j)$$。其中，$$p_i$$ 是位置，$$t_i$$ 是时间戳，令牌类型用于区分物品和动作。
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-06.png" alt="生成式推荐" width="720"><figcaption><p>位置与时间偏置</p></figcaption></figure>
 
 ### 训练和推理
 
 #### 训练：Stochastic Length（随机长度）
-思路：随机**截取序列片段**和完整序列用于训练，确保大多数时候序列长度较短。
 
-直觉上可以`学习用户长期和短期`的兴趣用于训练。
+训练时在完整序列与截短序列之间随机采样，让多数训练序列更短，同时保留一部分完整历史，用于学习长期兴趣。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-07.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示34</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-07.png" alt="生成式推荐" width="720"><figcaption><p>随机长度训练</p></figcaption></figure>
 
 #### 推理：M-FALCON-全局成本分摊的推理算法
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-08.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示35</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-08.png" alt="生成式推荐" width="720"><figcaption><p>M-FALCON 推理</p></figcaption></figure>
 
 ## HSTU的优化
 
 ### 自回归
 
-#### 不必保持生成式损失，不必在每个历史位置都计算 BE Loss
+#### 历史位置的监督损失
 
 如果自回归只是一个可选技巧，**更多监督信号应该提升性能**。
 
-但实验结果显示AUC显著下降。这可以用“one-epoch问题” (Huang et al., 2025) 解释：推荐数据中，用户ID、物品ID等稀疏特征占据绝大部分参数。由于长尾分布，大量ID只出现一两次。在历史位置计算loss时，模型倾向于`“记住”每个交互细节，但这难以泛化`。
+但实验结果显示AUC显著下降。这可以用“one-epoch问题” (Huang et al., 2025) 解释：推荐数据中，用户ID、物品ID等稀疏特征占据绝大部分参数。由于长尾分布，大量ID只出现一两次。在历史位置计算loss时，模型倾向于<span style="color:red">“记住”每个交互细节，但这难以泛化</span>。
 
 举个例子，假设用户小明的历史序列是“看了科技博主A的视频→点赞→看了美食博主B的视频→收藏”。如果在历史位置计算loss，模型会学习预测：“看了科技博主A后会点赞”。但这个模式难以泛化，测试集中小明可能看科技博主C的视频，模型却没见过这个组合。
 
 此外，**如果只训练一个epoch（推荐系统的常见做法），模型没有机会纠正这种过拟合**。
 
-#### 必须重点保留自回归的时间约束
+#### 因果掩码的时间约束
 
-第二组实验在历史位置使用全可见mask，允许双向attention。从**特征交互角度看这应该增强表达能力**，但性能仍然下降，且随模型规模增大下降幅度扩大。全可见`mask破坏了关键的归纳偏置`，即用户兴趣演化的因果性。Causal mask`强制模型学习因果结构`，而非任意统计相关性。
+第二组实验在历史位置使用全可见mask，允许双向attention。从**特征交互角度看这应该增强表达能力**，但性能仍然下降，且随模型规模增大下降幅度扩大。全可见掩码让历史位置看到后续行为，削弱了<span style="color:red">按时间组织序列的归纳偏置</span>。因果掩码为模型保留按时间预测的约束。
 
 继续上面的例子，如果允许双向attention，模型在处理“看了科技博主A”这个行为时，能看到后面的“点赞”和“看了美食博主B”。这可能让模型学到虚假关联，比如“因为后面看了美食视频，所以给科技视频点赞”。但在现实中，用户在时刻的行为不可能被未来的行为影响。
 
-Causal mask通过禁止“看到未来”，强制模型学习真实的因果关系`。
+因果掩码只允许当前位置访问当时已知的历史，避免模型在训练中借用未来信息。
 
 ### 训练方式
 
-#### user-level和point-wise
+#### 用户级与逐交互训练
 
-相比之下，样本组织方式的影响较小。传统DLRM采用**point-wise**训练，`每个样本对应一次交互`。
+相比之下，样本组织方式的影响较小。传统DLRM采用**point-wise**训练，<span style="color:red">每个样本对应一次交互</span>。
 
 HSTU采用user-level训练，意思是**将同一用户的多次交互组织成序列**。这看似能带来梯度估计的稳定性和防止信息泄露的好处。
 
 但实验显示，保持序列化组织但只在最后位置计算loss（模拟point-wise），性能几乎没有下降。
 
->在保留完整历史序列和自回归架构的情况下，**只监督最后一个候选**，与监督**多个位置相比**，模型效果差异很小。
+> 在保留完整历史序列和自回归架构的情况下，**只监督最后一个候选**，与监督**多个位置相比**，模型效果差异很小。
 
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-09.png" alt="生成式推荐" width="720"><figcaption><p>训练监督位置对照</p></figcaption></figure>
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-10.png" alt="生成式推荐" width="720"><figcaption><p>逐交互训练样例</p></figcaption></figure>
 
 ### 特征工程
+
 团队进一步测试了工业常用模块的兼容性。SIM、PPNet、PLE等模块在生成式架构下仍然有效。
 
 特征工程方面的实验也有新发现：**大部分历史聚合特征的价值大幅降低**，因为模型的序列建模能力可以自动学会这些统计规律。
 
-`但实时特征依然重要`，它们捕捉训练窗口外的新信息。此外，特征工程的简化释放了系统资源，为处理更大规模候选集创造了可能。
+<span style="color:red">但实时特征依然重要</span>，它们捕捉训练窗口外的新信息。此外，特征工程的简化释放了系统资源，为处理更大规模候选集创造了可能。
 
 ### 优化1：Action-Oriented，动作-序列编码到一个隐向量中
-物品和动作融入到同一个token中，一个表示物品本身的编码，一个表示**动作含义** (例如点击/未点击)的编码。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-09.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示36</p></figcaption></figure>
+GenRank 把物品和动作合并为一个令牌。第 $$i$$ 次交互的物品嵌入 $$\boldsymbol\psi(x_i)\in\mathbb R^d$$ 与动作嵌入 $$\boldsymbol\phi(a_i)\in\mathbb R^d$$ 相加，得到
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-10.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示37</p></figcaption></figure>
+$$
+\mathbf e_i=\boldsymbol\psi(x_i)+\boldsymbol\phi(a_i)
+$$
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-11.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示38</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-11.png" alt="生成式推荐" width="720"><figcaption><p>动作导向序列结构</p></figcaption></figure>
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-13.png" alt="生成式推荐" width="720"><figcaption><p>物品与动作令牌对照</p></figcaption></figure>
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-14.png" alt="生成式推荐" width="720"><figcaption><p>物品与动作嵌入相加</p></figcaption></figure>
 
 对于候选物品，还需要特殊mask action，主要用于表示当前模型的**预测目标**是什么？例如CTR还是CVR？
 
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-15.png" alt="生成式推荐" width="720"><figcaption><p>候选掩码动作示例</p></figcaption></figure>
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-12.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示39</p></figcaption></figure>
+每个候选物品只关注历史和自身。历史序列内部按时间使用因果掩码。
 
-候选物品`单独看待，之间不进行任何交互`，其余情况采用**因果掩码**的方式。
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-12.png" alt="生成式推荐" width="720"><figcaption><p>动作导向掩码</p></figcaption></figure>
 
-
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-13.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示40</p></figcaption></figure>
-
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-14.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示41</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-16.png" alt="生成式推荐" width="720"><figcaption><p>候选注意力可见范围</p></figcaption></figure>
 
 ### 优化2：位置与时间的编码
-有索引相关的位置编码 (例如sinual encoding)，请求索引的编码：用于编码**同一时间段的用户行为**，请求间时间编码：编码距离上一段请求的**时间间隔**，区分长期和短期兴趣。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-15.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示42</p></figcaption></figure>
+位置编码记录令牌的序列索引。请求索引编码标识同一次请求中的行为，请求间时间编码保留与上一次请求的时间间隔。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-16.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示43</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-17.png" alt="生成式推荐" width="720"><figcaption><p>位置与请求编码</p></figcaption></figure>
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-18.png" alt="生成式推荐" width="720"><figcaption><p>时间感知注意力偏置</p></figcaption></figure>
 
 ## MTGR：生成式，重新引入特征工程
 
 ### HSTU/GenRank的根本假设：严格自回归
-生成式/自回归的方式，限制了特征的交叉融合。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-17.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示44</p></figcaption></figure>
+生成式/自回归的方式，限制了特征的交叉融合。
 
 美团团队的消融实验给出了明确答案：**去除交叉特征后**，即使是最大规模的生成式模型，性能也会退化到甚至不如中等规模的传统DLRM。这不是一个可以通过scaling弥补的gap，而是信息本身的缺失。
 
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-19.png" alt="生成式推荐" width="720"><figcaption><p>严格自回归分解</p></figcaption></figure>
+
 ### 核心贡献：混合特征工程和自回归
 
-**MTGR的核心洞察**是：用户粒度建模带来的效率提升，本质上来自于样本聚合和计算复用，而`不一定要求完整的生成式建模`。
+MTGR 将同一用户的样本聚合在一起，主要收益来自共享历史计算。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-18.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示45</p></figcaption></figure>
-
-这个设计的哲学是：**区分手段和目的**。生成式架构（Transformer + 序列建模）是一种强大的表征学习手段，但不一定要服务于生成式的建模目标。用户粒度聚合是一种高效的计算组织方式，**但不一定要求完整的因果序列**。MTGR通过这种混合范式，在保持效率的同时，`恢复了判别式建模的灵活性`。
-
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-19.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示46</p></figcaption></figure>
-
+MTGR 复用同一用户的历史序列计算，同时为候选物品加入实时特征和交叉特征，用于判别式打分。动态掩码控制不同类型令牌的可见范围。
 
 #### 特征建模
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-20.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示47</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-20.png" alt="生成式推荐" width="720"><figcaption><p>MTGR 令牌序列</p></figcaption></figure>
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-21.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示48</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-21.png" alt="生成式推荐" width="720"><figcaption><p>MTGR 特征编码</p></figcaption></figure>
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-22.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示49</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-25.png" alt="生成式推荐" width="720"><figcaption><p>MTGR 输入令牌示例</p></figcaption></figure>
 
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-26.png" alt="生成式推荐" width="720"><figcaption><p>候选交叉特征示例</p></figcaption></figure>
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-27.png" alt="生成式推荐" width="720"><figcaption><p>候选令牌投影</p></figcaption></figure>
 
 ### 分层次归一化
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-23.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示50</p></figcaption></figure>
+MTGR 将用户、序列、实时和候选令牌分组归一化。组 $$g$$ 内的输入 $$x_i$$ 使用该组的均值 $$\mu_g$$、标准差 $$\sigma_g$$ 以及仿射参数 $$\gamma_g,\beta_g$$。
+
+$$
+\operatorname{GLN}(x_i)=\gamma_g\frac{x_i-\mu_g}{\sigma_g}+\beta_g
+$$
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-22.png" alt="生成式推荐" width="720"><figcaption><p>分组层归一化</p></figcaption></figure>
 
 ### Dynamic Masking：静态特征忽略因果性，动态特征建模因果性
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-24.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示51</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-23.png" alt="生成式推荐" width="720"><figcaption><p>动态掩码规则</p></figcaption></figure>
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-25.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示52</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-24.png" alt="生成式推荐" width="720"><figcaption><p>MTGR 掩码矩阵</p></figcaption></figure>
 
-## Rankmixer：偏判别式，硬件效率优化
+## RankMixer：偏判别式，硬件效率优化
 
-RankMixer (Zhu et al., 2025) 通过hardware-aware的架构设计，从根本上解决了这一问题。其核心原则是从硬件特性反推架构设计，将推荐模型重构为统一的、GPU友好的计算图：用Token Mixing替代Self-Attention以降低复杂度，用Per-Token FFN捕捉特征异质性，用Sparse MoE实现参数高效的模型扩展。
+RankMixer（Zhu 等，2025）面向 GPU 执行效率设计。它用 Token Mixing 替代自注意力，用逐令牌前馈网络处理不同类型的特征，再通过稀疏 MoE 扩展参数容量。
 
-模型核心是逐层堆叠的RankMixer Block，每个block包含Multi-head Token Mixing（替代Self-Attention）和Per-Token FFN（捕捉特征异质性）两个模块。输入特征经tokenization转换为`T个统一维度的token`，经L层block处理后通过mean pooling产生最终输出
+每个 RankMixer 块包含 Multi-head Token Mixing 和 Per-Token FFN。输入先编码为 $$T$$ 个同维度令牌，经 $$L$$ 层 RankMixer 块处理后，通过平均池化得到输出。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-26.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示53</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-28.png" alt="生成式推荐" width="720"><figcaption><p>RankMixer 总体架构</p></figcaption></figure>
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-27.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示54</p></figcaption></figure>
-
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-29.png" alt="生成式推荐" width="720"><figcaption><p>RankMixer 块计算</p></figcaption></figure>
 
 ### Token Mixing：替换注意力层，只进行组合
-每一个特点的**子维度相互交叉和排列**组合，用于后续进行**特征融合**。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-28.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示55</p></figcaption></figure>
+把每个令牌按特征维度分成多个头，再按头重排来自不同令牌的子向量，供后续 FFN 融合特征。
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-30.png" alt="生成式推荐" width="720"><figcaption><p>多头令牌混合</p></figcaption></figure>
 
 ### Per-Token FFN：特异参数
 
 因为输入和输出的序列维度是**固定的**，因此可以为固定序列长度中的每个token，**分配特异化参数**。
 
-推理时速度不变，存储时模型参数增多，但总体参数没有膨胀 (因为**Token Mixing本质是无参数化的**)。
+每个位置只执行自己的 FFN。参数需要分别存储，令牌混合本身通过重排完成，无可学习参数。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-29.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示56</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-31.png" alt="生成式推荐" width="720"><figcaption><p>逐令牌前馈网络</p></figcaption></figure>
 
-###  Sparse MoE：扩展表达能力
+### Sparse MoE：扩展表达能力
 
 但**如何扩展到十亿甚至百亿参数**？直接增加模型深度和宽度会线性增加计算量，推理延迟也会同比增加，这在工业场景中不可接受。
 
@@ -515,180 +601,179 @@ Sparse Mixture-of-Experts（MoE）提供了解决方案：不是让所有参数�
 
 MoE的理想工作模式是每个expert专门化到某种特定样本模式。但在推荐场景中，**实现有效的expert specialization面临三大挑战**。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-30.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示57</p></figcaption></figure>
+RankMixer 采用 ReLU 路由，将非正路由分数置零。不同令牌可以激活不同数量的专家。
 
-通过使用RELU**替代TOP-K**，确保每个专家都有机会被选择，同时抑制贡献非正的专家，强制实现专家的**训练平衡**。
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-32.png" alt="生成式推荐" width="720"><figcaption><p>ReLU 专家路由</p></figcaption></figure>
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-31.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示58</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-33.png" alt="生成式推荐" width="720"><figcaption><p>路由激活示例</p></figcaption></figure>
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-32.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示59</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-34.png" alt="生成式推荐" width="720"><figcaption><p>稀疏专家聚合</p></figcaption></figure>
 
-### OneTrans：生成式，序列和特征建模
+## OneTrans：统一序列与特征建模
 
-OneTrans (Zhang et al., 2025) 提出根本性架构革新：用**单一 Transformer backbone 同时完成序列建模和特征交互**。如图 图6.5.1 (b) 所示，OneTrans 通过统一 tokenizer **将序列特征（S-tokens）和非序列特征（NS-tokens）**转为统一 token 序列，在堆叠 Transformer 层中联合建模，打破序列与特征的信息壁垒，为应用 LLM 系统优化奠定基础。
+OneTrans（Zhang 等，2025）用同一个 Transformer 主干同时建模用户序列和非序列特征。两类输入分别编码为 S-tokens 和 NS-tokens，再拼接成一个序列，让不同类型的特征在同一主干内交互。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-33.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示60</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-35.png" alt="生成式推荐" width="720"><figcaption><p>OneTrans 架构对照</p></figcaption></figure>
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-34.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示61</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-36.png" alt="生成式推荐" width="720"><figcaption><p>序列与非序列分词</p></figcaption></figure>
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-35.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示62</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-37.png" alt="生成式推荐" width="720"><figcaption><p>OneTrans 总体架构</p></figcaption></figure>
 
-#### Mixed Parameterization 
+### 混合参数化
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-36.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示63</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-38.png" alt="生成式推荐" width="720"><figcaption><p>混合因果注意力</p></figcaption></figure>
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-37.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示64</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-39.png" alt="生成式推荐" width="720"><figcaption><p>混合参数前馈层</p></figcaption></figure>
 
-#### 渐进式蒸馏
+### 渐进式蒸馏
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-38.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示65</p></figcaption></figure>
-
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-40.png" alt="生成式推荐" width="720"><figcaption><p>金字塔序列压缩</p></figcaption></figure>
 
 # 端到端生成式建模
 
 ## OneRec-v1
 
+本节按多模态表示、语义 ID、用户特征、编码器—解码器和后训练来梳理 OneRec。架构和实验见 [OneRec 技术报告](https://arxiv.org/html/2506.13695v3)。
 
-### Aligned Collaborative-Aware Multimodal Representation
+### 协同感知的多模态表示
+
 协同感知的多模态表示学习。每个视频包含丰富的多模态信息，包括标题、标签、语音转文字（ASR）、图像转文字（OCR）、封面图和采样帧。这些信息通过视觉语言模型（如 miniCPM-V-8B）处理后，生成 1280 个 Token 向量。为了实现高效处理，采用 **QFormer 模块将这些向量压缩为 4 个可学习的查询向量**。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-39.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示66</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-41.png" alt="生成式推荐" width="720"><figcaption><p>多模态查询压缩</p></figcaption></figure>
 
 然而，仅依赖内容特征生成的语义 ID 无法捕捉协同过滤信号。为此，OneRec-V1 引入了**物品对对比学习**：从用户行为中提取高协同相似度的物品对（如同一用户正向点击的物品），通过对比损失拉近这些物品对的表示，使语义 ID 能够同时编码内容语义和行为模式。
 
 **还加入了标题生成的辅助任务**，确保表示保留内容理解能力。
 
+> 采用batch-wise的对比损失学习。正样本定义为：U2I，用户**点击过的物品**和用户**历史中与其相似度最高**的物品；I2I，与**展示高相似度** (Swing相似度)的物品对。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-40.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示67</p></figcaption></figure>
-
->采用batch-wise的对比损失学习。正样本定义为：U2I，用户**点击过的物品**和用户**历史中与其相似度最高**的物品；I2I，与**展示高相似度** (Swing相似度)的物品对。
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-42.png" alt="生成式推荐" width="720"><figcaption><p>对比与标题生成损失</p></figcaption></figure>
 
 ### RQ-Kmeans：残差量化
 
-使用经过对比学习和字幕预测后的多模态特征 (不只单个向量，从Query-Former提取)，进行Kmeans层次聚类，注意**码本的数量是平衡的**。
+用对比学习和标题生成训练得到的多模态表示做残差 K-Means。与前面的 RQ-K-Means 一样，每层对上一级的剩余残差聚类。OneRec 采用三层量化。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-41.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示68</p></figcaption></figure>
-
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-43.png" alt="生成式推荐" width="720"><figcaption><p>OneRec 残差量化</p></figcaption></figure>
 
 ### 特征工程
 
 #### User Static Pathway
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-42.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示69</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-44.png" alt="生成式推荐" width="720"><figcaption><p>用户静态特征映射</p></figcaption></figure>
 
 #### Short-term Pathway
 
 只取20个用户交互的视频序列，**构造一系列特征拼接**然后映射到统一维度。
 
->视频相关的特征**与之前提取的多模态特征基本无关**，vid表示视频id，后续被替换为sid。
+> 视频相关的特征**与之前提取的多模态特征基本无关**，vid表示视频id，后续被替换为sid。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-43.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示70</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-45.png" alt="生成式推荐" width="720"><figcaption><p>近期交互特征</p></figcaption></figure>
 
 #### Positive-feedback Pathway
+
 取用户高度交互过的视频序列。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-44.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示71</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-46.png" alt="生成式推荐" width="720"><figcaption><p>高参与度交互特征</p></figcaption></figure>
 
 #### Lifelong Pathway
+
 通过使用之前的**多模态特征**进行聚类，选取不超过M个物品，基准是**选择离聚类中心最近的物品**。
 
-后面构造特征是没有使用多模态特征，只是索引到对应视频，然后根据视频构造特征，例如vid，aid等内容。部分内容例如playtime和dur等，**替换为该聚类中心的平均特征**，而非个体特征。
+多模态向量用于聚类。选出代表视频后，再取视频 ID、作者 ID 等特征。播放时长和视频时长等统计量使用所在簇的均值。
 
-最终保留2000个具有用户代表性的终身特征，**使用Q-former进一步压缩至128个特征**。
+长期路径保留约 2,000 条代表性行为，再用 Q-Former 压缩为 128 个查询表示。
 
->只用了多模态特征进行聚类，`构造特征时基本没用到过它`。
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-47.png" alt="生成式推荐" width="720"><figcaption><p>长期历史压缩</p></figcaption></figure>
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-45.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示72</p></figcaption></figure>
+### 编码器与解码器
 
-### 编码和解码器
-就是正常的自注意力和交叉注意力层堆叠，使用稀疏MoE提高表达能力。
+编码器聚合各条用户特征路径。解码器通过因果自注意力读取已生成的码字，通过交叉注意力读取编码器输出，并用稀疏 MoE 扩展表达能力。
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-46.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示73</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-48.png" alt="生成式推荐" width="720"><figcaption><p>解码器与预测目标</p></figcaption></figure>
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-47.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示74</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-49.png" alt="生成式推荐" width="720"><figcaption><p>OneRec 编解码架构</p></figcaption></figure>
 
 ### 强化学习：ECPO
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-48.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示75</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-50.png" alt="生成式推荐" width="720"><figcaption><p>OneRec 奖励体系</p></figcaption></figure>
 
-#### P-SCORE
->主要思想：定义多个塔模型，**对物品多个维度进行打分**，然后根据业务目标，**手动加权**这些分数。
+#### P-Score
 
-为解决这些限制，我们建议使用神经网络学习个性化融合评分，称为P评分（偏好评分）（Cao等，2025）。该模型的整体框架如图5（中间）所示。该模型的**底层架构基于基于搜索兴趣模型（SIM）**（Pi 等，2020）。它包含多个塔楼，每个塔楼专门用于学习特定目标。在训练过程中，这些塔利用相应的目标标签作为辅助任务计算二元交叉熵（BCE）损失。
+P-Score 用多塔网络学习个性化偏好分。各任务塔通过二元交叉熵（BCE）预测相应行为。任务塔的隐藏状态与用户、物品表示一起输入 MLP，由融合塔输出偏好分。训练时分别计算各任务的 BCE，再按目标权重汇总。
 
-每个塔的隐藏状态，以及用户以及项目表示，则被输入到最后一层的多层感知器（MLP）。该MLP之后是单个塔输出P分数，利用所有目标的标签计算二元交叉熵损失。损失可以正式表示如下
-
->训练时，这些塔模型采用BCE损失。
-
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-49.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示76</p></figcaption></figure>
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-51.png" alt="生成式推荐" width="720"><figcaption><p>偏好分多任务损失</p></figcaption></figure>
 
 #### EC-GRPO
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-50.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示77</p></figcaption></figure>
+ECPO 对负优势样本使用提前裁剪，限制策略概率比率过大时的梯度。对正优势样本沿用 GRPO 的裁剪方式。组内优势由候选的奖励标准化得到。
 
-通过改进**负优势**下的clip函数，确保不会出现较大的梯度波动。
+$$
+A_i=\frac{r_i-\operatorname{mean}(r_1,\ldots,r_G)}
+{\operatorname{std}(r_1,\ldots,r_G)}
+$$
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-51.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示78</p></figcaption></figure>
+其中，$$G$$ 是组内候选数，$$r_i$$ 是第 $$i$$ 个候选的 P-Score 奖励。
 
-#### Generation Format Regularization
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-52.png" alt="生成式推荐" width="720"><figcaption><p>ECPO 训练目标</p></figcaption></figure>
 
-在生成式推荐中，合法性比率指的是生成语义ID序列中，能够映射到实际项目ID的比例。这一指标对于评估发电稳定性至关重要。实际上，语义ID序列的基数远大于视频序列。这确保所有项目都涵盖，词汇量增加更多参数，从而提升性能。
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-53.png" alt="生成式推荐" width="720"><figcaption><p>ECPO 提前裁剪</p></figcaption></figure>
 
-然而，这也可能导致在推理过程中**生成语义ID序列但没有对应的条目ID**，即非法生成。 引入强化学习与ECPO一起显著增加了非法输出的生成。最新研究（任 Sutherland，2024）认为这是·所致。如图7所示，预训练模型已经学会生成大部分合法代币。纳入强化学习后，A>0的项目仅略微调整分布。当应用A < 0的项目时，模型的概率分布将大部分概率质量压缩为当前认为的最优输出o∗。这导致某些**合法代币被挤压到与非法代币相当的概率，使模型难以区分合法代币**。
+#### 生成格式正则化
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-52.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示79</p></figcaption></figure>
+**合法率**衡量生成的 SID 中有多少可以映射到真实视频。SID 的组合空间大于视频库，部分码字组合无法查表。技术报告观察到，负优势更新可能把概率质量挤向少数高概率结果，使一部分合法码字与非法码字变得难以区分。
 
->后续从GRPO采样的样本中**只选取1%**用于赋予格式奖励。
+格式奖励从候选中随机取样。合法候选使用优势值 1，非法候选不参与这项更新。
+
+$$
+A_i =
+\begin{cases}
+1, & o_i\in\mathcal I_{\mathrm{legal}},\\
+0, & o_i\notin\mathcal I_{\mathrm{legal}}.
+\end{cases}
+$$
+
+其中，$$o_i$$ 是第 $$i$$ 个候选，$$\mathcal I_{\mathrm{legal}}$$ 是可映射到真实视频的候选集合。
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-54.png" alt="生成式推荐" width="720"><figcaption><p>挤压效应与格式奖励</p></figcaption></figure>
 
 ### Rejection Sampling Fine-Tuning
 
 先让模型生成多个候选答案，再用奖励模型或规则筛选出质量较高的答案，最后把这些高质量答案作为监督数据，对原模型进行 SFT 微调。
 
-它本质上是一种“生成 → 筛选 → 模仿”的训练方式。
+```mermaid
+flowchart TD
+    A["模型生成多个候选"] --> B{"奖励模型或规则判定"}
+    B -->|高奖励| C["保留为监督样本"]
+    B -->|低奖励| D["丢弃候选"]
+    C --> E["监督微调原模型"]
+```
 
-因为模型生成的候选不是全部用于训练，而是经过筛选：
-- 高奖励样本：Accept（接受）
-- 低奖励样本：Reject（拒绝）
+*拒绝采样微调流程*
 
 ### 实验
 
-#### 使用SID替换VID
-SID：语义id，长度为K，**依赖于码本**。
-VID：离散型id，**表征某一特定视频**，数量巨大 (十几亿)。
-优势：**参数更加高效**，而且语义表征能力更强。
+#### 使用 SID 替换 VID
 
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-53.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示80</p></figcaption></figure>
+VID 为每个视频分配独立标识，词表规模随视频库增长。SID 用多个共享码本中的码字表示视频，能在较小词表中保留语义结构。
+
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-55.png" alt="生成式推荐" width="720"><figcaption><p>SID 与 VID 对比</p></figcaption></figure>
 
 #### 搜索策略：如何生成多个候选？
 
-搜索策略强化学习在大型语言模型中通常采用top-k和top-p抽样来生成样本。在OneRec中，我们还探讨了`束流搜索`作为一种替代策略。
-
-表8比较了这两种方法的结果，显示在OneRec强化学习框架中，束搜索显著优于top-k和top-p抽样。这一改进源于语义ID结构的固有规律性，遵循前缀树编码方案，因此与束搜索的系统探索高度契合。
+OneRec 比较了束搜索与 top-k、top-p 采样在强化学习中生成候选的效果。实验中束搜索表现更好。报告将这一结果与 SID 的前缀结构联系起来。
 
 #### On-policy vs Off-policy
 
-参考模型本节比较了ECPO中策略生成的两个参考模型：（1）预训练模型（非政策模式）和（2）当前政策模型（政策外）。实验结果总结于表9。从表格中可以明显看出，**使用当前政策模型能带来更好的结果**，尤其是在离线奖励评估方面。这表明策略上方法允许模型持续自我学习，突破参考模型的局限，达到更高的上限。
+实验比较了两种生成训练候选的方式。Off-policy 使用预训练模型，on-policy 使用当前策略。使用当前策略时，离线奖励改善更明显，在线指标的增益则相对有限。
 
-**然而，就在线表现而言，政策内方法带来的改善并不显著**。这是因为奖励定义不够优，导致了轻微的奖励黑客行为。我们将将这一方面作为未来工作的关键方向。
+<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-56.png" alt="生成式推荐" width="720"><figcaption><p>当前与预训练策略对比</p></figcaption></figure>
 
-
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-54.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示81</p></figcaption></figure>
 #### 格式奖励验证
 
-在本节中，我们进行实验以验证格式奖励的有效性。如第2.4.2节所述，在将强化学习纳入预训练模型后，由于挤压效应，**模型输出的合法性显著降至50%以下**。这意味着超过一半生成的语义ID与实际视频ID不对应，这对推荐的稳定性和推理的可扩展性造成了不利影响。
+加入 ECPO 后，未使用格式奖励的基线合法率低于 50%。实验对比了两种取样策略，均从 128 个生成候选中选 5 个计算格式损失。
 
-我们通过比较两种计算格式丢失的样本选择方法来评估格式奖励的影响：（1）从128个生成的候选样本中**选择概率最高的5个样本**，（2）随机选择5个样本。 图12展示了它们对产出合法性的影响。左图显示了所有128个生成样本的合法性率，右图则聚焦于所选样本。没有格式奖励，基线合法性仍低于50%。
-
-Top-k 选择方法产生了一个有趣的模式：虽然整体合法性最初上升后下降，但被选中的样本迅速达到100%合法性，表明模型只学会在排名最高的子集中产生合法输出。相比之下，随机选择提供了更具挑战性的学习目标，但推动了稳步改进——最终合法性达到95%，且无下降迹象
-
->128指的是模型生产的候选物品，只选择其中5个**用于强化学习格式内容**。
-
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-55.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示82</p></figcaption></figure>
-
-
+按概率取前 5 个时，选中样本很快达到 100% 合法，全部候选的合法率却先升后降。随机选 5 个时，全部候选的合法率稳步提升，最终达到约 95%。
 
 #### Industrial Scenario Alignment
 
-本节将展示一个利用强化学习解决工业挑战的实际案例。在快手平台上，病毒式内容农场占了内容创作者的很大一部分，主要制作质量不稳定的再利用和剪辑视频。虽然OneRec在多个业务指标上优于传统推荐系统，但我们观察到，如果没有适当的后期过滤策略，病毒内容的曝光比例会显著增加，这可能对平台生态系统产生负面影响。 病毒内容视频的最佳比例可以设置为f。当比例超过f时，我们会下重他们的P分数奖励以抑制这些内容的质量，同时保持系统对这些内容质量的感知。
-
-<figure><img src="/assets/img/posts/recommend-system-gen-rec-sys/tui-jian-xi-tong-tu-56.png" alt="生成式推荐" width="720"><figcaption><p>推荐系统图示83</p></figcaption></figure>
+以搬运和二次剪辑为主的内容曝光超过阈值 $$f$$ 时，OneRec 降低这类候选的 P-Score 奖励，以控制曝光比例。
