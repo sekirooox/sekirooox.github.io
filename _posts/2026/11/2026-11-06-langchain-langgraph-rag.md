@@ -8,13 +8,13 @@ render_with_liquid: false
 mermaid: true
 ---
 
-本文记录基于 LangChain 的 RAG 代码示例，依次整理文档加载、文本分块、嵌入与向量库、检索、上下文拼接和模型问答。
+本文用一个 LangChain 示例串起检索增强生成（RAG）的两个阶段。建立索引时，先加载、切分和编码文档。回答问题时，再检索相关文档块，把它们作为上下文交给模型。
 
-示例保留了 Notebook 中的代码片段与部分输出，并非可直接独立运行的脚本；`markdown_path`、`embedding_model_path` 以及相关类的导入需在运行环境中准备。截断的输出均作为文本展示。
+示例来自 Notebook，代码片段按顺序阅读。运行前需准备 `markdown_path`、`embedding_model_path` 及相关导入。输出节选保留为文本。
 
 # RAG 数据流
 
-加载器将文档读为 `list[Document]`，分块后仍为 `list[Document]`；文档块经嵌入计算后存入向量库。查询得到的文档块拼接为上下文，再与问题一起构造提示消息，交给模型生成回答。
+沿着图中的数据类型读这段代码。文档在加载、分块和检索时都以 `Document` 为单位。检索完成后，代码提取命中文档块的 `page_content`，拼成一段上下文。
 
 ```mermaid
 flowchart TD
@@ -28,11 +28,11 @@ flowchart TD
     F --> G["调用模型：生成回答消息"]
 ```
 
-RAG 文档处理与问答流程。
+*RAG 文档处理与问答流程*
 
 ## 模型配置
 
-模型名称、接口地址和 API 密钥从环境变量读取；下文使用这些配置创建 `ChatOpenAI` 对象。
+先从环境变量读取模型名称、接口地址和 API 密钥。生成回答时会用到这些配置。
 
 ```python
 model = os.getenv("LLM_MODEL_ID", "glm-4.7-flash-free")
@@ -42,12 +42,14 @@ temperature = 0.7
 max_tokens = 4096
 ```
 
-## Document：文档数据结构
+## 建立索引
 
-本例中文档加载、分块和检索都以 `Document` 为基本对象，主要关注两个属性：
+### Document：文档数据结构
 
-- `doc.page_content`：文本内容。
-- `doc.metadata`：来源等附加信息。
+示例中的 `Document` 有两个需要关注的属性。
+
+- `doc.page_content` 保存文本内容。
+- `doc.metadata` 保存来源、作者等附加信息。
 
 ```python
 from langchain_core.documents import Document
@@ -64,9 +66,9 @@ doc_example
 Document(metadata={'source': '示例来源', 'author': '示例作者'}, page_content='这是一个示例文档内容。')
 ```
 
-## 加载文档
+### 加载文档
 
-文档加载器用于读取 Markdown、PDF、DOCX 等格式的文档。这里使用 `UnstructuredMarkdownLoader` 加载 Markdown，返回 `list[Document]`。
+调用 `UnstructuredMarkdownLoader` 的 `load()` 读取 Markdown 文件，得到 `list[Document]`。加载后可以通过 `metadata` 查看来源。
 
 ```python
 # 文档加载器：加载md，pdf和docx等格式的文档
@@ -84,10 +86,10 @@ docs[0].metadata
 {'source': '/home/xxx/project/all-in-rag/data/C1/markdown/easy-rl-chapter1.md'}
 ```
 
-## 文本分块
+### 文本分块
 
-- 把整篇文档切分为检索单元。
-- 分块后，每个片段都能单独被检索。这里的“递归”大致指先尝试段落等较大的边界；如果片段仍然过长，再尝试换行、空格等更细的边界。
+- 每个文档块都可以单独被检索。
+- `RecursiveCharacterTextSplitter` 优先尝试在段落边界切分。片段仍然过长时，再尝试换行、空格等更细的边界。
 
 ```python
 chunk_size = 4000
@@ -102,12 +104,10 @@ text_splitter = RecursiveCharacterTextSplitter(
 | 参数 | 含义 |
 | --- | --- |
 | `chunk_size` | 每块的目标最大长度 |
-| `chunk_overlap` | 相邻块保留部分重叠，缓解知识在边界处被截断 |
-| `separators` | 优先尝试的切分边界 |
+| `chunk_overlap` | 相邻块的目标重叠长度，用于保留边界附近的上下文 |
+| `separators` | 按顺序尝试的切分边界 |
 
-`split_text` 接收 `str`，返回 `list[str]`；`split_documents` 接收 `list[Document]`，返回 `list[Document]`，保留文档内容及元数据。
-
-> 这里的接口约定是：输入与输出尽量保留相似的数据结构。
+`split_text` 将一个 `str` 切成 `list[str]`。`split_documents` 接收并返回 `list[Document]`，每个文档块包含切分后的文本和原文档的元数据。下方输出依次展示两种方法所得首个文档块的前 100 个字符，以及文档块保留的来源。
 
 ```python
 text_chunks = text_splitter.split_text(docs[0].page_content)       # str → list[str]
@@ -123,11 +123,9 @@ text_chunks[0][:100], chunks[0].page_content[:100], chunks[0].metadata
  {'source': '/home/shared/ml/project/all-in-rag/data/C1/markdown/easy-rl-chapter1.md'})
 ```
 
-## 嵌入模型：HuggingFaceEmbeddings
+### 嵌入模型：HuggingFaceEmbeddings
 
-`HuggingFaceEmbeddings` 是适配器，将底层嵌入模型包装为 LangChain 可以统一调用的接口。创建 `embeddings` 对象主要是在加载模型；对文档进行编码则发生在调用嵌入接口或向量库添加文档时。
-
-> 本例中的 `embeddings` 是封装了嵌入模型的对象。
+`HuggingFaceEmbeddings` 将底层模型封装成 LangChain 可调用的嵌入接口。创建 `embeddings` 时加载模型。实际编码发生在调用嵌入接口或向量库添加文档时。
 
 ```python
 # embedding模型
@@ -143,20 +141,15 @@ embeddings = HuggingFaceEmbeddings(
 )
 ```
 
-各参数的作用：
+- `model_name` 指向本地模型目录。
+- `model_kwargs` 控制模型加载。本例用 `device='cuda:0'` 选择第一个 CUDA 设备，用 `local_files_only=True` 限定只从本地加载。改用 CPU 时可设为 `device='cpu'`。
+- `encode_kwargs` 控制向量编码。本例用 `normalize_embeddings=True` 将向量归一化为单位长度。
 
-- `model_name`：这里传入本地模型目录。
-- `model_kwargs`：传给底层模型加载过程。
-- `device='cuda:0'`：本例使用第一个 CUDA 设备；使用 CPU 时可设置为 `device='cpu'`。
-- `local_files_only=True`：只使用本地文件。
-- `encode_kwargs`：传给向量编码过程。
-- `normalize_embeddings=True`：将向量归一化为单位长度。
+#### 文档嵌入与查询嵌入
 
-Python 中的 `{...}` 是字典，上述配置以“名称 → 值”的形式传递。
+`embed_documents` 批量编码多段文本，将 `list[str]` 转为 `list[list[float]]`。
 
-### 文档嵌入与查询嵌入
-
-`embed_documents` 接收 `list[str]`，返回 `list[list[float]]`；`embed_query` 接收单个 `str`，返回 `list[float]`。
+`embed_query` 编码单条查询，将 `str` 转为 `list[float]`。
 
 ```python
 vectors = embeddings.embed_documents( # 针对一组查询list[str]，得到使用list表示的向量：list[str] → list[list[float]]
@@ -173,7 +166,7 @@ query_vector = embeddings.embed_query("什么是强化学习？") # 只针对单
 len(query_vector), query_vector
 ```
 
-原始输出节选：向量长度为 `512`，下方只展示其中三个分量。
+本例的查询向量有 512 个分量，下方节选前三个。
 
 ```text
 (512,
@@ -183,38 +176,40 @@ len(query_vector), query_vector
 )
 ```
 
-## 构建向量库
+### 构建向量库
 
-创建 `InMemoryVectorStore` 时传入嵌入对象；调用 `add_documents(chunks)` 时，对文档块执行嵌入计算并存入向量库。
+将 `embeddings` 传给 `InMemoryVectorStore`。调用 `add_documents(chunks)` 后，向量库对文档块计算嵌入，并保存文档块及其向量。
 
 ```python
 vectorstore = InMemoryVectorStore(embedding=embeddings)
 vectorstore.add_documents(chunks) # 作用对象是documents：list[Document]
 ```
 
-## 检索向量库
+## 检索与生成回答
 
-- 本例使用 `InMemoryVectorStore` 按余弦相似度检索，返回 `list[Document]`。
-- `k=3` 表示最多返回三个文档块，不代表找到三个例子，也不代表覆盖全文中的所有例子。
+### 检索向量库
+
+- `similarity_search` 接收问题字符串，按余弦相似度检索，返回 `list[Document]`。
+- `k=3` 限制的是返回的文档块数。一个块可以包含多个例子，其他例子也可能落在未命中的块里。
 
 ```python
 question = "DeepMind 研发的走路的智能体是什么?"
 results = vectorstore.similarity_search(question, k=3) # 作用对象是query：str
 ```
 
-加入向量库的单位是 `Document`，查询后**返回的单位也是 `Document`**。以下是原始输出的截断节选：
+下方节选展示了返回列表中的 `Document` 对象。
 
 ```text
 [Document(id='366eba3b-bc90-4a44-8a99-c77bff29ba63',Document(id='a2b13cd6-1947-4917-9b45-19227754673c',Document(id='1688693a-ad64-4a4f -9b02-f598a7daf223',]
 ```
 
-查看第一个结果的前 100 个字符：
+可以通过 `page_content` 查看首个命中文档块的前 100 个字符。
 
 ```python
 results[0].page_content[:100]
 ```
 
-也可以将向量库转为 `retriever`，通过 `invoke(question)` 查询：
+也可以用 `as_retriever()` 将向量库封装为检索器，再通过 `invoke(question)` 查询。
 
 ```python
 # 其他做法，使用retriever查询
@@ -225,19 +220,19 @@ retriever = vectorstore.as_retriever(
 retrieved_docs = retriever.invoke(question)
 ```
 
-## 将检索结果转换为上下文
+### 将检索结果转换为上下文
 
-- 检索结果仍然是 `Document` 对象。
-- 将多个文档的 `page_content` 拼接为一个完整的 `str`，作为提示词中的上下文。
+- 从 `results` 中取出各文档块的 `page_content`。
+- 用空行分隔并拼接这些文本，得到传给提示模板的上下文字符串。
 
 ```python
 docs_content = "\n\n".join([doc.page_content for doc in results])
 docs_content
 ```
 
-## ChatPromptTemplate：构建提示消息
+### ChatPromptTemplate：构建提示消息
 
-使用 `ChatPromptTemplate` 定义模板，通过 `context` 和 `question` 填入上下文与问题。
+用 `ChatPromptTemplate` 定义提示模板，再把拼好的文本填入 `context`，把用户问题填入 `question`。
 
 ```python
 prompt = ChatPromptTemplate.from_template("""
@@ -270,15 +265,15 @@ messages = prompt.format_messages(
 messages
 ```
 
-`format_messages` 得到消息对象列表，而非 `list[str]`，用法类似 Transformers 的聊天消息输入。原始输出节选：
+`format_messages` 返回聊天消息对象列表。本例的输出包含一条 `HumanMessage`，其中已经填入上下文和问题。
 
 ```text
 [HumanMessage(content="\n请根据下面提供的上下文信息来回答问题。\n\n上下文:\n图 1.8 可能的预演序列\n\n1.1.3 强化学...]
 ```
 
-## 调用模型生成回答
+### 调用模型生成回答
 
-将格式化后的 `messages` 传入 `llm.invoke`，得到回答消息。
+用前面的配置创建 `ChatOpenAI`，再将格式化后的 `messages` 传给 `llm.invoke`。
 
 ```python
 llm = ChatOpenAI(
@@ -296,16 +291,16 @@ answer = llm.invoke(
 # 上下文开销还是不小的，'completion_tokens': 214, 'prompt_tokens': 5917, 'total_tokens': 6131
 ```
 
-返回值为 `AIMessage` 消息对象。原始回答节选如下，文本已截断：
+调用返回一个 `AIMessage`。本次调用记录了 5,917 个输入 token 和 214 个输出 token。下方是回答节选。
 
 ```text
 answer
 AIMessage(content='DeepMind 研发的走路的智能体是一个通过强化学习训练的智能体：它每往前走一步就会获得奖励)
 ```
 
-## Chain：连接提示词、模型与解析器
+### Chain：连接提示词、模型与解析器
 
-通过 `prompt | llm | parser` 连接提示模板、模型和 `StrOutputParser`。输入字典提供模板所需的字段；提示模板构造消息输入，模型返回消息，解析器再将输出转换为 `str`。
+上面分步构造消息并调用模型。也可以用 `prompt | llm | parser` 把这两步和输出解析连成一条链。调用 `chain.invoke` 时传入包含 `context` 和 `question` 的字典，最后由 `StrOutputParser` 将模型消息转换为 `str`。
 
 ```python
 from langchain_core.output_parsers import StrOutputParser
